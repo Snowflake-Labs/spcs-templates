@@ -36,7 +36,7 @@ In order to launch LLAMA2 model you need to have the following:
 * Create SPCS repository
 
 
-3. Download this Github repository: `git clone git@github.com:snowflakedb/spcs-templates-internal.git`
+3. Download this Github repository: `git clone https://github.com/Snowflake-Labs/spcs-templates.git`
 
 4. Make sure you have `python3` installed
 5. Run `pip install -r requirements.txt`
