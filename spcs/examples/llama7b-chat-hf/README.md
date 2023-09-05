@@ -40,6 +40,7 @@ In order to launch LLAMA2 model you need to have the following:
 
 4. Make sure you have `python3` installed
 5. Run `pip install -r requirements.txt`
+6. **Make sure you have docker installed and running**
 
 ### Run the command
 
