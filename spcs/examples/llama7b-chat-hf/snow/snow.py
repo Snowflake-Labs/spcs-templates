@@ -6,7 +6,7 @@ import os
 import sys
 import time
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import snowflake.connector
 from snowflake.connector.connection import SnowflakeConnection
@@ -55,6 +55,7 @@ class Service:
 
 
 def _exec_sql(ctx: SnowflakeConnection, sql: str, log_results: bool = False) -> list[dict]:
+    log.info(f"Executing: {sql}")
     output: List[SnowflakeCursor] = list(ctx.execute_string(sql))
     result = output[0].fetchall()
     if log_results:
@@ -94,10 +95,17 @@ class SnowHandler:
         _exec_sql(self.ctx, sql, log_results=True)
 
     def drop_compute_pool(self, compute_pool_name: str) -> None:
-        sql = f"""
+        try:
+            stop_sql = f"""
+            ALTER COMPUTE POOL {compute_pool_name} STOP ALL
+            """
+            _exec_sql(self.ctx, stop_sql, log_results=True)
+        except Exception as e:
+            log.info("Compute pool does not exist, skipping")
+        drop_sql = f"""
     DROP COMPUTE POOL IF EXISTS {compute_pool_name}
         """
-        _exec_sql(self.ctx, sql, log_results=True)
+        _exec_sql(self.ctx, drop_sql, log_results=True)
 
     def drop_service(self, db: str, schema: str, service_name: str) -> None:
         sql = f"""
@@ -171,6 +179,12 @@ class SnowHandler:
         sql = f"""
     CREATE STAGE IF NOT EXISTS {db}.{schema}.{stage_name} ENCRYPTION = (type = 'SNOWFLAKE_SSE');
         """
+        repo = self.get_repository(db, schema, stage_name)
+        if repo is not None:
+            raise Exception(f"""
+                You have image repository with name {db}.{schema}.{stage_name}, please 
+                use different name for stage.
+            """)
         _exec_sql(self.ctx, sql, log_results=True)
 
     def upload_service_spec(self, db: str, schema: str, stage: str, spec_local_file: str) -> str:
@@ -183,7 +197,7 @@ class SnowHandler:
         _exec_sql(self.ctx, sql, log_results=True)
         return f"{stage}/{stage_dir}/{spec_filename}"
 
-    def get_repository(self, db: str, schema: str, repo_name: str) -> ImageRepository:
+    def get_repository(self, db: str, schema: str, repo_name: str) -> Optional[ImageRepository]:
         sql = f"""
     SHOW IMAGE REPOSITORIES;
         """
@@ -195,7 +209,7 @@ class SnowHandler:
                     and curr_db.lower() == db.lower() \
                     and curr_schema.lower() == schema.lower():
                 return ImageRepository(repo_name, db, schema, repo[4])
-        raise Exception(f"Could not find repo: {db}.{schema}.{repo_name}")
+        return None
 
     def create_repository(self, db: str, schema: str, repo_name: str):
         sql = f"""

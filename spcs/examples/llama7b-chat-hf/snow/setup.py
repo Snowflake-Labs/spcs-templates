@@ -28,7 +28,6 @@ COMPUTE_POOL_INSTANCE: str = "GPU_3"
 def run_setup(account: str, username: str, password: str,
               db: str, schema: str, compute_pool: str, service_name: str,
               repo_name: str, stage_name: str, hf_token: str) -> None:
-
     log.info("===============================")
     log.info("Account: %s", account)
     log.info("Username: %s", username)
@@ -54,6 +53,8 @@ def run_setup(account: str, username: str, password: str,
         handler.create_repository(db, schema, repo_name)
         log.info("Getting repository")
         repo = handler.get_repository(db, schema, repo_name)
+        if repo is None:
+            raise Exception(f"Repository: {db}.{schema}.{repo_name} not found")
         log.info(f"Uploading image to: {repo.repository_url}")
         image = upload_image(BASE_IMAGE, repo.repository_url, username, password)
         log.info(f"Waiting for compute pool: {compute_pool}")
