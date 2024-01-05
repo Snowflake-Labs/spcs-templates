@@ -19,6 +19,7 @@ WORKDIR /app
 
 # Copy only the necessary files from the build stage
 COPY --from=build /app/spcs .
+COPY --from=build /app/config.yaml .
 
 # Expose port 8080 to the outside world
 EXPOSE 8080

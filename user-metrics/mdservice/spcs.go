@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	sf "github.com/snowflakedb/gosnowflake"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"net"
@@ -16,6 +17,7 @@ import (
 )
 
 const (
+	ConfigFile          = "config.yaml"
 	SpcsPluginName      = "spcs"
 	SpcsTokenFilePath   = "/snowflake/session/token"
 	ComputePoolQuery    = "SHOW COMPUTE POOLS;"
@@ -32,6 +34,13 @@ const (
 )
 
 var logger *log.Logger
+
+var config *Config
+
+// Config represents the structure of configuration file
+type Config struct {
+	Port int `yaml:"port"`
+}
 
 // EndpointResolver interface definition
 type EndpointResolver interface {
@@ -291,9 +300,30 @@ func (d *DNSResolver) ResolveEndPoint(endPoint string) ([]string, error) {
 	return ipAddresses, nil
 }
 
+func loadConfig(filename string) error {
+	// Read the content of the YAML file
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return fmt.Errorf("error reading config file: %v", err)
+	}
+
+	// Parse the YAML content into the Config struct
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		return fmt.Errorf("error unmarshalling config: %v", err)
+	}
+
+	return nil
+}
+
 func init() {
 	// Initialize the logger with timestamp
 	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lmicroseconds)
+
+	// Load configuration from YAML file
+	if err := loadConfig(ConfigFile); err != nil {
+		logger.Printf("SPCS discovery plugin: Error loading configuration: %v", err)
+	}
 }
 
 func main() {
@@ -324,9 +354,9 @@ func main() {
 		if err != nil {
 			logger.Printf("SPCS discovery plugin: Error getting compute pools to scrape. err: %v", err)
 		}
+		logger.Printf("SPCS discovery plugin: Compute Pools that can be scraped %s\n", computePools)
 
-		logger.Printf("Compute Pools that can be scraped %s\n", computePools)
-		response, err := getResponse(computePools)
+		response, err := getResponse([]string{})
 		if err != nil {
 			logger.Printf("SPCS discovery plugin: Error getting targetgroups to scrape. err: %v", err)
 		}
@@ -342,18 +372,14 @@ func main() {
 			return
 		}
 
-		//fmt.Fprintln(w, computePools)
 	}
 
 	// Register the handler for the root ("/") path
 	http.HandleFunc("/", handler)
 
-	// Specify the port to listen on
-	port := 8080
-
 	// Start the HTTP server
-	logger.Printf("Server listening on port %d...\n", port)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	logger.Printf("SPCS discovery plugin: Server listening on port %d...\n", config.Port)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 	if err != nil {
 		logger.Printf("Error: %s\n", err)
 	}
