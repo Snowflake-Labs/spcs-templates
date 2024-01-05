@@ -1,2 +1,3 @@
-# spcs-templates-internal
-Internal version of spcs-templates
+# spcs-templates
+
+Repository contains templates and solutions for SPCS
