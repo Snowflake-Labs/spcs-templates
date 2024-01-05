@@ -356,7 +356,7 @@ func main() {
 		}
 		logger.Printf("SPCS discovery plugin: Compute Pools that can be scraped %s\n", computePools)
 
-		response, err := getResponse([]string{})
+		response, err := getResponse(computePools)
 		if err != nil {
 			logger.Printf("SPCS discovery plugin: Error getting targetgroups to scrape. err: %v", err)
 		}
