@@ -125,7 +125,7 @@ type MockEndpointResolver struct {
 	ipAddresses []string
 }
 
-func (m *MockEndpointResolver) ResolveEndPoint(endPoint string) ([]string, error) {
+func (m *MockEndpointResolver) ResolveEndpoint(endPoint string) ([]string, error) {
 	// Return predefined IP addresses for testing.
 	return m.ipAddresses, nil
 }

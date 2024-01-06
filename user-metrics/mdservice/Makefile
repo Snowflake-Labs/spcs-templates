@@ -16,7 +16,7 @@ SOURCES = spcs.go
 all: clean build run
 
 build:
-	$(GOBUILD) -o $(TARGET) $(SOURCES)
+	$(GOBUILD) -o $(TARGET) .
 
 run:
 	./$(TARGET)

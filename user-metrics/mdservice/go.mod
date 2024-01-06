@@ -1,4 +1,4 @@
-module spcs-discovery-plugin
+module spcs-md-service
 
 go 1.21.5
 
