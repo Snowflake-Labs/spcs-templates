@@ -1,10 +1,10 @@
 receivers:
-    # TODO: set correct scraper
-    # prometheus:
-    #   config:
-    #     scrape_configs:
-    #       - job_name: 'spcs-metrics'
-    #         http_sd_configs:
+  prometheus:
+    config:
+      scrape_configs:
+      - job_name: 'spcs-metrics'
+        http_sd_configs:
+          - url: 'http://localhost:8080'
 
 exporters:
   prometheus:

@@ -1,26 +1,29 @@
 # Makefile for Golang HTTP server
 
 # Name of the executable
-TARGET = simple-http-server
+TARGET = spcs-md-service
 
 # Go commands
 GO = go
 GOCLEAN = $(GO) clean
 GOTEST = $(GO) test
 GOBUILD = $(GO) build
+GORUN = $(GO) run
 
 # Source files
-SOURCES = main.go
+SOURCES = spcs.go
 
 all: clean build run
 
 build:
-	$(GOBUILD) -o $(TARGET) $(SOURCES)
+	$(GOBUILD) -o $(TARGET) .
 
 run:
 	./$(TARGET)
 
+test:
+	$(GOTEST) -v
+
 clean:
 	$(GOCLEAN)
 	rm -f $(TARGET)
-
