@@ -5,13 +5,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	sf "github.com/snowflakedb/gosnowflake"
 	"io/ioutil"
 	"os"
+
+	sf "github.com/snowflakedb/gosnowflake"
 )
 
 const (
-	SpcsTokenFilePath   = "/snowflake/session/token"
+	SpcsTokenFilePath = "/snowflake/session/token"
 )
 
 // GetSfConfig retrieves the Snowflake configuration based on environment variables
@@ -110,9 +111,7 @@ func GetDataFromSnowflake(cfg sf.Config, query string) ([][]string, []string, er
 
 	var result [][]string
 
-	// Iterate through the rows
 	for rows.Next() {
-		// Scan the current row into the values slice
 		if err := rows.Scan(values...); err != nil {
 			return nil, nil, fmt.Errorf("SPCS discovery plugin: error scanning row. err: %v", err)
 		}
@@ -121,7 +120,6 @@ func GetDataFromSnowflake(cfg sf.Config, query string) ([][]string, []string, er
 		rowValues := make([]string, len(columns))
 		for i := range columns {
 			if values[i] != nil {
-				// Convert the underlying value to a string
 				strVal := fmt.Sprintf("%v", *values[i].(*interface{}))
 				rowValues[i] = strVal
 			}
@@ -129,7 +127,6 @@ func GetDataFromSnowflake(cfg sf.Config, query string) ([][]string, []string, er
 		result = append(result, rowValues)
 	}
 
-	// Check for errors during iteration
 	if err := rows.Err(); err != nil {
 		return nil, nil, fmt.Errorf("SPCS discovery plugin: Error iterating over rows. err: %v", err)
 	}

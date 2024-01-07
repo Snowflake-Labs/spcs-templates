@@ -1,7 +1,7 @@
 # Makefile for Golang HTTP server
 
 # Name of the executable
-TARGET = spcs-md-service
+TARGET = spcs-mdservice
 
 # Go commands
 GO = go
@@ -10,7 +10,6 @@ GOTEST = $(GO) test
 GOBUILD = $(GO) build
 GORUN = $(GO) run
 
-# Source files
 SOURCES = spcs.go
 
 all: clean build run

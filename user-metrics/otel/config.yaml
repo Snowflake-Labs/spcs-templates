@@ -4,7 +4,7 @@ receivers:
       scrape_configs:
       - job_name: 'spcs-metrics'
         http_sd_configs:
-          - url: 'http://localhost:8080'
+          - url: 'http://localhost:9003'
 
 exporters:
   prometheus:

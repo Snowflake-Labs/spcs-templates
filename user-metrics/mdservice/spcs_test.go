@@ -3,10 +3,11 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetComputePoolsToScrape(t *testing.T) {
@@ -102,7 +103,6 @@ func TestGetTargets(t *testing.T) {
 	expectedTargets = []string{"1.2.3.4:" + MetricsPort, "5.6.7.8:" + MetricsPort}
 	verifyResult(t, err, resultTargets, expectedTargets)
 
-	// Empty compute pool
 	computePool = ""
 	resultTargets, err = getTargets(computePool, &DNSResolver{})
 	if err == nil {
@@ -120,7 +120,7 @@ func TestGetTargets(t *testing.T) {
 
 }
 
-// Implement a mock resolver for testing.
+// Mock resolver for testing.
 type MockEndpointResolver struct {
 	ipAddresses []string
 }
