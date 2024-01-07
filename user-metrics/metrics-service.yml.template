@@ -1,7 +1,7 @@
 spec:
   container:
     - name: mdservice
-      image: qa6-snowservices-ami-presubmit3.registry-dev.snowflakecomputing.com/testdb2/public/testrepo/spcs/mdservice:v01
+      image: ${SPCS_IMAGE_REPO}/spcs/mdservice:v01
       resources:
         requests:
           memory: 200M
@@ -10,7 +10,7 @@ spec:
           memory: 200M
           cpu: 100m
     - name: otel-collector
-      image: qa6-snowservices-ami-presubmit3.registry-dev.snowflakecomputing.com/testdb2/public/testrepo/spcs/otel:v01
+      image: ${SPCS_IMAGE_REPO}/spcs/otel:v01
       resources:
         requests:
           memory: 200M
@@ -19,7 +19,7 @@ spec:
           memory: 200M
           cpu: 200m
     - name: prometheus
-      image: qa6-snowservices-ami-presubmit3.registry-dev.snowflakecomputing.com/testdb2/public/testrepo/spcs/prometheus:v01
+      image: ${SPCS_IMAGE_REPO}/spcs/prometheus:v01
       resources:
         requests:
           memory: 500M
@@ -35,7 +35,7 @@ spec:
         - --storage.tsdb.path=/data/prometheus/db
         - --config.file=/etc/prometheus/prometheus.yml
     - name: grafana
-      image: qa6-snowservices-ami-presubmit3.registry-dev.snowflakecomputing.com/testdb2/public/testrepo/spcs/grafana:v01
+      image: ${SPCS_IMAGE_REPO}/spcs/grafana:v01
       resources:
         requests:
           memory: 500M
