@@ -2,4 +2,4 @@
 spcs/examples/llama7b-chat-hf/snow/__pycache__
 spcs/examples/llama7b-chat-hf/spcs_spec.yaml
 .DS_Store
-user-metrics/prometheus/Dockerfile
+user-metrics/metrics-service.yml
