@@ -13,7 +13,7 @@ If new compute pool is added, metadata service will discover all node that belon
 
 Metrics services consists of several containers defined above.
 Containers can be built manually from this repository, or one can use
-containers from the dockerhub: TODO: add link to all containers.
+containers from the dockerhub: TODO: https://hub.docker.com/u/snowflakedb.
 
 ### Deploying metrics service
 
