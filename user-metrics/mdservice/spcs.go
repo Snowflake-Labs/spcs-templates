@@ -5,12 +5,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"strings"
+
+	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -25,6 +26,7 @@ const (
 	DnsSuffix           = "snowflakecomputing.internal"
 	MetricsPort         = "9001"
 	MetaComputePoolName = "__meta_spcs_compute_pool_name"
+	NOT_FOUND           = -1
 )
 
 var config *Config
@@ -69,7 +71,6 @@ func getCurrentRole(rows [][]string) (string, error) {
 
 func getComputePoolsToScrape(rows [][]string, columns []string, role string) ([]string, error) {
 
-	// Create a slice to hold the computepools
 	var computePools = []string{}
 
 	for _, row := range rows {
@@ -97,9 +98,8 @@ func getComputePoolsToScrape(rows [][]string, columns []string, role string) ([]
 
 func getColumnValue(row []string, columns []string, columnName string) (string, error) {
 
-	// Get the column index
 	columnIndex := indexOf(columnName, columns)
-	if columnIndex == -1 {
+	if columnIndex == NOT_FOUND {
 		return "", fmt.Errorf("SPCS discovery plugin: column not found. column_name: %v", columnName)
 	}
 
@@ -112,14 +112,13 @@ func indexOf(target string, slice []string) int {
 			return i
 		}
 	}
-	return -1 // Element not found
+	return NOT_FOUND
 }
 
 func getTargetgroups(computePools []string) ([]struct {
 	Targets []string          `json:"targets"`
 	Labels  map[string]string `json:"labels"`
 }, error) {
-	// Initialize an empty response slice
 	var response []struct {
 		Targets []string          `json:"targets"`
 		Labels  map[string]string `json:"labels"`
@@ -133,7 +132,6 @@ func getTargetgroups(computePools []string) ([]struct {
 		if err != nil {
 			logrus.Errorf("SPCS discovery plugin: error resolving endpoint: %v", err)
 		} else {
-			// Append to the response only if there's no error
 			response = append(response, struct {
 				Targets []string          `json:"targets"`
 				Labels  map[string]string `json:"labels"`
@@ -176,13 +174,11 @@ func getEndPointFromComputePool(computePool string) string {
 }
 
 func loadConfig(filename string) error {
-	// Read the content of the YAML file
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading config file: %v", err)
 	}
 
-	// Parse the YAML content into the Config struct
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		return fmt.Errorf("error unmarshalling config: %v", err)
@@ -192,7 +188,6 @@ func loadConfig(filename string) error {
 }
 
 func init() {
-	// Load configuration from YAML file
 	if err := loadConfig(ConfigFile); err != nil {
 		logrus.Errorf("SPCS discovery plugin: Error loading configuration: %v", err)
 	}
@@ -238,7 +233,6 @@ func processRequest() []struct {
 }
 
 func main() {
-	// Define a handler function
 	handler := func(w http.ResponseWriter, r *http.Request) {
 
 		response := processRequest()
@@ -254,10 +248,8 @@ func main() {
 
 	}
 
-	// Register the handler for the root ("/") path
 	http.HandleFunc("/", handler)
 
-	// Start the HTTP server
 	logrus.Infof("SPCS discovery plugin: Server listening on port %d...\n", config.Port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 	if err != nil {

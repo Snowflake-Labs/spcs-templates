@@ -8,7 +8,6 @@ global:
   label_name_length_limit: 200
   label_value_length_limit: 200
 
-
 scrape_configs:
 - job_name: otel-collector
   metrics_path: /metrics

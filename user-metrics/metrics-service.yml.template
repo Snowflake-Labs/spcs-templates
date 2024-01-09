@@ -1,0 +1,61 @@
+spec:
+  container:
+    - name: mdservice
+      image: ${SPCS_IMAGE_REPO}/spcs/mdservice:v01
+      resources:
+        requests:
+          memory: 200M
+          cpu: 100m
+        limits:
+          memory: 200M
+          cpu: 100m
+    - name: otel-collector
+      image: ${SPCS_IMAGE_REPO}/spcs/otel:v01
+      resources:
+        requests:
+          memory: 200M
+          cpu: 200m
+        limits:
+          memory: 200M
+          cpu: 200m
+    - name: prometheus
+      image: ${SPCS_IMAGE_REPO}/spcs/prometheus:v01
+      resources:
+        requests:
+          memory: 500M
+          cpu: 200m
+        limits:
+          memory: 500M
+          cpu: 200m
+      volumeMounts:
+        - name: metrics
+          mountPath: /data/prometheus
+      command:
+        - /bin/prometheus
+        - --storage.tsdb.path=/data/prometheus/db
+        - --config.file=/etc/prometheus/prometheus.yml
+    - name: grafana
+      image: ${SPCS_IMAGE_REPO}/spcs/grafana:v01
+      resources:
+        requests:
+          memory: 500M
+          cpu: 200m
+        limits:
+          memory: 500M
+          cpu: 200m
+  endpoints:
+    - name: mdservice
+      port: 9003
+      public: true
+    - name: otel-collector
+      port: 9001
+      public: true
+    - name: prometheus
+      port: 9090
+      public: true
+    - name: grafana
+      port: 3000
+      public: true
+  volume:
+    - name: metrics
+      source: "@metrics"
