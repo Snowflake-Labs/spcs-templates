@@ -2,74 +2,46 @@
 
 VERSION=v0.0.1
 
-build-local-grafana:
-	echo 'Building grafana image'
-	docker build -t grafana:spcs-$(VERSION) . -f ./grafana/Dockerfile
+# Makefile for SPCS user metrics service
 
-build-local-prometheus:
-	echo 'Building prometheus image'
-	docker build -t prometheus:spcs-$(VERSION) . -f ./prometheus/Dockerfile
-
-build-local-otel:
-	echo 'Building otel image'
-	docker build -t otel:spcs-$(VERSION) . -f ./otel/Dockerfile
-
-build-local-mdservice:
-	echo 'Building mdservice image'
-	docker build -t mdservice:spcs-$(VERSION) . -f ./mdservice/Dockerfile
+VERSION=v0.0.1
 
 check-repo-is-set:
-ifndef REPO
-	echo "REPO not set, use `REPO=SPCS_IMAGE_REPOSITORY`"
+ifndef SNOW_REPO
+	echo "SNOW_REPO environment variable is not defined."
 	exit 1
 endif
 
-build-upload-grafana: SERVICE_NAME=grafana
-build-upload-grafana: build-upload-repo
+build-spec-file: check-repo-is-set
+	echo 'Building spec file, using repository: $(SNOW_REPO)'
+	SPCS_IMAGE_REPO=$(SNOW_REPO) VERSION=$(VERSION) envsubst < metrics-service.yml.template > metrics-service.yml
 
-build-upload-prometheus: SERVICE_NAME=prometheus
-build-upload-prometheus: build-upload-repo
+%.bli:
+	echo 'Building $(basename $@)  image'
+	docker build -t $(basename $@):spcs-$(VERSION) . -f ./$(basename $@)/Dockerfile
 
-build-upload-mdservice: SERVICE_NAME=mdservice
-build-upload-mdservice: build-upload-repo
+%.pui: check-repo-is-set
+	echo 'Pulling and uploading $(basename $@) image to $(SNOW_REPO)/$(basename $@):$(VERSION)'
+	docker pull --platform=linux/amd64 snowflakedb/spcs-oss-$(basename $@):$(VERSION)
+	docker tag snowflakedb/spcs-oss-$(basename $@):$(VERSION)  $(SNOW_REPO)/$(basename $@):$(VERSION)
+	docker push $(SNOW_REPO)/$(basename $@):$(VERSION)
 
-build-upload-otel: SERVICE_NAME=otel
-build-upload-otel: build-upload-repo
-
-build-upload-repo: check-repo-is-set
-	echo 'Building and uploading $(SERVICE_NAME) image to $(REPO)/spcs/$(SERVICE_NAME):$(VERSION)'
+%.bui: check-repo-is-set
+	echo 'Building and uploading $(basename $@) image to $(SNOW_REPO)/$(basename $@):$(VERSION)'
 	docker build --platform=linux/amd64 . \
-	-f ./$(SERVICE_NAME)/Dockerfile \
-	--tag $(REPO)/spcs/$(SERVICE_NAME):$(VERSION) \
+	-f ./$(basename $@)/Dockerfile \
+	--tag $(SNOW_REPO)/$(basename $@):$(VERSION) \
 	--push --rm
 
+images=mdservice prometheus grafana otel
 
-build-upload-all: build-upload-grafana build-upload-prometheus build-upload-otel build-upload-mdservice
+build-local-images=$(addsuffix .bli, $(images))
+build-local-all: $(build-local-images)
 
-build-spec-file: check-repo-is-set
-	echo 'Building spec file'
-	SPCS_IMAGE_REPO=$(REPO) envsubst < metrics-service.yml.template &> metrics-service.yml
+build-upload-images=$(addsuffix .bui, $(images))
+build-upload-all: $(build-upload-images)
 
-pull-upload-grafana: SERVICE_NAME=grafana
-pull-upload-grafana: pull-upload-repo
-
-pull-upload-prometheus: SERVICE_NAME=prometheus
-pull-upload-prometheus: pull-upload-repo
-
-pull-upload-mdservice: SERVICE_NAME=mdservice
-pull-upload-mdservice: pull-upload-repo
-
-pull-upload-otel: SERVICE_NAME=otel
-pull-upload-otel: pull-upload-repo
-
-pull-upload-repo: check-repo-is-set
-	echo 'Pulling and uploading $(SERVICE_NAME) image to $(REPO)/spcs/prometheus:$(VERSION)'
-	docker pull --platform=linux/amd64 snowflakedb/spcs-oss-$(SERVICE_NAME):$(VERSION)
-	docker tag snowflakedb/spcs-oss-$(SERVICE_NAME):$(VERSION)  $(REPO)/spcs/$(SERVICE_NAME):$(VERSION)
-	docker push $(REPO)/spcs/$(SERVICE_NAME):$(VERSION)
-
-build-local-all: build-otel build-mdservice build-grafana build-prometheus
+pull-upload-images=$(addsuffix .pui, $(images))
+pull-upload-all: $(pull-upload-images) build-spec-file
 
 build-all: build-upload-all build-spec-file
-
-pull-upload-all: pull-upload-otel pull-upload-mdservice pull-upload-prometheus pull-upload-grafana build-spec-file
