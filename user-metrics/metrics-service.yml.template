@@ -27,9 +27,6 @@ spec:
         limits:
           memory: 500M
           cpu: 200m
-      volumeMounts:
-        - name: metrics
-          mountPath: /data/prometheus
       command:
         - /bin/prometheus
         - --storage.tsdb.path=/data/prometheus/db
@@ -56,6 +53,4 @@ spec:
     - name: grafana
       port: 3000
       public: true
-  volume:
-    - name: metrics
-      source: "@metrics"
+
