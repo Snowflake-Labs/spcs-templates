@@ -1,0 +1,1 @@
+[{"labels": {"job": "ray"}, "targets": ["rayhead.public.testdb.snowflakecomputing.internal:8082", "rayhead.public.testdb.snowflakecomputing.internal:44217", "rayhead.public.testdb.snowflakecomputing.internal:44227"]}]

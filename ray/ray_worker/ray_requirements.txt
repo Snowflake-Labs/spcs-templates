@@ -1,0 +1,4 @@
+ray[data]==2.7.1
+ray[client]==2.7.1
+ray[default]==2.7.1
+ray[serve]==2.7.1
