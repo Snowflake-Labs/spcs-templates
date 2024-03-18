@@ -17,25 +17,4 @@ containers from the dockerhub: TODO: https://hub.docker.com/u/snowflakedb.
 
 ### Deploying metrics service
 
-Create database, schema, stage and image repository that defined in
-`metrics_service_setup.sql` file.
-
-Once the image repository created execute the following command:
-
-```commandline
-make build-all REPO=$SPCS_IMAGE_REPOSITORY
-```
-
-The command above will build and push all containers to the SPCS image repository
-and create `metrics-service.yml` file.
-
-Then, start the service using the following SQL:
-```commandline
-
-create service test01
-in compute pool VASHAH_POOL
-from specification '
-    INSERT_CONTENT_OF `metrics-service.yml` FILE
-';
-
-```
+Follow [Tutorial](../tutorial-1/README.md) to deploy this metrics service.
