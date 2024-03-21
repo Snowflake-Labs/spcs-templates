@@ -8,11 +8,11 @@ Consider the code provided for this tutorial as a template to build an initial m
 
 Code to create the service is provided on [GitHub](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics). You clone the repository and upload the images to a repository in your Snowflake account.
 
-This service is made up of the following Docker images:
+This service is made up of the following [Docker images](https://hub.docker.com/u/snowflakedb):
 
 * **Metrics Discovery service (spcs-oss-mdservice):** An HTTP service that discovers the metrics endpoints for the available compute pools.
 
-* **Otel collector (spcs-oss-otel):** An OpenTelemetry (OTel) collector that pulls node metrics from compute pools discovered by the metrics discovery service.
+* **Otel collector (spcs-oss-otel-prometheus):** An OpenTelemetry (OTel) collector that pulls node metrics from compute pools discovered by the metrics discovery service and exports to prometheus.
 
 * **Prometheus (spcs-oss-prometheus):** A data store for metrics that the service uses to store compute pool metrics.
 

@@ -1,0 +1,56 @@
+spec:
+  container:
+    - name: mdservice
+      image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/testrepo/mdservice:v0.0.1
+      resources:
+        requests:
+          memory: 200M
+          cpu: 100m
+        limits:
+          memory: 200M
+          cpu: 100m
+    - name: otel-collector
+      image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/testrepo/otel:v0.0.1
+      resources:
+        requests:
+          memory: 200M
+          cpu: 200m
+        limits:
+          memory: 200M
+          cpu: 200m
+    - name: prometheus
+      image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/testrepo/prometheus:v0.0.1
+      resources:
+        requests:
+          memory: 500M
+          cpu: 200m
+        limits:
+          memory: 500M
+          cpu: 200m
+      command:
+        - /bin/prometheus
+        - --storage.tsdb.path=/data/prometheus/db
+        - --config.file=/etc/prometheus/prometheus.yml
+    - name: grafana
+      image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/testrepo/grafana:v0.0.1
+      resources:
+        requests:
+          memory: 500M
+          cpu: 200m
+        limits:
+          memory: 500M
+          cpu: 200m
+  endpoints:
+    - name: mdservice
+      port: 9003
+      public: true
+    - name: otel-collector
+      port: 9001
+      public: true
+    - name: prometheus
+      port: 9090
+      public: true
+    - name: grafana
+      port: 3000
+      public: true
+

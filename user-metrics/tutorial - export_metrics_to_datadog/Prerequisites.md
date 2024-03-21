@@ -1,21 +1,20 @@
 # Prerequisites
 
-## Prerequisites common to Tutorials 1, 2 and 3
-You need a compute pool with a service running to get any metrics. To set up this service, you will follow the You need a compute pool with a service running to get any metrics. To set up this service, you follow the instructions in [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1) to create a simple “echo” service with modification. In the current implementation, the metrics_visualizer service you create in this tutorial can access only the compute pools whose owner role is the same as the owner role of the service. So you need to make sure to create the compute pool using the test_role as described:
+You need a compute pool with a service running to get any metrics. To set up this service, you will follow the instructions in [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1) instructions to create a simple “echo” service with modification. In the current implementation, the metrics_visualizer service you create in this tutorial can see only the compute pools whose owner role is the same as the owner role of the service. So you need to make sure to create the compute pool using the test_role as described:
 
-1. Complete [Common Setup for Snowpark Container Services Tutorials](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/common-setup) with the following modifications to the Create Snowflake objects step.
-    * Don’t use the ACCOUNTADMIN role to create the compute pool named tutorial_compute_pool. Instead, grant test_role the privilege to create a compute pool.
+1. Complete [Common Setup, Create Snowflake objects](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/common-setup) provided for various tutorials with the following modifications:
+    * Do not use the ACCOUNTADMIN role to create the compute pool named tutorial_compute_pool. Instead, grant test_role the privilege to create a compute pool.
     ```commandline
     USE ROLE ACCOUNTADMIN;
     GRANT CREATE COMPUTE POOL ON ACCOUNT TO ROLE test_role;
-    USE ROLE test_role;
+    USE ROLE TEST_ROLE;
     ```
-    * Continue with the steps in the Common Setup and create the compute pool as part of the script that is executed using the test_role:
+    * Continue with the steps in the Common Setup tutorial and create the compute pool as part of the script that is executed using the test_role:
     ```commandline
     CREATE COMPUTE POOL tutorial_compute_pool
-      MIN_NODES = 1
-      MAX_NODES = 1
-      INSTANCE_FAMILY = CPU_X64_XS;
+    MIN_NODES = 1
+    MAX_NODES = 1
+    INSTANCE_FAMILY = CPU_X64_XS;
     ```
 
 2. Complete [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1).
@@ -25,16 +24,12 @@ You need a compute pool with a service running to get any metrics. To set up thi
 SELECT SYSTEM$GET_SERVICE_STATUS('echo_service', 10);
 ```
 
+You now have a sample service (Echo service) running in a compute pool (tutorial_compute_pool). Proceed with creating to create the visualization service to access the metrics published by the compute pool.
+
+
 ## Additional prerequisites for this tutorial
-1. Create a Snowflake internal stage (named configs). You upload OTel configuration to this stage. When the service runs, Snowflake mounts this stage as a storage volume inside the container. The OTel collector reads the configuration from this volume and sets the pipelines (compute pool to poll for the metrics and the endpoint where to make the metrics available for end users to access). 
 
-  Create the stage with ENCRYPTION = (TYPE = 'SNOWFLAKE_SSE') to allow attaching this stage as a storage volume on the service.
-```commandline
-CREATE STAGE CONFIGS
-  ENCRYPTION = (type = 'SNOWFLAKE_SSE');
-```
-
-2. Inorder to export metrics to datadog.
+1. Inorder to export metrics to datadog.
   * Firstly you need to have a datadog account. 
   * Generate API Key following this datadog [tutorial](https://docs.datadoghq.com/account_management/api-app-keys/#add-an-api-key-or-client-token). This api key is needed to export the metrics.
   * Get the metrics site from the following [location](https://docs.datadoghq.com/getting_started/site/). In this case (us5.datadoghq.com)
@@ -51,7 +46,7 @@ CREATE OR REPLACE SECRET DATADOG_METRICS_KEY
     SECRET_STRING = 'YYYYYYYYYYY';
 ```
 
-3. For the data to be exported out of spcs, we need an external access integration allowing traffic to datadog.
+2. For the data to be exported out of spcs, we need an external access integration allowing traffic to datadog.
 The endpoint value will be obtained from the following [location](https://docs.datadoghq.com/getting_started/site/) and api prefix should be added to it. In this case (api.us5.datadoghq.com)
 
 ```commandline
@@ -68,5 +63,5 @@ CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION DATADOG_API_ACCESS_INTEGRATION
   ALLOWED_NETWORK_RULES = (DATADOG_NETWORK_RULE)
   ENABLED = true;
   
-GRANT USAGE ON INTEGRATION DATADOG_APIS_ACCESS_INTEGRATION TO ROLE TEST_ROLE;
+GRANT USAGE ON INTEGRATION DATADOG_API_ACCESS_INTEGRATION TO ROLE TEST_ROLE;
 ```

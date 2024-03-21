@@ -5,7 +5,7 @@ FROM --platform=$BUILDPLATFORM golang:latest AS build
 
 WORKDIR /app
 
-COPY ./mdservice .
+COPY . .
 
 ARG TARGETARCH
 

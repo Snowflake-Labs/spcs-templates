@@ -9,7 +9,7 @@
 git clone https://github.com/Snowflake-Labs/spcs-templates.git
 ```
 
-4. Change to the user-metrics directory. This directory has source code for the visualization service that you are creating.
+4. Go to [user-metrics/metrics-service-grafana](../metrics-service-grafana/) directory. This directory has source code for the visualization service that you are creating.
 
 5. To enable Docker to upload images on your behalf to your image repository, you must use the docker login command to authenticate to the Snowflake registry:
 ```commandline
@@ -21,7 +21,7 @@ Note the following:
  * <username> is your Snowflake username. Docker will prompt you for your password.
 
 6. Use one of the following options to upload images to your image repository:
-    * Option 1: The easiest option is to upload the pre-built Docker images that Snowflake provides on dockerhub.
+    * Option 1: The easiest option is to upload the pre-built [Docker images](https://hub.docker.com/u/snowflakedb) that Snowflake provides on dockerhub.
     ```commandline
     make pull-upload-all SNOW_REPO=<repositry-url>
     ```
