@@ -1,5 +1,5 @@
 .idea
-spcs/examples/llama7b-chat-hf/snow/__pycache__
-spcs/examples/llama7b-chat-hf/spcs_spec.yaml
+llama/llama7b-chat-hf/snow/__pycache__
+llama/llama7b-chat-hf/spcs_spec.yaml
 .DS_Store
 user-metrics/metrics-service/metrics-service.yml
