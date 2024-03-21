@@ -1,0 +1,34 @@
+spec:
+  container:
+    - name: mdservice
+      image: ${SPCS_IMAGE_REPO}/mdservice:v0.0.1
+      resources:
+        requests:
+          memory: 200M
+          cpu: 100m
+        limits:
+          memory: 200M
+          cpu: 100m
+    - name: otel-collector
+      image: ${SPCS_IMAGE_REPO}/otel-datadog:v0.0.1
+      secrets:
+      - snowflakeSecret: DATADOG_METRICS_SITE
+        secretKeyRef: SECRET_STRING
+        envVarName: DATADOG_METRICS_SITE
+      - snowflakeSecret: DATADOG_METRICS_KEY
+        secretKeyRef: SECRET_STRING
+        envVarName: DATADOG_METRICS_KEY      
+      resources:
+        requests:
+          memory: 200M
+          cpu: 200m
+        limits:
+          memory: 200M
+          cpu: 200m
+  endpoints:
+    - name: mdservice
+      port: 9003
+      public: true
+    - name: otel-collector
+      port: 9001
+      public: true

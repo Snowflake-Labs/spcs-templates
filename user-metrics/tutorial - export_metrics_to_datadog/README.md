@@ -2,7 +2,7 @@
 
 ## [Introduction](./Introduction.md) 
 ## [Prerequisites](./Prerequisites.md)
-## [1: Prepare the OTel image and configuration](./Upload.md)
+## [1: Upload service images to a repository](./Upload.md)
 ## [2: Create a service](./Service.md)
 ## [3: Access the compute pool metrics](./Access.md)
 ## [4: Clean up](./Cleanup.md)

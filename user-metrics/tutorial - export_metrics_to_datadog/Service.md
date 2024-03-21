@@ -37,6 +37,21 @@ The specification defines one container that runs the OTel collector image. When
   * Snowflake mounts the internal stage @configs inside the container (see the volume and volumeMount sections).
   * The --config parameter causes the container to read the OTel collector configuration file to set up the metrics pipeline, identifying the compute pool to scrape the metrics from and your datadog account where to make the metrics available (see OTel configuration in the preceding section).
 
+
+# 2: Create a service
+
+The make command in the preceding section also creates a service specification file (metrics-service.yml) in the user-metrics directory. When you execute a CREATE SERVICE statement to create the service, you include the contents of this file inline in that statement.
+
+1. To create the service, execute the following CREATE SERVICE command using SnowSQL CLI or Snowsight web interface.
+
+```commandline
+CREATE SERVICE metrics_visualizer
+  IN COMPUTE POOL tutorial_compute_pool
+  FROM SPECIFICATION $$
+    <copy/paste the specification from metrics-service.yml file>
+  $$;
+```
+
 2. Make sure the service is running. Execute the following SQL commands to get detailed information about the service you just created. For more information, see [Working with services](https://docs.snowflake.com/developer-guide/snowpark-container-services/working-with-services).
     * To list services in your account, execute the [SHOW SERVICES](https://docs.snowflake.com/sql-reference/sql/show-services) command:
     ```commandline
