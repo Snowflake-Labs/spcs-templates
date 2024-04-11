@@ -1,11 +1,3 @@
-# 3: Use the service (access your compute pool metrics)
+# 3: Access metrics on Datadog (access your compute pool metrics)
 
-To send requests to the service for the compute pool metrics, you need the ingress URL of the public endpoint the service exposes.
-
-1. To get a list of endpoints that the service exposes, execute the [SHOW ENDPOINTS](https://docs.snowflake.com/sql-reference/sql/show-endpoints) command. In the response, the ingress_url column provides the URL.
-
-```commandline
-SHOW ENDPOINTS IN SERVICE TUTORIAL_DB.DATA_SCHEMA.OTEL_PROM_METRICS;
-```
-
-2. Append /metrics to the endpoint URL, and paste it in the web browser. You can review the compute pool metrics in the browser.
+1. Login to your datadog account and navigate to metrics tab. You should be able to explore the compute pool [metrics](https://docs.snowflake.com/LIMITEDACCESS/snowpark-container-services/compute-pool-metrics-overview#list-of-available-metrics)

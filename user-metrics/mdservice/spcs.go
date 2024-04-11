@@ -17,7 +17,6 @@ import (
 const (
 	ConfigFile          = "config.yaml"
 	ComputePoolQuery    = "SHOW COMPUTE POOLS;"
-	RoleQuery           = "SELECT CURRENT_ROLE();"
 	NameColumn          = "name"
 	StateColumn         = "state"
 	OwnerColumn         = "owner"
@@ -69,7 +68,7 @@ func getCurrentRole(rows [][]string) (string, error) {
 	return "", fmt.Errorf("SPCS discovery plugin: error retrieving role.")
 }
 
-func getComputePoolsToScrape(rows [][]string, columns []string, role string) ([]string, error) {
+func getComputePoolsToScrape(rows [][]string, columns []string) ([]string, error) {
 
 	var computePools = []string{}
 
@@ -79,17 +78,12 @@ func getComputePoolsToScrape(rows [][]string, columns []string, role string) ([]
 			return nil, fmt.Errorf("SPCS discovery plugin: error retrieving compute pool state. %v", err)
 		}
 
-		ownerName, err := getColumnValue(row, columns, OwnerColumn)
-		if err != nil {
-			return nil, fmt.Errorf("SPCS discovery plugin: error retrieving compute pool owner name. %v", err)
-		}
-
 		cpName, err := getColumnValue(row, columns, NameColumn)
 		if err != nil {
 			return nil, fmt.Errorf("SPCS discovery plugin: error retrieving compute pool name. %v", err)
 		}
 
-		if strings.ToLower(cpState) == StateActiveValue && strings.ToLower(ownerName) == strings.ToLower(role) {
+		if strings.ToLower(cpState) == StateActiveValue {
 			computePools = append(computePools, cpName)
 		}
 	}
@@ -207,17 +201,7 @@ func processRequest() []struct {
 		logrus.Errorf("SPCS discovery plugin: Error getting data from snowflake. err: %v", err)
 	}
 
-	rolesRows, _, err := GetDataFromSnowflake(cfg, RoleQuery)
-	if err != nil {
-		logrus.Errorf("SPCS discovery plugin: Error getting data from snowflake. err: %v", err)
-	}
-
-	role, err := getCurrentRole(rolesRows)
-	if err != nil {
-		logrus.Errorf("SPCS discovery plugin: Error getting current role. err: %v", err)
-	}
-
-	computePools, err := getComputePoolsToScrape(rows, columns, role)
+	computePools, err := getComputePoolsToScrape(rows, columns)
 	if err != nil {
 		logrus.Errorf("SPCS discovery plugin: Error getting compute pools to scrape. err: %v", err)
 	}

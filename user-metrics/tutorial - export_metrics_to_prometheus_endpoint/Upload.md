@@ -64,7 +64,7 @@ receivers:
          scrape_interval: 10s
          dns_sd_configs:
            - names:
-             - metrics.tutorial_compute_pool.snowflakecomputing.internal
+             - monitor.tutorial_compute_pool.snowflakecomputing.internal
              type: 'A'
              port: 9001
              refresh_interval: 30s
@@ -85,13 +85,13 @@ service:
 ```
 This OTel configuration defines a pipeline with one receiver and one exporter:
 
-* Receiver: This configuration directs the OTel collector to poll http://metrics.tutorial_compute_pool.snowflakecomputing.internal:9001/metrics for metrics in Prometheus format every 10 seconds (scrape_interval), resolving DNS every 30 seconds (refresh_interval) for any changes in compute pool nodes or any node IP address changes.
+* Receiver: This configuration directs the OTel collector to poll http://monitor.tutorial_compute_pool.snowflakecomputing.internal:9001/metrics for metrics in Prometheus format every 10 seconds (scrape_interval), resolving DNS every 30 seconds (refresh_interval) for any changes in compute pool nodes or any node IP address changes.
 
     In dns_sd_configs, name is the domain name of the compute pool. The OTel service uses it to find IP addresses of nodes in the compute pool. For more information, see [Overview](https://docs.snowflake.com/LIMITEDACCESS/snowpark-container-services/compute-pool-metrics-overview#label-spcs-compute-pool-metrics-overview).
 
 * Exporter: This configuration directs the collector to make the collected metrics available on port 9001 (to be exposed as an endpoint in the service specification in the next section), also using the Prometheus format (see [Prometheus exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/prometheusexporter#prometheus-exporter)).
 
-This configuration makes the OTel image a web service listening on port 9001, where metrics can be queried from. In the next section, the Snowpark Container Services service you create exposes this port as a public endpoint to allow requests to the service from the public web.
+This configuration tells the OTel to expose scraped metrics on port 9001, where metrics can be queried from. In the next section, the Snowpark Container Services service you create exposes this port as a public endpoint to allow requests to the service from the public web.
 
 You will upload this configuration file to a Snowflake stage, and then the Service will mount that stage for the OTel service code to read.
 
