@@ -6,17 +6,17 @@ In this tutorial, you create a service (metrics_visualizer) to consume the [metr
 Consider the code provided for this tutorial as a template to build an initial metrics service that you can customize it for different use cases.
 ```
 
-Code to create the service is provided on [GitHub](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics). You clone the repository and upload the images to a repository in your Snowflake account.
+Code to create the service is provided on [GitHub](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics/metrics-service-grafana). You clone the repository and upload the images to a repository in your Snowflake account.
 
 This service is made up of the following [Docker images](https://hub.docker.com/u/snowflakedb):
 
-* **Metrics Discovery service (spcs-oss-mdservice):** An HTTP service that discovers the metrics endpoints for the available compute pools.
+* **[Metrics Discovery service](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics/mdservice) (spcs-oss-mdservice):** An HTTP service that discovers the metrics endpoints for the available compute pools.
 
-* **Otel collector (spcs-oss-otel-prometheus):** An OpenTelemetry (OTel) collector that pulls node metrics from compute pools discovered by the metrics discovery service and exports to prometheus.
+* **[Otel collector](https://github.com/open-telemetry/opentelemetry-collector-contrib) (spcs-oss-otel-prometheus):** An OpenTelemetry (OTel) collector that pulls node metrics from compute pools discovered by the metrics discovery service and exports to prometheus.
 
-* **Prometheus (spcs-oss-prometheus):** A data store for metrics that the service uses to store compute pool metrics.
+* **[Prometheus](https://github.com/prometheus/prometheus) (spcs-oss-prometheus):** A data store for metrics that the service uses to store compute pool metrics.
 
-* **Grafana (spcs-oss-grafana):** A dashboard tool that pulls data from Prometheus and provides a way to visualize the data.
+* **[Grafana](https://github.com/grafana/grafana) (spcs-oss-grafana):** A dashboard tool that pulls data from Prometheus and provides a way to visualize the data.
 
 These containers work together as follows:
 
@@ -29,9 +29,9 @@ These containers work together as follows:
 
 For more information, see [Metrics Overview](https://docs.snowflake.com/LIMITEDACCESS/snowpark-container-services/compute-pool-metrics-overview).
 
-In this tutorial, you will do the following in this tutorial:
+In this tutorial, you will do the following:
 
-1. **Set up the prerequisites:**  For this tutorial, you will need a compute pool to collect metrics. You will create a compute pool and start a service (echo_service, which is provided in Tutorial 1).
+1. **Set up the prerequisites:**  For this tutorial, you will need a compute pool to collect metrics. You will create a compute pool and start a service (echo_service, which is provided in [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1)).
 
 2. **Create the metrics visualizer service:** Follow instructions in this tutorial to create this service.
 

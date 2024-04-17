@@ -1,21 +1,13 @@
 # Prerequisites
 
-## Prerequisites common to Tutorials 1 and 2
-You need a compute pool with a service running to get any metrics. To set up this service, you will follow the You need a compute pool with a service running to get any metrics. To set up this service, you follow the instructions in [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1) to create a simple “echo” service with modification. In the current implementation, the metrics_visualizer service you create in this tutorial can access only the compute pools whose owner role is the same as the owner role of the service. So you need to make sure to create the compute pool using the test_role as described:
+You need a compute pool with a service running to get any metrics. To set up this service, you will follow the instructions in [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1) instructions to create a simple “echo” service with modification. 
+A role can access metrics of a compute pool only if it has one of the following privileges on the compute pool(OWNERSHIP, MONITOR).
 
-1. Complete [Common Setup for Snowpark Container Services Tutorials](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/common-setup) with the following modifications to the Create Snowflake objects step.
-    * Don’t use the ACCOUNTADMIN role to create the compute pool named tutorial_compute_pool. Instead, grant test_role the privilege to create a compute pool.
+1. Complete [Common Setup, Create Snowflake objects](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/common-setup) provided for various tutorials with the following modifications:
+    * In the above tutorial we grant USAGE, MONITOR privilege to test_role on compute pool. Hence test_role can view the metrics from tutorial_compute_pool
     ```commandline
     USE ROLE ACCOUNTADMIN;
-    GRANT CREATE COMPUTE POOL ON ACCOUNT TO ROLE test_role;
-    USE ROLE test_role;
-    ```
-    * Continue with the steps in the Common Setup and create the compute pool as part of the script that is executed using the test_role:
-    ```commandline
-    CREATE COMPUTE POOL tutorial_compute_pool
-      MIN_NODES = 1
-      MAX_NODES = 1
-      INSTANCE_FAMILY = CPU_X64_XS;
+    GRANT USAGE, MONITOR ON COMPUTE POOL tutorial_compute_pool TO ROLE test_role;
     ```
 
 2. Complete [Tutorial 1](https://docs.snowflake.com/developer-guide/snowpark-container-services/tutorials/tutorial-1).

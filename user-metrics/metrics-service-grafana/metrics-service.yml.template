@@ -1,7 +1,7 @@
 spec:
   container:
     - name: mdservice
-      image: ${SPCS_IMAGE_REPO}/mdservice:v0.0.1
+      image: SPCS_IMAGE_REPO/mdservice:VERSION
       resources:
         requests:
           memory: 200M
@@ -10,7 +10,7 @@ spec:
           memory: 200M
           cpu: 100m
     - name: otel-collector
-      image: ${SPCS_IMAGE_REPO}/otel:v0.0.1
+      image: SPCS_IMAGE_REPO/otel-prometheus:VERSION
       resources:
         requests:
           memory: 200M
@@ -19,7 +19,7 @@ spec:
           memory: 200M
           cpu: 200m
     - name: prometheus
-      image: ${SPCS_IMAGE_REPO}/prometheus:v0.0.1
+      image: SPCS_IMAGE_REPO/prometheus:VERSION
       resources:
         requests:
           memory: 500M
@@ -32,7 +32,7 @@ spec:
         - --storage.tsdb.path=/data/prometheus/db
         - --config.file=/etc/prometheus/prometheus.yml
     - name: grafana
-      image: ${SPCS_IMAGE_REPO}/grafana:v0.0.1
+      image: SPCS_IMAGE_REPO/grafana:VERSION
       resources:
         requests:
           memory: 500M
@@ -53,4 +53,3 @@ spec:
     - name: grafana
       port: 3000
       public: true
-

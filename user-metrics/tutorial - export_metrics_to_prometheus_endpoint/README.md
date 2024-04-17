@@ -1,4 +1,4 @@
-# Tutorial 2: Using OTel to export compute pool metrics to an endpoint
+# Tutorial: Using OTel to export compute pool metrics to an endpoint
 
 ## [Introduction](./Introduction.md) 
 ## [Prerequisites](./Prerequisites.md)

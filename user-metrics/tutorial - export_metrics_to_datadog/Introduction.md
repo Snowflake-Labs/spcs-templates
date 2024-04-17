@@ -2,13 +2,13 @@
 
 In this tutorial, you create a service to consume the [metrics provided by Snowflake for compute pools](https://docs.snowflake.com/LIMITEDACCESS/snowpark-container-services/compute-pool-metrics-overview) in your account, and export to your datadog to visualize the metrics.
 
-Code to create the service is provided on [GitHub](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics). You clone the repository and upload the images to a repository in your Snowflake account.
+Code to create the service is provided on [GitHub](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics/metrics-service-datadog). You clone the repository and upload the images to a repository in your Snowflake account.
 
 This service is made up of the following [Docker images](https://hub.docker.com/u/snowflakedb):
 
-* **Metrics Discovery service (spcs-oss-mdservice):** An HTTP service that discovers the metrics endpoints for the available compute pools.
+* **[Metrics Discovery service](https://github.com/Snowflake-Labs/spcs-templates/tree/main/user-metrics/mdservice) (spcs-oss-mdservice):** An HTTP service that discovers the metrics endpoints for the available compute pools.
 
-* **Otel collector (spcs-oss-otel-datadog):** An OpenTelemetry (OTel) collector that pulls node metrics from compute pools discovered by the metrics discovery service and exports to datadog.
+* **[Otel collector](https://github.com/open-telemetry/opentelemetry-collector-contrib)(spcs-oss-otel-datadog):** An OpenTelemetry (OTel) collector that pulls node metrics from compute pools discovered by the metrics discovery service and exports to datadog.
 
 These containers work together as follows:
 

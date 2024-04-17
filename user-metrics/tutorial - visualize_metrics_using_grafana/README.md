@@ -1,4 +1,4 @@
-# Tutorial 1: Grafana Visualization Service for Compute Pool Metrics
+# Tutorial: Grafana Visualization Service for Compute Pool Metrics
 
 ## [Introduction](./Introduction.md) 
 ## [Prerequisites](./Prerequisites.md)

@@ -1,4 +1,4 @@
-# Tutorial 3: Using OTel to export compute pool metrics to datadog
+# Tutorial: Using OTel to export compute pool metrics to datadog
 
 ## [Introduction](./Introduction.md) 
 ## [Prerequisites](./Prerequisites.md)

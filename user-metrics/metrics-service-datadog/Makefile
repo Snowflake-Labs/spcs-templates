@@ -14,7 +14,8 @@ endif
 
 build-spec-file: check-repo-is-set
 	echo 'Building spec file, using repository: $(SNOW_REPO)'
-	SPCS_IMAGE_REPO=$(SNOW_REPO) VERSION=$(VERSION) envsubst < metrics-service.yml.template > metrics-service.yml
+	SPCS_IMAGE_REPO=$(SNOW_REPO) VERSION=$(VERSION)
+	sed 's#SPCS_IMAGE_REPO#$(SNOW_REPO)#g; s#VERSION#$(VERSION)#g' metrics-service.yml.template > metrics-service.yml
 
 build-mdservice:
 	echo 'Building mdservice image'
