@@ -16,9 +16,8 @@ func TestGetComputePoolsToScrape(t *testing.T) {
 		{"active", "pool1", "admin"},
 	}
 	columns := []string{"state", "name", "owner"}
-	role := "admin"
 	expected := []string{"pool1"}
-	result, err := getComputePoolsToScrape(rows, columns, role)
+	result, err := getComputePoolsToScrape(rows, columns)
 	verifyResult(t, err, result, expected)
 
 	// Test case with multiple rows, some active and some inactive
@@ -28,7 +27,7 @@ func TestGetComputePoolsToScrape(t *testing.T) {
 		{"active", "pool3", "admin"},
 	}
 	expected = []string{"pool1", "pool3"}
-	result, err = getComputePoolsToScrape(rows, columns, role)
+	result, err = getComputePoolsToScrape(rows, columns)
 	verifyResult(t, err, result, expected)
 
 	// Test case with no active compute pools
@@ -37,7 +36,7 @@ func TestGetComputePoolsToScrape(t *testing.T) {
 		{"inactive", "pool2", "admin"},
 	}
 	expected = []string{}
-	result, err = getComputePoolsToScrape(rows, columns, role)
+	result, err = getComputePoolsToScrape(rows, columns)
 	verifyResult(t, err, result, expected)
 
 	// Test case with active compute pools but different owner
@@ -46,8 +45,8 @@ func TestGetComputePoolsToScrape(t *testing.T) {
 		{"active", "pool1", "admin"},
 		{"active", "pool2", "guest"},
 	}
-	expected = []string{"pool1"}
-	result, err = getComputePoolsToScrape(rows, columns, role)
+	expected = []string{"pool1", "pool2"}
+	result, err = getComputePoolsToScrape(rows, columns)
 	verifyResult(t, err, result, expected)
 
 	// Test case with no state column
@@ -57,7 +56,7 @@ func TestGetComputePoolsToScrape(t *testing.T) {
 	}
 	columns = []string{"name", "owner"}
 	expected = []string{}
-	result, err = getComputePoolsToScrape(rows, columns, role)
+	result, err = getComputePoolsToScrape(rows, columns)
 	if err == nil {
 		t.Errorf("Expected an error, but got no error")
 	}
@@ -108,7 +107,7 @@ func TestGetTargets(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected an error, but got no error")
 	}
-	require.Equal(t, "SPCS discovery plugin: error resolving endpoint: lookup metrics..snowflakecomputing.internal: no such host", err.Error(), "Error message mismatch")
+	require.Equal(t, "SPCS discovery plugin: error resolving endpoint: lookup monitor..snowflakecomputing.internal: no such host", err.Error(), "Error message mismatch")
 
 	// DNS Resolution Failed
 	computePool = "Pool1"
@@ -116,7 +115,7 @@ func TestGetTargets(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected an error, but got no error")
 	}
-	require.Equal(t, "SPCS discovery plugin: error resolving endpoint: lookup metrics.pool1.snowflakecomputing.internal: no such host", err.Error(), "Error message mismatch")
+	require.Equal(t, "SPCS discovery plugin: error resolving endpoint: lookup monitor.pool1.snowflakecomputing.internal: no such host", err.Error(), "Error message mismatch")
 
 }
 

@@ -21,7 +21,7 @@ const (
 	StateColumn         = "state"
 	OwnerColumn         = "owner"
 	StateActiveValue    = "active"
-	DnsPrefix           = "metrics"
+	DnsPrefix           = "monitor"
 	DnsSuffix           = "snowflakecomputing.internal"
 	MetricsPort         = "9001"
 	MetaComputePoolName = "__meta_spcs_compute_pool_name"
