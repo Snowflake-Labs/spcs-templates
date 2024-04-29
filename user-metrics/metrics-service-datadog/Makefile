@@ -2,10 +2,6 @@
 
 VERSION=v0.0.1
 
-# Makefile for SPCS user metrics service
-
-VERSION=v0.0.1
-
 check-repo-is-set:
 ifndef SNOW_REPO
 	echo "SNOW_REPO environment variable is not defined."
@@ -52,12 +48,12 @@ pull-upload-mdservice:
 images=otel-datadog
 
 build-local-images=$(addsuffix .bli, $(images))
-build-local-all: $(build-local-images) build-mdservice
+build-local-all: $(build-local-images) build-mdservice build-spec-file
 
 build-upload-images=$(addsuffix .bui, $(images))
-build-upload-all: $(build-upload-images) build-upload-mdservice
+build-upload-all: $(build-upload-images) build-upload-mdservice build-spec-file
 
 pull-upload-images=$(addsuffix .pui, $(images))
 pull-upload-all: $(pull-upload-images) pull-upload-mdservice build-spec-file
 
-build-all: build-upload-all build-upload-mdservice build-spec-file
+build-all: build-upload-all
