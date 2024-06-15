@@ -16,13 +16,11 @@ import (
 
 const (
 	ConfigFile          = "config.yaml"
-	ComputePoolQuery    = "SHOW COMPUTE POOLS;"
+	ComputePoolQuery    = "call SYSTEM$GET_COMPUTE_POOL_MONITOR_ENDPOINTS();"
 	NameColumn          = "name"
 	StateColumn         = "state"
 	OwnerColumn         = "owner"
 	StateActiveValue    = "active"
-	DnsPrefix           = "monitor"
-	DnsSuffix           = "snowflakecomputing.internal"
 	MetricsPort         = "9001"
 	MetaComputePoolName = "__meta_spcs_compute_pool_name"
 	NOT_FOUND           = -1
@@ -68,48 +66,18 @@ func getCurrentRole(rows [][]string) (string, error) {
 	return "", fmt.Errorf("SPCS discovery plugin: error retrieving role.")
 }
 
-func getComputePoolsToScrape(rows [][]string, columns []string) ([]string, error) {
+func getMonitorEndpointsToScrape(rows [][]string) ([]string, error) {
 
-	var computePools = []string{}
-
-	for _, row := range rows {
-		cpState, err := getColumnValue(row, columns, StateColumn)
-		if err != nil {
-			return nil, fmt.Errorf("SPCS discovery plugin: error retrieving compute pool state. %v", err)
-		}
-
-		cpName, err := getColumnValue(row, columns, NameColumn)
-		if err != nil {
-			return nil, fmt.Errorf("SPCS discovery plugin: error retrieving compute pool name. %v", err)
-		}
-
-		if strings.ToLower(cpState) == StateActiveValue {
-			computePools = append(computePools, cpName)
-		}
+	var monitorEndpointsStr = rows[0][0]
+	var monitorEndpointsList []string
+	err := json.Unmarshal([]byte(monitorEndpointsStr), &monitorEndpointsList)
+	if err != nil {
+		return nil, fmt.Errorf("SPCS discovery plugin: error retrieving monitor endpoints. %v", err)
 	}
-	return computePools, nil
+	return monitorEndpointsList, nil
 }
 
-func getColumnValue(row []string, columns []string, columnName string) (string, error) {
-
-	columnIndex := indexOf(columnName, columns)
-	if columnIndex == NOT_FOUND {
-		return "", fmt.Errorf("SPCS discovery plugin: column not found. column_name: %v", columnName)
-	}
-
-	return row[columnIndex], nil
-}
-
-func indexOf(target string, slice []string) int {
-	for i, value := range slice {
-		if value == target {
-			return i
-		}
-	}
-	return NOT_FOUND
-}
-
-func getTargetgroups(computePools []string) ([]struct {
+func getTargetgroups(computePoolMonitorEndpoints []string) ([]struct {
 	Targets []string          `json:"targets"`
 	Labels  map[string]string `json:"labels"`
 }, error) {
@@ -118,10 +86,10 @@ func getTargetgroups(computePools []string) ([]struct {
 		Labels  map[string]string `json:"labels"`
 	}
 
-	for _, computePool := range computePools {
+	for _, computePoolMonitorEndpoint := range computePoolMonitorEndpoints {
 		var resolver EndpointResolver = &DNSResolver{}
-		targetsForCP, err := getTargets(computePool, resolver)
-		labels := getLabels(computePool)
+		targetsForCP, err := getTargets(computePoolMonitorEndpoint, resolver)
+		labels, err := getLabels(computePoolMonitorEndpoint)
 
 		if err != nil {
 			logrus.Errorf("SPCS discovery plugin: error resolving endpoint: %v", err)
@@ -139,8 +107,7 @@ func getTargetgroups(computePools []string) ([]struct {
 	return response, nil
 }
 
-func getTargets(computePool string, resolver EndpointResolver) ([]string, error) {
-	endPoint := getEndPointFromComputePool(computePool)
+func getTargets(endPoint string, resolver EndpointResolver) ([]string, error) {
 
 	ipAddresses, err := resolver.ResolveEndpoint(endPoint)
 	if err != nil {
@@ -156,15 +123,17 @@ func getTargets(computePool string, resolver EndpointResolver) ([]string, error)
 	return targetsForCP, nil
 }
 
-func getLabels(computePool string) map[string]string {
-	labels := map[string]string{
-		MetaComputePoolName: strings.ToLower(computePool),
+func getLabels(computePoolMonitorEndpoint string) (map[string]string, error) {
+	// discover.monitor.mypool.snowflakecomputing.internal -> mypool
+	delimiter := "."
+	segments := strings.Split(computePoolMonitorEndpoint, delimiter)
+	if len(segments)!=5 {
+		return nil, fmt.Errorf("SPCS discovery plugin: Endpoint doesn't have 5 segments : %v", computePoolMonitorEndpoint)
 	}
-	return labels
-}
-
-func getEndPointFromComputePool(computePool string) string {
-	return DnsPrefix + "." + strings.ToLower(computePool) + "." + DnsSuffix
+	labels := map[string]string{
+		MetaComputePoolName: strings.ToLower(segments[2]),
+	}
+	return labels, nil
 }
 
 func loadConfig(filename string) error {
@@ -196,18 +165,18 @@ func processRequest() []struct {
 		logrus.Errorf("SPCS discovery plugin: Error getting snowflake config to scrape. err: %v", err)
 	}
 
-	rows, columns, err := GetDataFromSnowflake(cfg, ComputePoolQuery)
+	rows, _, err := GetDataFromSnowflake(cfg, ComputePoolQuery)
 	if err != nil {
 		logrus.Errorf("SPCS discovery plugin: Error getting data from snowflake. err: %v", err)
 	}
 
-	computePools, err := getComputePoolsToScrape(rows, columns)
+	computePoolMonitorEndpoints, err := getMonitorEndpointsToScrape(rows)
 	if err != nil {
-		logrus.Errorf("SPCS discovery plugin: Error getting compute pools to scrape. err: %v", err)
+		logrus.Errorf("SPCS discovery plugin: Error getting compute pool monitor endpoints to scrape. err: %v", err)
 	}
-	logrus.Infof("SPCS discovery plugin: Compute Pools that can be scraped %s\n", computePools)
+	logrus.Infof("SPCS discovery plugin: Compute Pool monitor endpoints that can be scraped %s\n", computePoolMonitorEndpoints)
 
-	response, err := getTargetgroups(computePools)
+	response, err := getTargetgroups(computePoolMonitorEndpoints)
 	if err != nil {
 		logrus.Errorf("SPCS discovery plugin: Error getting targetgroups to scrape. err: %v", err)
 	}
