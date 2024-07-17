@@ -1,0 +1,34 @@
+spec:
+  container:
+  - name: {{ postgres.name }}
+    image: {{ postgres.repo_path }}/{{ postgres.image }}
+    {% if postgres.secrets %}
+    secrets:
+    {% for item in postgres.secrets %}
+      - snowflakeSecret: {{ item.snowflakeSecret }}
+        secretKeyRef: {{ item.secretKeyRef }}
+        envVarName: {{ item.envVarName }}
+    {% endfor %}
+    {% endif %}
+    {% if postgres.env %}
+    env:
+    {% for key, value in postgres.env.items() %}
+      {{ key }}: {{ value }}
+    {% endfor %}
+    {% endif %}
+    volumeMounts:
+      - name: {{ postgres.volume_name }}
+        mountPath:  {{ postgres.volume_mount_path }}
+  endpoint:
+  - name: postgres
+    port: {{ postgres.port }}
+  volumes:
+  - name: {{ postgres.volume_name }}
+    source: {{ postgres.volume_source }}
+    size: {{ postgres.volume_size }}
+    {% if postgres.database_snapshot %}
+    blockConfig:
+      initialContents:
+        fromSnapshot: {{ postgres.database_snapshot }}
+    {% endif %}
+  

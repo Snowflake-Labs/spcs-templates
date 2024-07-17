@@ -1,0 +1,21 @@
+spec:
+  container:
+  - name: postgres
+    image: /airflow_db/airflow_schema/airflow_repository/postgres:14.10
+    secrets:
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_postgres_pwd
+        secretKeyRef: password
+        envVarName: POSTGRES_PASSWORD
+    env:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: postgres
+    volumeMounts:
+      - name: pgdata
+        mountPath:  /var/lib/postgresql/data
+  endpoint:
+  - name: postgres
+    port: 5432
+  volumes:
+  - name: pgdata
+    source: block
+    size: 10Gi

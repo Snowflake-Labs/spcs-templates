@@ -1,0 +1,164 @@
+variables:
+  snowflake_db_name: airflow_db
+  snowflake_schema_name: airflow_schema
+  image_repository_path: /airflow_db/airflow_schema/airflow_repository
+
+  redis_service_name: redis-service
+  postgres_service_name: postgres-service
+  airflow_service_name: airflow-service
+  airflow_worker_service_name: airflow-worker
+
+  redis_port: 6379
+  postgres_port: 5432
+  wlog_port: 8793
+  webserver_port: 8080
+  runner_port: 8001
+  flower_port: 5555
+  postgres_user: postgres
+
+  redis_dns: redis-service.airflow-schema.airflow-db.snowflakecomputing.internal
+  postgres_dns: postgres-service.airflow-schema.airflow-db.snowflakecomputing.internal
+  worker_dns: airflow-worker.airflow-schema.airflow-db.snowflakecomputing.internal
+  
+template:
+  redis:
+    name: redis
+    repo_path: "{{ image_repository_path }}"
+    image: redis:7.0
+    port: "{{ redis_port }}"
+    secrets:
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_redis_pwd
+        secretKeyRef: password
+        envVarName: REDIS_PASSWORD
+    env:
+      REDIS_REPLICATION_MODE: master
+      REDIS_PORT: "{{ redis_port }}"
+
+  postgres:
+    name: postgres
+    repo_path: "{{ image_repository_path }}"
+    image: postgres:14.10
+    port: "{{ postgres_port }}"
+    # database_snapshot: POSTGRES_DATA_SNAPSHOT
+    volume_name: pgdata
+    volume_source: block
+    volume_mount_path: /var/lib/postgresql/data
+    volume_size: 10Gi
+    secrets:
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_postgres_pwd
+        secretKeyRef: password
+        envVarName: POSTGRES_PASSWORD
+    env:
+      POSTGRES_USER: "{{ postgres_user }}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    
+  gitsync:
+    name: git-sync
+    repo_path: "{{ image_repository_path }}"
+    image: gitsync:latest
+    command: "$HOME/git-sync.sh"
+    # secrets:
+    #   - snowflakeSecret: airflow_db.airflow_schema.airflow_user
+    #     secretKeyRef: password
+    #     envVarName: SNOWFLAKE_CONNECTIONS_SNOWHOUSE_PASSWORD   
+
+  airflow:
+    repo_path: "{{ image_repository_path }}"
+    image: airflow:2.7.3
+    secrets:
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_fernet_key
+        secretKeyRef: password
+        envVarName: AIRFLOW__CORE__FERNET_KEY
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_redis_pwd
+        secretKeyRef: password
+        envVarName: REDIS_PASSWORD
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_postgres_pwd
+        secretKeyRef: password
+        envVarName: POSTGRES_PASSWORD
+      # - snowflakeSecret: airflow_db.airflow_schema.airflow_user
+      #   secretKeyRef: password
+      #   envVarName: SNOWFLAKE_CONNECTIONS_SNOWHOUSE_PASSWORD
+      # - snowflakeSecret: airflow_db.airflow_schema.airflow_spcs_okta
+      #   secretKeyRef: username
+      #   envVarName: AIRFLOW_WEB_CLIENT_ID
+      # - snowflakeSecret: airflow_db.airflow_schema.airflow_spcs_okta
+      #   secretKeyRef: password
+      #   envVarName: AIRFLOW_WEB_CLIENT_SECRET
+    env:
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      WORKER_TYPE: ip
+      USE_HOSTNAME: 'No'
+      WORKER_NAME: "{{ worker_dns }}"
+      DATABASE_HOST: "{{ postgres_dns }}"
+      DATABASE_PORT: "{{ postgres_port }}"
+      POSTGRES_USER: "{{ postgres_user }}"
+      REDIS_HOST: "{{ redis_dns }}"
+      REDIS_PORT: "{{ redis_port }}"
+      REDIS_DBNUM: "0"
+      ## ----------------
+      ## Airflow
+      #AIRFLOW__LOGGING__REMOTE_LOGGING: True
+      #AIRFLOW__LOGGING__REMOTE_LOG_CONN_ID: aws_conn
+      #AIRFLOW__LOGGING__REMOTE_BASE_LOG_FOLDER: s3://bucket-name
+      ## ----------------
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: 32
+      AIRFLOW_CORE_PARALLELISM: 120
+      ## ----------------
+      ## SMTP
+      ## ----------------
+      #AIRFLOW__SMTP__SMTP_HOST: hostname
+      #AIRFLOW__SMTP__SMTP_MAIL_FROM: airflow@spcs-airflow
+      #AIRFLOW__SMTP__SMTP_PORT: 25
+      #AIRFLOW__SMTP__SMTP_STARTTLS: False
+      ## ----------------
+      ## Airflow - CeleryExecutor
+      ## ----------------
+      DATABASE_CELERY_CMD: |-
+        echo -n "db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/postgres"
+      AIRFLOW__CELERY__BROKER_URL: "redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DBNUM}"
+      AIRFLOW__CELERY__FLOWER_PORT: "{{ flower_port }}"
+      AIRFLOW__CELERY__FLOWER_URL_PREFIX: ""
+      AIRFLOW__CELERY__RESULT_BACKEND_CMD: |-
+        bash -c 'eval "$DATABASE_CELERY_CMD"'
+      AIRFLOW__CELERY__WORKER_CONCURRENCY: 16
+      AIRFLOW__CELERY__WORKER_AUTOSCALE: 16,8
+      AIRFLOW__LOGGING__WORKER_LOG_SERVER_PORT: "{{ wlog_port }}"
+      ## ----------------
+      ## Airflow - User Configs
+      ## ----------------
+      AIRFLOW__WEBSERVER__AUTHENTICATE: False # Change its value to True if you are planning to put the UI behing Okta
+      AIRFLOW__WEBSERVER__RBAC: False # Change its value to True if you are planning to put the UI behing Okta
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@${DATABASE_HOST}:${DATABASE_PORT}/postgres"
+      AIRFLOW__CORE__LOAD_EXAMPLES: False
+      AIRFLOW__WEBSERVER__SECRET_KEY: fullsvc
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: True
+      AIRFLOW__CORE__HOSTNAME_CALLABLE: infra.common.custom_hostname_callable.custom_hostname_callable
+    dags_volume_name: dags
+    dags_volume_path: /opt/airflow/dags
+    dag_volume_source: "@airflow_db.airflow_schema.airflow_dags"
+    logs_volume_name: airflow-logs
+    logs_volume_path: /opt/airflow/logs
+    logs_volume_source: "@airflow_db.airflow_schema.airflow_logs"
+    webserver:
+      name: webserver
+      port: "{{ webserver_port }}"
+      command: "airflow users create -r Admin -u airflow -e airflow@test.com -f airflow -l airflow -p airflow && airflow sync-perm && airflow webserver"
+    scheduler:
+      name: scheduler
+      command:  "airflow db init && airflow scheduler"
+    worker:
+      name: worker
+      port: "{{ runner_port }}"
+      log_port: "{{ wlog_port }}"
+      command: "airflow celery worker"
+      resources:
+        requests:
+          memory: 2G
+          cpu: 2
+        limits:
+          memory: 4G
+          cpu: 2
+      commad: 
+
