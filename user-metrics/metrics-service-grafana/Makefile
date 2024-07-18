@@ -20,7 +20,7 @@ build-mdservice:
 build-upload-mdservice:
 	echo 'Building and uploading mdservice image to $(SNOW_REPO)/mdservice:$(VERSION)'
 	docker build --platform=linux/amd64 ../mdservice -f ../mdservice/Dockerfile \
-	--tag $(SNOW_REPO)/mdservice:$(VERSION) --push --rm
+	--tag $(SNOW_REPO)/mdservice:$(VERSION) && docker push $(SNOW_REPO)/mdservice:$(VERSION)
 
 pull-upload-mdservice:
 	echo 'Pulling and uploading mdservice image to $(SNOW_REPO)/mdservice:$(VERSION)'
@@ -43,7 +43,7 @@ pull-upload-mdservice:
 	docker build --platform=linux/amd64 . \
 	-f ./$(basename $@)/Dockerfile \
 	--tag $(SNOW_REPO)/$(basename $@):$(VERSION) \
-	--push --rm
+	&& docker push $(SNOW_REPO)/$(basename $@):$(VERSION)
 
 images=prometheus grafana otel-prometheus
 
