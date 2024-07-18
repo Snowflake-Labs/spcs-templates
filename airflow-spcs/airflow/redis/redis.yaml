@@ -1,0 +1,22 @@
+spec:
+  containers:
+  - name: redis
+    image: /airflow_db/airflow_schema/airflow_repository/redis:7.0
+    env:
+      REDIS_PORT: 6379
+      REDIS_REPLICATION_MODE: master
+    secrets:
+      - snowflakeSecret: airflow_db.airflow_schema.airflow_redis_pwd
+        secretKeyRef: password
+        envVarName: REDIS_PASSWORD
+    command:
+    - /bin/bash
+    - -c
+    - |
+      ARGS=("--port" "${REDIS_PORT}")
+      ARGS+=("--requirepass" "${REDIS_PASSWORD}")
+      ARGS+=("--masterauth" "${REDIS_PASSWORD}")
+      redis-server ${ARGS[@]}
+  endpoint:
+  - name: redis
+    port: 6379

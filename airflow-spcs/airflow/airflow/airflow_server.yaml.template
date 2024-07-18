@@ -1,0 +1,87 @@
+spec:
+  container:
+  - name: {{ airflow.scheduler.name }}
+    image: {{ airflow.repo_path }}/{{ airflow.image }}
+    {% if airflow.secrets %}
+    secrets:
+    {% for item in airflow.secrets %}
+      - snowflakeSecret: {{ item.snowflakeSecret }}
+        secretKeyRef: {{ item.secretKeyRef }}
+        envVarName: {{ item.envVarName }}
+    {% endfor %}
+    {% endif %}
+    {% if airflow.env %}
+    env:
+    {% for key, value in airflow.env.items() %}
+      {{ key }}: {{ value }}
+    {% endfor %}
+    {% endif %}
+    command:
+    - bash
+    - -c
+    - "{{airflow.scheduler.command }}"
+    volumeMounts:
+    - name: {{ airflow.dags_volume_name }}
+      mountPath: {{ airflow.dags_volume_path }}
+    - name: {{ airflow.logs_volume_name }}
+      mountPath: {{ airflow.logs_volume_path }}
+
+  - name: {{ airflow.webserver.name }}
+    image: {{ airflow.repo_path }}/{{ airflow.image }}
+    {% if airflow.secrets %}
+    secrets:
+    {% for item in airflow.secrets %}
+      - snowflakeSecret: {{ item.snowflakeSecret }}
+        secretKeyRef: {{ item.secretKeyRef }}
+        envVarName: {{ item.envVarName }}
+    {% endfor %}
+    {% endif %}
+    {% if airflow.env %}
+    env:
+    {% for key, value in airflow.env.items() %}
+      {{ key }}: {{ value }}
+    {% endfor %}
+    {% endif %}
+    command:
+    - bash
+    - -c
+    - "{{airflow.webserver.command }}"
+    volumeMounts:
+    - name: {{ airflow.dags_volume_name }}
+      mountPath: {{ airflow.dags_volume_path }}
+    - name: {{ airflow.logs_volume_name }}
+      mountPath: {{ airflow.logs_volume_path }}
+    
+  - name: {{ gitsync.name }}
+    image: {{ gitsync.repo_path }}/{{ gitsync.image }}
+    {% if gitsync.secrets %}
+    secrets:
+    {% for item in gitsync.secrets %}
+      - snowflakeSecret: {{ item.snowflakeSecret }}
+        secretKeyRef: {{ item.secretKeyRef }}
+        envVarName: {{ item.envVarName }}
+    {% endfor %}
+    {% endif %}
+    command:
+        - bash
+        - -c
+        - "{{ gitsync.command }}"
+    volumeMounts:
+      - name: {{ airflow.dags_volume_name }}
+        mountPath: /dags
+  endpoint:
+  - name: runner
+    port: {{ airflow.worker.port }}
+  - name: webserver
+    port: {{ airflow.webserver.port }}
+    public: true
+  volumes:
+  - name: {{ airflow.dags_volume_name }}
+    source: "{{ airflow.dag_volume_source }}"
+    uid: 50000
+    gid: 50000
+  - name: {{ airflow.logs_volume_name }}
+    source: "{{ airflow.logs_volume_source }}"
+    uid: 50000
+    gid: 50000
+    

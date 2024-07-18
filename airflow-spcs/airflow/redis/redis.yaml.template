@@ -1,0 +1,30 @@
+spec:
+  containers:
+  - name: {{ redis.name }}
+    image: {{ redis.repo_path }}/{{ redis.image }}
+    {% if redis.env %}
+    env:
+    {% for key, value in redis.env.items() %}
+      {{ key }}: {{ value }}
+    {% endfor %}
+    {% endif %}
+    {% if redis.secrets %}
+    secrets:
+    {% for item in redis.secrets %}
+      - snowflakeSecret: {{ item.snowflakeSecret }}
+        secretKeyRef: {{ item.secretKeyRef }}
+        envVarName: {{ item.envVarName }}
+    {% endfor %}
+    {% endif %}
+    command:
+    - /bin/bash
+    - -c
+    - |
+    
+      ARGS=("--port" "${REDIS_PORT}")
+      ARGS+=("--requirepass" "${REDIS_PASSWORD}")
+      ARGS+=("--masterauth" "${REDIS_PASSWORD}")
+      redis-server ${ARGS[@]}
+  endpoint:
+  - name: redis
+    port: {{ redis.port }}

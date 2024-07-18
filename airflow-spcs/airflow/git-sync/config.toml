@@ -1,0 +1,9 @@
+[connections]
+[connections.airflow]
+account = "<snowflake account>"
+user = "airflow_user"
+database = "airflow_db"
+schema = "airflow_schema"
+warehouse = "airflow_wh"
+role = "airflow_admin_rl"
+connection_timeout = 600
