@@ -34,3 +34,10 @@ Note the following:
     ```commandline
     SHOW IMAGES IN IMAGE REPOSITORY tutorial_db.data_schema.tutorial_repository;
     ```
+
+    The repository should contain four images:
+
+    - `grafana`
+    - `mdservice`
+    - `otel-prometheus`
+    - `prometheus`
