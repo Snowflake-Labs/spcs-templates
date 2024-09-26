@@ -1,0 +1,39 @@
+
+CREATE SERVICE {{SERVICE_NAME}}
+IN COMPUTE POOL {{COMPUTE_POOL_NAME}}
+FROM SPECIFICATION '
+spec:
+  container:
+  - name: main
+    image: {{SERVICE_IMAGE}}
+    command:
+     - python
+     - -u
+     - src/main_service.py
+     - --ip
+     - 0.0.0.0
+     - --port
+     - 9000
+    env:
+      OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
+    resources:
+      requests:
+        nvidia.com/gpu: {{NUM_GPUS}}
+      limits:
+        nvidia.com/gpu: {{NUM_GPUS}}
+  endpoint:
+  - name: main
+    port: 9000
+'
+WITH
+MIN_INSTANCES = {{SERVICE_NUM_INSTANCES}}
+MAX_INSTANCES = {{SERVICE_NUM_INSTANCES}}
+EXTERNAL_ACCESS_INTEGRATIONS=(HF_EAI);
+
+
+CREATE OR REPLACE FUNCTION {{SERVICE_NAME}}_FN (n VARCHAR)
+  returns VARCHAR
+  service={{SERVICE_NAME}}
+  endpoint='main'
+  MAX_BATCH_ROWS={{MAX_BATCH_SIZE}}
+  as '/process';

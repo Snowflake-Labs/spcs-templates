@@ -1,0 +1,14 @@
+FROM nvcr.io/nvidia/pytorch:23.08-py3
+
+WORKDIR /app
+
+RUN pip install --upgrade pip
+
+COPY requirements_service.txt /app/requirements.txt
+RUN pip install -r requirements.txt
+
+ADD . /app
+
+WORKDIR /app/src
+
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:9000", "--workers", "1", "--timeout", "0", "app:app"]

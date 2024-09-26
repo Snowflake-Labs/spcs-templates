@@ -1,0 +1,36 @@
+[general]
+model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
+tokenizer_name = "bert-base-uncased" # name of the tokenizer
+
+[snowflake.credentials]
+account = "aivanoutest02"
+user = "admin"
+warehouse = "LARGEWH" # this is only used in setup workload to upload dummy data
+database = "AIVANOUDB"
+schema = "PUBLIC"
+role = "SYSADMIN"
+stage_name = "EMBED_STAGE"
+compute_pool_name = 'EMB_COMPUTE_POOL'
+compute_pool_type = 'GPU_NV_S'
+compute_pool_nodes = 1
+image_repository = 'embeddings_repo'
+service_name = 'EMBEDDING_SERVICE'
+service_instances = 1
+service_image = 'preprod8-aivanoutest.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/test/service:0002'
+
+#account = "<<YOUR_ACCOUNT>>"
+#user = "<<YOUR_USER>>"
+#warehouse = "<<YOUR_WAREHOUSE>>" # this is only used in setup workload to upload dummy data
+#database = "<<YOUR_DATABASE>>"
+#schema = "<<YOUR_SCHEMA>>"
+#stage_name = "<<YOUR_STAGE_NAME>>"
+
+[compute_pool.GPU_NV_M]
+batch_size = 560 # batch size that will be used for workloads on GPU_NV_M
+
+[compute_pool.default]
+batch_size = 32 # the default batch size that will be used if compute pool instance type was not found
+
+[job]
+stage_data_path = "DUMMY_DATA_RANDOM_TEXT/data50000" # path to the input data. The full path is $stage_name/$stage_data_path
+stage_output_path = "DUMMY_DATA_RANDOM_TEXT/output50000" # path to where the output data will be stored. The full path is $stage_name/$stage_output_path
