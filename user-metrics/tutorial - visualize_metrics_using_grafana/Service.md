@@ -12,8 +12,8 @@ The `make` command in the preceding section also creates a service specification
       $$;
     ```
 
-2. Call the SYSTEM$GET_SERVICE_STATUS function to verify that all of the service containers are running.
+2. Run `SHOW SERVICE CONTAINERS IN SERVICE` statement to verify that all of the service containers are running.
 
-```commandline
-call SYSTEM$GET_SERVICE_STATUS('metrics_visualizer');
-```
+    ```sql
+    SHOW SERVICE CONTAINERS IN SERVICE metrics_visualizer;
+    ```
