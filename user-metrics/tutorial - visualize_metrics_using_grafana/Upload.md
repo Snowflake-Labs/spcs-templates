@@ -29,7 +29,8 @@ Note the following:
     ```commandline
     make build-all SNOW_REPO=<repository-url>
     ```
-7. Call the `SYSTEM$REGISTRY_LIST_IMAGES` function to verify that the images are present in the repository.
-```commandline
-SELECT SYSTEM$REGISTRY_LIST_IMAGES('/tutorial_db/data_schema/tutorial_repository');
-```
+7. Run the `SHOW IMAGES IN IMAGE REPOSITORY` statement to verify that the images are present in the repository.
+
+    ```commandline
+    SHOW IMAGES IN IMAGE REPOSITORY tutorial_db.data_schema.tutorial_repository;
+    ```
