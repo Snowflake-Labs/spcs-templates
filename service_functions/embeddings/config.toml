@@ -2,28 +2,30 @@
 model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
 tokenizer_name = "bert-base-uncased" # name of the tokenizer
 
-[snowflake.credentials]
-account = "aivanoutest02"
-user = "admin"
-warehouse = "LARGEWH" # this is only used in setup workload to upload dummy data
-database = "AIVANOUDB"
-schema = "PUBLIC"
-role = "SYSADMIN"
-stage_name = "EMBED_STAGE"
-compute_pool_name = 'EMB_COMPUTE_POOL'
-compute_pool_type = 'GPU_NV_S'
-compute_pool_nodes = 1
-image_repository = 'embeddings_repo'
-service_name = 'EMBEDDING_SERVICE'
-service_instances = 1
-service_image = 'preprod8-aivanoutest.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/test/service:0002'
+[setup.steps]
+rebuild_image = false
+recreate_eai = false
+recreate_table = false
+recreate_compute_pool = false
+recreate_service = false
+run_warmup = true
 
-#account = "<<YOUR_ACCOUNT>>"
-#user = "<<YOUR_USER>>"
-#warehouse = "<<YOUR_WAREHOUSE>>" # this is only used in setup workload to upload dummy data
-#database = "<<YOUR_DATABASE>>"
-#schema = "<<YOUR_SCHEMA>>"
-#stage_name = "<<YOUR_STAGE_NAME>>"
+[snowflake.credentials]
+account = <<YOUR_ACCOUNT_NAME>>
+user = <<YOUR_USER_NAME>>
+warehouse = <<YOUR_WAREHOUSE_NAME>> # this is only used in setup workload to upload dummy data
+database = <<YOUR_DATABASE_NAME>>
+schema = <<YOUR_SCHEMA_NAME>>
+role = <<YOUR_ROLE_NAME>>
+stage_name = <<YOUR_STAGE_NAME_NAME>>
+compute_pool_name = <<YOUR_COMPUTE_POOL_NAME>>
+compute_pool_type = <<YOUR_COMPUTE_POOL_TYPE>>
+compute_pool_nodes = 1
+image_repository = <<YOUR_IMAGE_REPOSITORY_NAME>>
+service_name = <<YOUR_SERVICE_NAME>>
+service_instances = 1
+# service_image = <<YOUR_SERVICE_IMAGE_FULL_NAME>>
+eai_name = <<EAI_NAME>>
 
 [compute_pool.GPU_NV_M]
 batch_size = 560 # batch size that will be used for workloads on GPU_NV_M

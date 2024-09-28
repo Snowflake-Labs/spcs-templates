@@ -1,11 +1,13 @@
 
+DROP SERVICE IF EXISTS EMBEDDING_SERVICE;
+
 CREATE SERVICE EMBEDDING_SERVICE
 IN COMPUTE POOL EMB_COMPUTE_POOL
 FROM SPECIFICATION '
 spec:
   container:
   - name: main
-    image: preprod8-aivanoutest.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/test/service:0002
+    image: /AIVANOUDB/PUBLIC/EMBEDDINGS_REPO/embeddings_service:01
     command:
      - python
      - -u
