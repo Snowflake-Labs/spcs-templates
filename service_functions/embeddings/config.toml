@@ -3,11 +3,11 @@ model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
 tokenizer_name = "bert-base-uncased" # name of the tokenizer
 
 [setup.steps]
-rebuild_image = false
-recreate_eai = false
-recreate_table = false
-recreate_compute_pool = false
-recreate_service = false
+rebuild_image = true
+recreate_eai = true
+recreate_table = true
+recreate_compute_pool = true
+recreate_service = true
 run_warmup = true
 
 [snowflake.credentials]
@@ -17,18 +17,21 @@ warehouse = <<YOUR_WAREHOUSE_NAME>> # this is only used in setup workload to upl
 database = <<YOUR_DATABASE_NAME>>
 schema = <<YOUR_SCHEMA_NAME>>
 role = <<YOUR_ROLE_NAME>>
-stage_name = <<YOUR_STAGE_NAME_NAME>>
-compute_pool_name = <<YOUR_COMPUTE_POOL_NAME>>
-compute_pool_type = <<YOUR_COMPUTE_POOL_TYPE>>
+stage_name = EMBEDDINGS_STAGE
+compute_pool_name = EMBEDDINGS_COMPUTE_POOL
+compute_pool_type = CPU_X64_M
 compute_pool_nodes = 1
-image_repository = <<YOUR_IMAGE_REPOSITORY_NAME>>
-service_name = <<YOUR_SERVICE_NAME>>
+image_repository = EMBEDDINGS_REPOSITORY
+service_name = EMBEDDINGS_SERVICE
 service_instances = 1
-# service_image = <<YOUR_SERVICE_IMAGE_FULL_NAME>>
+service_image = <<YOUR_SERVICE_IMAGE_FULL_NAME>>
 eai_name = <<EAI_NAME>>
 
 [compute_pool.GPU_NV_M]
-batch_size = 560 # batch size that will be used for workloads on GPU_NV_M
+batch_size = 560 # max batch size that will be used for workloads on GPU_NV_M
+
+[compute_pool.GPU_NV_S]
+batch_size = 128 # max batch size that will be used for workloads on GPU_NV_M
 
 [compute_pool.default]
 batch_size = 32 # the default batch size that will be used if compute pool instance type was not found
