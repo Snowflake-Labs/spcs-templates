@@ -1,0 +1,26 @@
+spec:
+  containers:
+    - name: "main"
+      image: preprod8-aivanoutest02.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/test/interactive_job:01
+      command:
+        - ./interactive_entrypoint.sh
+      env:
+        NUM_NODES: "2"
+      resources:
+        limits:
+          cpu: 1
+        requests:
+          cpu: 1
+  endpoint:
+    - name: ssh
+      port: 22
+    - name: torch-master
+      port: 29500
+      protocol: TCP
+    - name: gloo-workers
+      portRange: 29501-65000
+      protocol: TCP
+  volume:
+    - name: dshm
+      source: "memory"
+      size: "1Gi"

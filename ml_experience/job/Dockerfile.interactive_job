@@ -1,0 +1,21 @@
+FROM nvcr.io/nvidia/pytorch:23.08-py3
+
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install dnsutils -y && apt-get install net-tools -y
+RUN apt-get install pdsh -y
+
+RUN apt update && apt install  openssh-server sudo -y
+RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test
+RUN  echo 'test:test' | chpasswd
+RUN service ssh start
+EXPOSE 22
+
+WORKDIR /job
+
+ADD ./src /job
+
+RUN pip install --upgrade pip
+RUN pip install -r ./spcs_runner/requirements.txt
+RUN pip install -r ./interactive_job/requirements.txt
+
+ENTRYPOINT ["./interactive_entrypoint.sh"]

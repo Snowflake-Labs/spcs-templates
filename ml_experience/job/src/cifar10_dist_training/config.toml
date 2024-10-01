@@ -1,0 +1,4 @@
+[general]
+database = "AIVANOUDB"
+schema = "PUBLIC"
+role = "SYSADMIN"
