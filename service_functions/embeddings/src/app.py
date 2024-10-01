@@ -1,5 +1,4 @@
 import os
-import time
 from threading import Semaphore
 
 from flask import Flask, jsonify, request, make_response
@@ -59,65 +58,3 @@ def process():
         return _process_internal()
     finally:
         semaphore.release()
-
-
-@app.post('/process_cpu_sleep')
-def process_cpu_sleep():
-    global num_deny
-    global num_success
-    if not semaphore_process_cpu.acquire(blocking=False):
-        num_deny += 1
-        logger.info(f"All workers are busy, try later: {os.getpid()}, num_deny:{num_deny} ")
-        response = make_response(jsonify({"error": "All workers are busy, try later"}), 429)
-        return response
-    try:
-        num_success += 1
-        incoming_request = request.get_json()
-        time.sleep(5)
-        return jsonify(incoming_request), 200
-    finally:
-        semaphore_process_cpu.release()
-
-
-num_process_failure = 0
-
-
-@app.post('/process_failure')
-def process_failure():
-    global num_deny
-    global num_process_failure
-    if not semaphore_process_cpu.acquire(blocking=False):
-        num_deny += 1
-        logger.info(f"All workers are busy, try later: {os.getpid()}, num_deny:{num_deny} ")
-        response = make_response(jsonify({"error": "All workers are busy, try later"}), 429)
-        response.headers['Retry-After'] = '1'
-        return response
-    try:
-        incoming_request = request.get_json()
-        if num_success % 15000 == 0:
-            return jsonify(incoming_request), 500
-        num_process_failure += 1
-        time.sleep(2)
-        return jsonify(incoming_request), 200
-    finally:
-        semaphore_process_cpu.release()
-
-
-@app.post('/long_processing_time')
-def long_processing_time():
-    global num_deny
-    global num_success
-    if not semaphore_process_cpu.acquire(blocking=False):
-        num_deny += 1
-        logger.info(f"All workers are busy, try later: {os.getpid()}, num_deny:{num_deny} ")
-        response = make_response(jsonify({"error": "All workers are busy, try later"}), 429)
-        response.headers['Retry-After'] = '1'
-        return response
-    try:
-        logger.info(f"num_success: {num_success} ")
-        num_success += 1
-        incoming_request = request.get_json()
-        time.sleep(60 * 60)
-        return jsonify(incoming_request), 200
-    finally:
-        semaphore_process_cpu.release()
