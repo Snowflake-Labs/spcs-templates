@@ -1,7 +1,7 @@
 spec:
   containers:
     - name: "main"
-      image: preprod8-aivanoutest02.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/test/interactive_job:01
+      image: <<YOUR_CONTAINER>>
       command:
         - ./interactive_entrypoint.sh
       env:

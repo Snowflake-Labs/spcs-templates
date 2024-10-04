@@ -1,11 +1,11 @@
 spec:
   containers:
     - name: "main"
-      image: preprod8-aivanoutest02.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/test/cifar10:02
+      image: {{CONTAINER_NAME}}
       command:
         - ./cifar10_dist_training_job_entrypoint.sh
       env:
-        NUM_NODES: "2"
+        NUM_NODES: "{{SERVICE_INSTANCES}}"
         NCCL_DEBUG: "WARN"
         NCCL_SOCKET_IFNAME: "eth0"
       resources:
@@ -31,14 +31,14 @@ spec:
     - name: torch-master
       port: 29500
       protocol: TCP
-    - name: gloo-workers
+    - name: nccl-workers
       portRange: 29501-65000
       protocol: TCP
   volume:
     - name: dshm
       source: "memory"
-      size: "1Gi"
+      size: "2Gi"
     - name: cifar10-data
-      source: "@CIFAR10_DATA_STAGE"
+      source: "@{{STAGE_NAME}}"
       uid: 1000
       gid: 1000
