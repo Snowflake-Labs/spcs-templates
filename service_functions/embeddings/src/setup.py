@@ -153,7 +153,7 @@ def _render_start_service(filename, config):
         'SERVICE_NAME': config['service_name'],
         'COMPUTE_POOL_NAME': config['compute_pool_name'],
         'SERVICE_IMAGE': config['service_image'],
-        'NUM_GPUS': config['service_instances'],
+        'NUM_GPUS': config['service_instance_gpus'],
         'SERVICE_NUM_INSTANCES': config['service_instances'],
         'EAI_NAME': config['eai_name'],
         'MAX_BATCH_SIZE': 1024,

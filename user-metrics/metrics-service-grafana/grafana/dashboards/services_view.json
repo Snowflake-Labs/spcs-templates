@@ -90,7 +90,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 6,
         "w": 8,
         "x": 0,
         "y": 0
@@ -188,7 +188,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 6,
         "w": 8,
         "x": 8,
         "y": 0
@@ -285,7 +285,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 6,
         "w": 8,
         "x": 16,
         "y": 0
@@ -326,7 +326,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 6
       },
       "id": 15,
       "panels": [],
@@ -458,7 +458,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 7
       },
       "id": 5,
       "options": {
@@ -692,11 +692,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 15
       },
       "id": 19,
       "panels": [],
-      "title": "CPU Utilization",
+      "title": "System Telemetry",
       "type": "row"
     },
     {
@@ -707,7 +707,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisCenteredZero": false,
@@ -716,15 +716,15 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 1,
-            "gradientMode": "scheme",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "smooth",
-            "lineWidth": 3,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -757,17 +757,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 19
+        "y": 16
       },
-      "id": 2,
+      "id": 33,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -775,46 +775,20 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "9.5.5",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "grafana-prometheus"
+            "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "topk(20, sum(rate(spcs_container_cpu_usage_seconds_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name))",
-          "hide": false,
+          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
           "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "spcs_container_resource_limits{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"cpu\"}",
-          "hide": false,
-          "legendFormat": "CPU - Limits[{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}]",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "spcs_container_resource_requests{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"cpu\"}",
-          "hide": false,
-          "legendFormat": "CPU - Requests [{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}]",
-          "range": true,
-          "refId": "C"
         }
       ],
-      "title": "CPU Usage",
+      "title": "CPU Usage(cores)",
       "type": "timeseries"
     },
     {
@@ -834,127 +808,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 19
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "9.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) / sum(spcs_container_resource_requests{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"cpu\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "hide": false,
-          "legendFormat": "Requests Usage {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) / sum(spcs_container_resource_limits{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"cpu\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "hide": false,
-          "legendFormat": "Limits Usage {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "CPU Usage Over Requests/Limits",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 31
-      },
-      "id": 21,
-      "panels": [],
-      "title": "Memory Utilization",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -978,7 +832,6 @@
             }
           },
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -997,17 +850,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 32
+        "x": 12,
+        "y": 16
       },
-      "id": 30,
+      "id": 34,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -1015,16 +868,14 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "9.5.5",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "grafana-prometheus"
+            "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
           "expr": "sum(spcs_container_memory_used_bytes{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "hide": false,
           "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
           "range": true,
           "refId": "A"
@@ -1050,20 +901,20 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 9,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1087,22 +938,22 @@
               }
             ]
           },
-          "unit": "percentunit"
+          "unit": "bytes"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 32
+        "x": 0,
+        "y": 24
       },
-      "id": 31,
+      "id": 35,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -1110,43 +961,310 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "9.1.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "grafana-prometheus"
+            "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_memory_used_bytes{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) / sum(spcs_container_resource_requests{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"memory\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_instance_name, snow_containers_container_name)",
-          "hide": false,
-          "legendFormat": "Requests {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_memory_used_bytes{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_instance_name, snow_containers_container_name) / sum(spcs_container_resource_limits{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"memory\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_instance_name, snow_containers_container_name)",
-          "hide": false,
-          "legendFormat": "Limits {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(rate(spcs_network_egress_receive_bytes_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Memory Usage Over Requests/Limits",
+      "title": "Egress: Bytes Received From Internet",
       "type": "timeseries"
     },
     {
-      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 37,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spcs_network_egress_receive_packets_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Egress: Packets Received From Internet",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 36,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spcs_network_egress_transmit_bytes_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
+          "hide": false,
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Egress: Bytes Sent To Internet",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 38,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spcs_network_egress_transmit_packets_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
+          "hide": false,
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Egress: Bytes Sent To Internet",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 40
       },
       "id": 25,
       "panels": [],
@@ -1215,7 +1333,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 41
       },
       "id": 23,
       "options": {
@@ -1241,18 +1359,6 @@
           "legendFormat": "GPU Used Memory(Mib) {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
           "range": true,
           "refId": "GPU Usage"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_used_mib{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) + sum(spcs_container_gpu_memory_free_mib{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) ",
-          "hide": false,
-          "legendFormat": "GPU Total Memory(Mib) {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
-          "range": true,
-          "refId": "A"
         }
       ],
       "title": "GPU Utilization %",
@@ -1322,7 +1428,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 52
+        "y": 49
       },
       "id": 32,
       "options": {
@@ -1417,7 +1523,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 52
+        "y": 49
       },
       "id": 26,
       "options": {
@@ -1458,8 +1564,8 @@
       {
         "current": {
           "selected": true,
-          "text": "All",
-          "value": "$__all"
+          "text": "EMBEDDING_SERVICE",
+          "value": "EMBEDDING_SERVICE"
         },
         "datasource": {
           "type": "prometheus",
@@ -1486,8 +1592,8 @@
       {
         "current": {
           "selected": false,
-          "text": "TESTDB",
-          "value": "TESTDB"
+          "text": "AIVANOUDB",
+          "value": "AIVANOUDB"
         },
         "datasource": {
           "type": "prometheus",
@@ -1542,7 +1648,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
