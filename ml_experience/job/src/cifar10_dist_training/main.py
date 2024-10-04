@@ -11,11 +11,15 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 import wandb
+import click
 
-wandb.login(key=os.environ['WANDB_SECRET'])
 
-service_name = os.environ.get('SNOWFLAKE_SERVICE_NAME', 'test')
-wandb.init(project=f"experiment-{service_name}")
+def _setup_wandb():
+    WANDB_SECRET = os.environ.get('WANDB_SECRET')
+    wandb.login(key=WANDB_SECRET)
+
+    service_name = os.environ.get('SNOWFLAKE_SERVICE_NAME', 'test')
+    wandb.init(project=f"experiment-{service_name}")
 
 
 def _set_rnd_seeds(random_seed=0):
@@ -50,12 +54,18 @@ def evaluate(model, device, test_loader):
     return accuracy
 
 
-def train():
+def train(use_wandb: bool):
     rank = int(os.environ.get('RANK', 0))
     world_size = int(os.environ.get('WORLD_SIZE', 1))
     master_addr = os.environ.get('MASTER_ADDR', '0.0.0.0')
     master_port = int(os.environ.get('MASTER_PORT', 29501))
     local_rank = int(os.environ.get('LOCAL_RANK', 0))
+
+    os.environ['MASTER_ADDR'] = master_addr
+    os.environ['MASTER_PORT'] = str(master_port)
+    os.environ['RANK'] = str(rank)
+    os.environ['LOCAL_RANK'] = str(local_rank)
+    os.environ['WORLD_SIZE'] = str(world_size)
 
     num_epoch = 100
     batch_size = 256
@@ -66,7 +76,6 @@ def train():
     _set_rnd_seeds(rnd_seed)
 
     print(f"Rank {rank}/{world_size} starting...")
-
     dist.init_process_group(backend="nccl" if torch.cuda.is_available() else "gloo",
                             init_method=f"tcp://{master_addr}:{master_port}",
                             world_size=world_size, rank=rank)
@@ -89,6 +98,7 @@ def train():
     criterion = nn.CrossEntropyLoss().to(_get_device(local_rank))
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
+    print("Start training loop")
     for epoch in range(num_epoch):
         model.train()
         train_sampler.set_epoch(epoch)
@@ -113,11 +123,12 @@ def train():
             epoch_running_loss += loss.item()
             epoch_loss += loss.item()
             if batch_idx % epoch_metrics_iteration == 0:
-                wandb.log({
-                    "running_loss": epoch_running_loss / epoch_metrics_iteration,
-                    "loss": epoch_loss,
-                    "epoch": epoch
-                })
+                if use_wandb:
+                    wandb.log({
+                        "running_loss": epoch_running_loss / epoch_metrics_iteration,
+                        "loss": epoch_loss,
+                        "epoch": epoch
+                    })
                 print(
                     f'rank={rank} epoch={epoch} batch_index={batch_idx}, running_loss: {epoch_running_loss / epoch_metrics_iteration}, loss: {epoch_loss}')
                 epoch_running_loss = 0.0
@@ -125,8 +136,12 @@ def train():
     dist.destroy_process_group()
 
 
-def main():
-    train()
+@click.command()
+@click.option('--use_wandb', is_flag=True, help="Wandb Secret")
+def main(use_wandb: bool):
+    if use_wandb:
+        _setup_wandb()
+    train(use_wandb)
 
 
 if __name__ == "__main__":

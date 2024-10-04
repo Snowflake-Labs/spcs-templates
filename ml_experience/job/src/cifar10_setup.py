@@ -1,10 +1,11 @@
-import argparse
 import os.path
 from pathlib import Path
 
-import toml
-from jinja2 import Environment, FileSystemLoader
 import click
+import toml
+import torchvision
+import torchvision.transforms as transforms
+from jinja2 import Environment, FileSystemLoader
 
 
 def _get_job_root_path(job_name: str):
@@ -65,7 +66,8 @@ def _render_spcs_spec(filename, job_name: str, config):
 @click.option('--wandb_secret', help="Wandb Secret")
 @click.option('--image_repo', help="Image full repository path")
 @click.option('--service_instances', help="Service instance number")
-def main(wandb_secret: str, image_repo: str, service_instances: int):
+@click.option('--download_data', is_flag=True, help="Service instance number")
+def main(wandb_secret: str, image_repo: str, service_instances: int, download_data: bool):
     job_name = "cifar10_dist_training"
     config = load_toml_config(job_name)
     setup_config = config['general']
@@ -78,6 +80,13 @@ def main(wandb_secret: str, image_repo: str, service_instances: int):
     print(f'Created wandb secret output file: {output_file}')
     output_file = _render_spcs_spec('service_spec.yaml.j2', job_name, setup_config)
     print(f'Created service spec file: {output_file}')
+    if download_data:
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+        torchvision.datasets.CIFAR10(root='./data', train=True, download=True,
+                                     transform=transform)
+        torchvision.datasets.CIFAR10(root="./data", train=False, download=True,
+                                     transform=transform)
 
 
 if __name__ == "__main__":
