@@ -1,0 +1,41 @@
+[general]
+model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
+tokenizer_name = "bert-base-uncased" # name of the tokenizer
+
+[setup.steps]
+rebuild_image = true
+recreate_eai = true
+recreate_table = true
+recreate_compute_pool = true
+recreate_service = true
+run_warmup = true
+
+[snowflake.credentials]
+account = <<YOUR_ACCOUNT_NAME>>
+user = <<YOUR_USER_NAME>>
+warehouse = <<YOUR_WAREHOUSE_NAME>> # this is only used in setup workload to upload dummy data
+database = <<YOUR_DATABASE_NAME>>
+schema = <<YOUR_SCHEMA_NAME>>
+role = <<YOUR_ROLE_NAME>>
+stage_name = EMBEDDINGS_STAGE
+compute_pool_name = EMBEDDINGS_COMPUTE_POOL
+compute_pool_type = CPU_X64_M
+compute_pool_nodes = 1
+image_repository = EMBEDDINGS_REPOSITORY
+service_name = EMBEDDINGS_SERVICE
+service_instances = 1
+service_image = <<YOUR_SERVICE_IMAGE_FULL_NAME>>
+eai_name = <<EAI_NAME>>
+
+[compute_pool.GPU_NV_M]
+batch_size = 560 # max batch size that will be used for workloads on GPU_NV_M
+
+[compute_pool.GPU_NV_S]
+batch_size = 128 # max batch size that will be used for workloads on GPU_NV_M
+
+[compute_pool.default]
+batch_size = 32 # the default batch size that will be used if compute pool instance type was not found
+
+[job]
+stage_data_path = "DUMMY_DATA_RANDOM_TEXT/data50000" # path to the input data. The full path is $stage_name/$stage_data_path
+stage_output_path = "DUMMY_DATA_RANDOM_TEXT/output50000" # path to where the output data will be stored. The full path is $stage_name/$stage_output_path

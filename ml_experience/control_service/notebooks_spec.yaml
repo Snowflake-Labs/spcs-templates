@@ -1,0 +1,16 @@
+spec:
+  containers:
+    - name: "main"
+      image: <<YOUR_IMAGE>>
+      resources:
+        limits:
+          cpu: 1
+        requests:
+          cpu: 1
+  endpoint:
+    - name: ssh
+      port: 9090
+      public: True
+    - name: jupyter
+      port: 9091
+      public: True

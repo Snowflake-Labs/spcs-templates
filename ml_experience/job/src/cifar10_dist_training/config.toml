@@ -1,0 +1,6 @@
+[general]
+database = "<<YOUR_DATABASE>>"
+schema = "<<YOUR_SCHEMA>>"
+role = "<<YOUR_ROLE>>"
+stage_name = "CIFAR10_DATA_STAGE"
+services_instances = 2

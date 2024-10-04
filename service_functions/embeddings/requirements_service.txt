@@ -1,0 +1,8 @@
+flask
+gunicorn
+uvicorn[standard]
+torch==2.3.1
+transformers==4.41.2
+click
+snowflake-connector-python
+snowflake-snowpark-python

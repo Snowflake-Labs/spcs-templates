@@ -1,0 +1,44 @@
+spec:
+  containers:
+    - name: "main"
+      image: {{CONTAINER_NAME}}
+      command:
+        - ./cifar10_dist_training_job_entrypoint.sh
+      env:
+        NUM_NODES: "{{SERVICE_INSTANCES}}"
+        NCCL_DEBUG: "WARN"
+        NCCL_SOCKET_IFNAME: "eth0"
+      resources:
+        limits:
+          cpu: 1
+          nvidia.com/gpu: 1
+        requests:
+          cpu: 1
+          nvidia.com/gpu: 1
+      volumeMounts:
+        - name: cifar10-data
+          mountPath: /tmp/cifar10
+        - name: dshm
+          mountPath: /dev/shm
+      secrets:
+        - snowflakeSecret:
+            objectName: WANDB_SECRET
+          envVarName: WANDB_SECRET
+          secretKeyRef: secret_string
+  endpoint:
+    - name: ssh
+      port: 22
+    - name: torch-master
+      port: 29500
+      protocol: TCP
+    - name: nccl-workers
+      portRange: 29501-65000
+      protocol: TCP
+  volume:
+    - name: dshm
+      source: "memory"
+      size: "2Gi"
+    - name: cifar10-data
+      source: "@{{STAGE_NAME}}"
+      uid: 1000
+      gid: 1000

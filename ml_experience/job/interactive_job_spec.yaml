@@ -1,0 +1,26 @@
+spec:
+  containers:
+    - name: "main"
+      image: <<YOUR_CONTAINER>>
+      command:
+        - ./interactive_entrypoint.sh
+      env:
+        NUM_NODES: "2"
+      resources:
+        limits:
+          cpu: 1
+        requests:
+          cpu: 1
+  endpoint:
+    - name: ssh
+      port: 22
+    - name: torch-master
+      port: 29500
+      protocol: TCP
+    - name: gloo-workers
+      portRange: 29501-65000
+      protocol: TCP
+  volume:
+    - name: dshm
+      source: "memory"
+      size: "1Gi"
