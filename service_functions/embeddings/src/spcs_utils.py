@@ -1,15 +1,46 @@
-import os.path
-
-import toml
-from pathlib import Path
 import logging
+import os
+import os.path
+from pathlib import Path
+from dataclasses import dataclass
+
 import snowflake.connector
-from snowflake.snowpark import Session, DataFrame
+import toml
+from snowflake.snowpark import Session
+
+
+@dataclass
+class ModelConfiguration:
+    """
+    Defines the model configuration
+    """
+    classifier_model_name: str
+    embedding_model_name: str
+    embedding_tokenizer_name: str
+
+
+@dataclass
+class InputRow:
+    """
+    Defines the input format of each row
+    """
+    idx: int
+    text: str
+
+
+@dataclass
+class OutputRow:
+    """
+    Defines the output format of each row
+    """
+    idx: int
+    output: str
 
 
 def init_logger(log_name: str):
     logger = logging.getLogger(log_name)
-    logger.setLevel(logging.INFO)
+    log_level = os.environ.get('LOG_LEVEL', 'INFO')
+    logger.setLevel(log_level)
 
     ch = logging.StreamHandler()
     formatter = logging.Formatter("%(asctime)s;%(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -38,7 +69,9 @@ def _check_config_parameter(config, parameter_name: str):
 
 
 def _get_connection_parameters(config):
-    parameters_to_check = ['account', 'user', 'warehouse', 'database', 'schema', 'stage_name']
+    if 'SNOWFLAKE_HOST' in os.environ:
+        return _get_spcs_connection_parameters()
+    parameters_to_check = ['account', 'user', 'warehouse', 'database', 'schema', 'stage_name', 'password']
     for param in parameters_to_check:
         _check_config_parameter(config, param)
     params = {
@@ -46,16 +79,22 @@ def _get_connection_parameters(config):
         "user": config['user'],
         "database": config['database'],
         'schema': config['schema'],
+        'password': config['password'],
     }
     if 'host' in config:
         params['host'] = config['host']
+    return params
 
-    if 'SNOWFLAKE_HOST' in os.environ:
-        params['authenticator'] = 'oauth'
-        params['token'] = _get_login_token()
-    else:
-        _check_config_parameter(config, 'password')
-        params['password'] = config['password']
+
+def _get_spcs_connection_parameters():
+    params = {
+        "account": os.environ['SNOWFLAKE_ACCOUNT'],
+        "host": os.environ['SNOWFLAKE_HOST'],
+        'authenticator': 'oauth',
+        'token': _get_login_token(),
+        "database": os.environ['SNOWFLAKE_DATABASE'],
+        'schema': os.environ['SNOWFLAKE_SCHEMA'],
+    }
     return params
 
 
