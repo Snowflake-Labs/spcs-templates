@@ -11,4 +11,4 @@ ADD . /app
 
 WORKDIR /app/src
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:9000", "--workers", "1", "--timeout", "0", "app:app"]
+ENTRYPOINT ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:9000", "--workers", "1", "--timeout", "0", "async_app:app"]

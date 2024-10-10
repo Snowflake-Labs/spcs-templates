@@ -1,6 +1,8 @@
 [general]
-model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
-tokenizer_name = "bert-base-uncased" # name of the tokenizer
+classifier_model_name = "bhadresh-savani/distilbert-base-uncased-emotion"
+embedding_model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
+embedding_tokenizer_name = "bert-base-uncased" # name of the tokenizer
+max_concurrent_workers = 1
 
 [setup.steps]
 rebuild_image = true
@@ -24,6 +26,7 @@ compute_pool_nodes = 1
 image_repository = EMBEDDINGS_REPOSITORY
 service_name = EMBEDDINGS_SERVICE
 service_instances = 1
+service_instance_gpus = 0
 service_image = <<YOUR_SERVICE_IMAGE_FULL_NAME>>
 eai_name = <<EAI_NAME>>
 

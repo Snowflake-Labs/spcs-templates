@@ -20,9 +20,15 @@ spec:
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     resources:
       requests:
-        nvidia.com/gpu: {{NUM_GPUS}}
+{% if NUM_GPUS != 0 %}
+        nvidia.com/gpu: {{ NUM_GPUS }}
+{% endif %}
+        cpu: 1
       limits:
-        nvidia.com/gpu: {{NUM_GPUS}}
+{% if NUM_GPUS != 0 %}
+        nvidia.com/gpu: {{ NUM_GPUS }}
+{% endif %}
+        cpu: 1
   endpoint:
   - name: main
     port: 9000
