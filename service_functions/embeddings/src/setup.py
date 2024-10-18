@@ -7,7 +7,7 @@ import click
 # Import Snowflake modules
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
-from utils import init_logger, load_toml_config, get_snowpark_session
+from spcs_utils import init_logger, load_toml_config, get_snowpark_session
 
 logger = init_logger("setup")
 
