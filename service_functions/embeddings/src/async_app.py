@@ -66,18 +66,14 @@ def _run_inference(input_json, inference_function):
     return JSONResponse(content=output_data, status_code=http.HTTPStatus.OK)
 
 
-def process_cpu_sleep(input_json):
-    time.sleep(10)
-    return JSONResponse(content=input_json, status_code=http.HTTPStatus.OK)
-
-
 async def _run_with_throttling(method, request: Request) -> JSONResponse:
     app = cast(Starlette, request.app)
 
+    start_time = time.time()
     if _CONCURRENT_REQUESTS_MAX:
         if app.state.concurrent_requests >= int(_CONCURRENT_REQUESTS_MAX):
             app.state.throttle_requests += 1
-            logger.info(f'Number of throttled requests: {app.state.throttle_requests}')
+            logger.debug(f'Number of throttled requests: {app.state.throttle_requests}')
             return JSONResponse(
                 {"error": "Too many requests"}, status_code=http.HTTPStatus.TOO_MANY_REQUESTS
             )
@@ -86,9 +82,12 @@ async def _run_with_throttling(method, request: Request) -> JSONResponse:
         async with app.state.semaphore:
             app.state.success_requests += 1
             app.state.concurrent_requests += 1
-            logger.info(f'Number of success requests: {app.state.success_requests}')
             input_json = await request.json()
+            batch_size = len(input_json['data'])
             resp = await concurrency.run_in_threadpool(method, input_json)
+            total_batch_time = time.time() - start_time
+            logger.info(
+                f'Number of success requests: {app.state.success_requests}, batch_size: {batch_size}, batch_time: {total_batch_time}')
             return resp
     finally:
         app.state.concurrent_requests -= 1
@@ -108,8 +107,6 @@ def run_app() -> Starlette:
         Route('/extract_embeddings', _create_endpoint(partial(_run_with_throttling, route_extract_embeddings)),
               methods=["POST"]),
         Route('/classify_texts', _create_endpoint(partial(_run_with_throttling, route_classify_texts)),
-              methods=["POST"]),
-        Route('/process_cpu_sleep', _create_endpoint(partial(_run_with_throttling, process_cpu_sleep)),
               methods=["POST"]),
     ]
 

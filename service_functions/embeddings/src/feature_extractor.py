@@ -8,9 +8,6 @@ from spcs_utils import init_logger, InputRow, OutputRow, ModelConfiguration
 
 logger = init_logger("FeatureExtractor")
 
-model_cache_dir = f'/tmp/model_cache/'
-os.makedirs(model_cache_dir, exist_ok=True)
-
 embedding_pipeline = None
 
 
@@ -32,13 +29,14 @@ def extract_embeddings(rows: List[InputRow], batch_size: int, model_config: Mode
 
 def _create_embedding_pipeline(device: int, batch_size: int, model_config: ModelConfiguration):
     num_gpus = torch.cuda.device_count()
-    logger.info(f"Creating embedding pipeline on worker: {os.getpid()}, available gpus: {num_gpus}")
-    tokenizer = AutoTokenizer.from_pretrained(model_config.embedding_tokenizer_name, padding=True, truncation=True,
-                                              return_tensors='pt', model_max_length=4096, cache_dir=model_cache_dir,
+    logger.info(
+        f"Creating embedding pipeline on worker: {os.getpid()}, available gpus: {num_gpus}")
+
+    tokenizer = AutoTokenizer.from_pretrained(model_config.embedding_model_name, padding=True, truncation=True,
+                                              return_tensors='pt', model_max_length=4096,
                                               force_download=False)
-    model = AutoModel.from_pretrained(model_config.embedding_model_name, trust_remote_code=True,
-                                      rotary_scaling_factor=2,
-                                      cache_dir=model_cache_dir, force_download=False)
+    model = AutoModel.from_pretrained(model_config.embedding_tokenizer_name, trust_remote_code=True,
+                                      force_download=False)
     # use fp16
     model = model.half()
 

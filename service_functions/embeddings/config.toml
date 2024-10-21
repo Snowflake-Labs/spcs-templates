@@ -1,7 +1,7 @@
 [general]
 classifier_model_name = "bhadresh-savani/distilbert-base-uncased-emotion"
-embedding_model_name = "nomic-ai/nomic-embed-text-v1" # name of the model
-embedding_tokenizer_name = "bert-base-uncased" # name of the tokenizer
+embedding_model_name = "google-bert/bert-base-uncased" # name of the model
+embedding_tokenizer_name = "google-bert/bert-base-uncased" # name of the tokenizer
 max_concurrent_workers = 1
 
 [setup.steps]
@@ -13,22 +13,21 @@ recreate_service = true
 run_warmup = true
 
 [snowflake.credentials]
-account = <<YOUR_ACCOUNT_NAME>>
-user = <<YOUR_USER_NAME>>
-warehouse = <<YOUR_WAREHOUSE_NAME>> # this is only used in setup workload to upload dummy data
-database = <<YOUR_DATABASE_NAME>>
-schema = <<YOUR_SCHEMA_NAME>>
-role = <<YOUR_ROLE_NAME>>
-stage_name = EMBEDDINGS_STAGE
-compute_pool_name = EMBEDDINGS_COMPUTE_POOL
-compute_pool_type = CPU_X64_M
+account = "<<YOUR_ACCOUNT_NAME>>"
+user = "<<YOUR_USER_NAME>>"
+warehouse = "<<YOUR_WAREHOUSE_NAME>>" # this is only used in setup workload to upload dummy data
+database = "<<YOUR_DATABASE_NAME>>"
+schema = "<<YOUR_SCHEMA_NAME>>"
+role = "<<YOUR_ROLE_NAME>>"
+stage_name = "EMBEDDINGS_STAGE"
+compute_pool_name = "EMBEDDINGS_COMPUTE_POOL"
+compute_pool_type = "CPU_X64_M"
 compute_pool_nodes = 1
-image_repository = EMBEDDINGS_REPOSITORY
-service_name = EMBEDDINGS_SERVICE
+image_repository = "EMBEDDINGS_REPOSITORY"
+service_name = "EMBEDDINGS_SERVICE"
 service_instances = 1
 service_instance_gpus = 0
-service_image = <<YOUR_SERVICE_IMAGE_FULL_NAME>>
-eai_name = <<EAI_NAME>>
+eai_name = "HF_EAI"
 
 [compute_pool.GPU_NV_M]
 batch_size = 560 # max batch size that will be used for workloads on GPU_NV_M

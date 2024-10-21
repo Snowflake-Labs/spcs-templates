@@ -2,13 +2,11 @@ import os
 from typing import List
 
 import torch
-from transformers import AutoTokenizer, AutoModel, pipeline
+from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
+
 from spcs_utils import init_logger, InputRow, OutputRow, ModelConfiguration
 
 logger = init_logger("TextClassifier")
-
-model_cache_dir = f'/tmp/model_cache/'
-os.makedirs(model_cache_dir, exist_ok=True)
 
 classifier_pipeline = None
 
@@ -36,10 +34,14 @@ def _create_classifier_pipeline(device: int, batch_size: int, model_config: Mode
     num_gpus = torch.cuda.device_count()
     logger.info(f"Creating classifier pipeline on worker: {os.getpid()}, available gpus: {num_gpus}")
 
+    model = AutoModelForSequenceClassification.from_pretrained(model_config.classifier_model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_config.classifier_model_name)
+
     classifier = pipeline(
         "text-classification",
-        model_config.classifier_model_name,
-        top_k=1,
+        model=model,
+        tokenizer=tokenizer,
+        top_k=2,
         device=torch.device(f"cuda:{device}" if torch.cuda.is_available() else "cpu"),
         batch_size=batch_size)
     return classifier
