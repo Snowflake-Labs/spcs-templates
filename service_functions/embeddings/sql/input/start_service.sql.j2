@@ -9,20 +9,29 @@ spec:
   - name: main
     image: {{SERVICE_IMAGE}}
     command:
-     - python
-     - -u
-     - src/main_service.py
-     - --ip
-     - 0.0.0.0
-     - --port
-     - 9000
+     - gunicorn
+     - -k
+     - uvicorn.workers.UvicornWorker
+     - --bind
+     - 0.0.0.0:9000
+     - --workers
+     - 1
+     - --timeout
+     - 0
+     - async_app:app
     env:
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     resources:
       requests:
-        nvidia.com/gpu: {{NUM_GPUS}}
+{% if NUM_GPUS != 0 %}
+        nvidia.com/gpu: {{ NUM_GPUS }}
+{% endif %}
+        cpu: 1
       limits:
-        nvidia.com/gpu: {{NUM_GPUS}}
+{% if NUM_GPUS != 0 %}
+        nvidia.com/gpu: {{ NUM_GPUS }}
+{% endif %}
+        cpu: 1
   endpoint:
   - name: main
     port: 9000
@@ -33,9 +42,17 @@ MAX_INSTANCES = {{SERVICE_NUM_INSTANCES}}
 EXTERNAL_ACCESS_INTEGRATIONS=({{EAI_NAME}});
 
 
-CREATE OR REPLACE FUNCTION {{SERVICE_NAME}}_FN (n VARCHAR)
+CREATE OR REPLACE FUNCTION {{SERVICE_NAME}}_EMBEDDING_FN (n VARCHAR)
   returns VARCHAR
   service={{SERVICE_NAME}}
   endpoint='main'
   MAX_BATCH_ROWS={{MAX_BATCH_SIZE}}
-  as '/process';
+  as '/extract_embeddings';
+
+
+CREATE OR REPLACE FUNCTION {{SERVICE_NAME}}_CLASSIFY_FN (n VARCHAR)
+  returns VARCHAR
+  service={{SERVICE_NAME}}
+  endpoint='main'
+  MAX_BATCH_ROWS={{MAX_BATCH_SIZE}}
+  as '/classify_texts';

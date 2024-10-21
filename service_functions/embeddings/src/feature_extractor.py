@@ -1,43 +1,12 @@
 import os
-from dataclasses import dataclass
 from typing import List
 
 import torch
 from transformers import AutoTokenizer, AutoModel, pipeline
-from utils import init_logger
+
+from spcs_utils import init_logger, InputRow, OutputRow, ModelConfiguration
 
 logger = init_logger("FeatureExtractor")
-
-model_cache_dir = f'/tmp/model_cache/'
-os.makedirs(model_cache_dir, exist_ok=True)
-
-
-@dataclass
-class ModelConfiguration:
-    """
-    Defines the model configuration
-    """
-    model_name: int
-    tokenizer_name: str
-
-
-@dataclass
-class InputRow:
-    """
-    Defines the input format of each row
-    """
-    idx: int
-    text: str
-
-
-@dataclass
-class OutputRow:
-    """
-    Defines the output format of each row
-    """
-    idx: int
-    embeddings: str
-
 
 embedding_pipeline = None
 
@@ -55,17 +24,19 @@ def extract_embeddings(rows: List[InputRow], batch_size: int, model_config: Mode
     if embedding_pipeline is None:
         embedding_pipeline = _create_embedding_pipeline(_get_cuda_device(), batch_size, model_config)
     result = _execute_inference(embedding_pipeline, texts)
-    return [OutputRow(idx=rows[idx].idx, embeddings=result['outputs'][idx]) for idx in range(len(result['outputs']))]
+    return [OutputRow(idx=rows[idx].idx, output=result['outputs'][idx]) for idx in range(len(result['outputs']))]
 
 
 def _create_embedding_pipeline(device: int, batch_size: int, model_config: ModelConfiguration):
     num_gpus = torch.cuda.device_count()
-    logger.info(f"Creating embedding pipeline on worker: {os.getpid()}, available gpus: {num_gpus}")
-    tokenizer = AutoTokenizer.from_pretrained(model_config.tokenizer_name, padding=True, truncation=True,
-                                              return_tensors='pt', model_max_length=4096, cache_dir=model_cache_dir,
+    logger.info(
+        f"Creating embedding pipeline on worker: {os.getpid()}, available gpus: {num_gpus}")
+
+    tokenizer = AutoTokenizer.from_pretrained(model_config.embedding_model_name, padding=True, truncation=True,
+                                              return_tensors='pt', model_max_length=4096,
                                               force_download=False)
-    model = AutoModel.from_pretrained(model_config.model_name, trust_remote_code=True, rotary_scaling_factor=2,
-                                      cache_dir=model_cache_dir, force_download=False)
+    model = AutoModel.from_pretrained(model_config.embedding_tokenizer_name, trust_remote_code=True,
+                                      force_download=False)
     # use fp16
     model = model.half()
 

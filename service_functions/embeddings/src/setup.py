@@ -7,7 +7,7 @@ import click
 # Import Snowflake modules
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
-from utils import init_logger, load_toml_config, get_snowpark_session
+from spcs_utils import init_logger, load_toml_config, get_snowpark_session
 
 logger = init_logger("setup")
 
@@ -137,6 +137,28 @@ def _render_setup_resources_sql(filename, config, setup_steps_config):
     return render_sql_file(filepath, setup_resources_context)
 
 
+def _render_start_service(filename, config):
+    setup_context = {
+        'SERVICE_NAME': config['service_name'],
+        'COMPUTE_POOL_NAME': config['compute_pool_name'],
+        'SERVICE_IMAGE': config['service_image'],
+        'NUM_GPUS': config['service_instance_gpus'],
+        'EAI_NAME': config['eai_name'],
+        'SERVICE_NUM_INSTANCES': config['service_instances'],
+        'MAX_BATCH_SIZE': 1024,
+    }
+    filepath = Path(__file__).parent.parent.joinpath('sql').joinpath('input').joinpath(filename)
+    return render_sql_file(filepath, setup_context)
+
+
+def _render_start_service_embeddings_warmup(filename, config):
+    setup_context = {
+        'EMBEDDINGS_SERVICE_FUNCTION_NAME': config['embeddings_service_function_name'],
+    }
+    filepath = Path(__file__).parent.parent.joinpath('sql').joinpath('input').joinpath(filename)
+    return render_sql_file(filepath, setup_context)
+
+
 def _render_eai(filename, config):
     setup_eai_context = {
         'ROLE': config['role'],
@@ -148,37 +170,16 @@ def _render_eai(filename, config):
     return render_sql_file(input_filepath, setup_eai_context)
 
 
-def _render_start_service(filename, config):
-    setup_eai_context = {
-        'SERVICE_NAME': config['service_name'],
-        'COMPUTE_POOL_NAME': config['compute_pool_name'],
-        'SERVICE_IMAGE': config['service_image'],
-        'NUM_GPUS': config['service_instance_gpus'],
-        'SERVICE_NUM_INSTANCES': config['service_instances'],
-        'EAI_NAME': config['eai_name'],
-        'MAX_BATCH_SIZE': 1024,
-    }
-    filepath = Path(__file__).parent.parent.joinpath('sql').joinpath('input').joinpath(filename)
-    return render_sql_file(filepath, setup_eai_context)
-
-
-def _render_start_service_embeddings_warmup(filename, config):
-    setup_eai_context = {
-        'SERVICE_FUNCTION_NAME': config['service_function_name'],
-    }
-    filepath = Path(__file__).parent.parent.joinpath('sql').joinpath('input').joinpath(filename)
-    return render_sql_file(filepath, setup_eai_context)
-
-
 def _render_cleanup(filename, config):
-    setup_eai_context = {
+    setup_context = {
         'COMPUTE_POOL_NAME': config['compute_pool_name'],
         'STAGE_NAME': config['stage_name'],
         'SERVICE_NAME': config['service_name'],
-        'SERVICE_FUNCTION_NAME': config['service_function_name'],
+        'EMBEDDINGS_SERVICE_FUNCTION_NAME': config['embeddings_service_function_name'],
+        'CLASSIFY_SERVICE_FUNCTION_NAME': config['classify_service_function_name'],
     }
     filepath = Path(__file__).parent.parent.joinpath('sql').joinpath('input').joinpath(filename)
-    return render_sql_file(filepath, setup_eai_context)
+    return render_sql_file(filepath, setup_context)
 
 
 def _get_image_repository(session, database: str, schema: str, image_repo: str):
@@ -198,7 +199,7 @@ def build_and_upload_service_image(image_repo_url: str, image_repo_name: str, im
 docker build 
 --platform linux/amd64 
 -t {image_repo_url}/{image_name} 
--f./Dockerfile.service . 
+-f./Dockerfile.service.gunicorn .
     """.replace("\n", " ")
     os.system(build_image_cmd)
 
@@ -209,7 +210,7 @@ docker build
 
 def _get_or_rebuild_image(session, config, setup_steps_config):
     if setup_steps_config['rebuild_image']:
-        service_image_name = 'embeddings_service:01'
+        service_image_name = 'model_inference_image:01'
         image_repo_row = _get_image_repository(session, config['database'], config['schema'],
                                                config['image_repository'])
         image_path = build_and_upload_service_image(image_repo_row.repository_url, image_repo_row.name,
@@ -220,18 +221,6 @@ def _get_or_rebuild_image(session, config, setup_steps_config):
         return config['service_image']
     else:
         return None
-
-
-def _setup_eai(session, config, setup_steps_config):
-    if setup_steps_config['recreate_eai']:
-        eai_name = config['eai_name']
-        logger.info(f"Setting up EAI: {eai_name}")
-        logger.info(f'Creating external integration resource: {eai_name}')
-        # setup EAI
-        setup_resources_sql_filepath = _render_eai("setup_eai.sql.j2", config)
-        execute_sql_file(session, setup_resources_sql_filepath)
-    else:
-        logger.info(f"Skipping setting up EAI")
 
 
 def _setup_service(session, config, setup_steps_config):
@@ -246,6 +235,18 @@ def _setup_service(session, config, setup_steps_config):
         execute_sql_file(session, setup_resources_sql_filepath)
     else:
         logger.info(f"Skip service creation: {config['service_name']}")
+
+
+def _setup_eai(session, config, setup_steps_config):
+    if setup_steps_config['recreate_eai']:
+        eai_name = config['eai_name']
+        logger.info(f"Setting up EAI: {eai_name}")
+        logger.info(f'Creating external integration resource: {eai_name}')
+        # setup EAI
+        setup_resources_sql_filepath = _render_eai("setup_eai.sql.j2", config)
+        execute_sql_file(session, setup_resources_sql_filepath)
+    else:
+        logger.info(f"Skipping setting up EAI")
 
 
 def _run_render(config, setup_steps_config):
@@ -268,7 +269,7 @@ def _run_cleanup(session, config):
 def _run_warmup(session, config, setup_steps_config):
     if setup_steps_config['run_warmup']:
         # run Service function warmup
-        logger.info(f"Running service function: {config['service_function_name']} on test data")
+        logger.info(f"Running service function: {config['embeddings_service_function_name']} on test data")
         setup_resources_sql_filepath = _render_start_service_embeddings_warmup(
             "start_service_embeddings_warmup.sql.j2", config)
         responses = execute_sql_file(session, setup_resources_sql_filepath, print_outputs=False)
@@ -284,7 +285,7 @@ def _run_pipeline(session, config, setup_steps_config):
     setup_resources_sql_filepath = _render_setup_resources_sql("setup_resources.sql.j2", config, setup_steps_config)
     execute_sql_file(session, setup_resources_sql_filepath)
 
-    _setup_table(session, config['table_name'], setup_steps_config, num_rows=10000)
+    _setup_table(session, config['table_name'], setup_steps_config, num_rows=1000)
     _setup_eai(session, config, setup_steps_config)
 
     config['service_image'] = _get_or_rebuild_image(session, config, setup_steps_config)
@@ -303,6 +304,7 @@ def execute(config, setup_steps_config, override_steps):
     table = 'DUMMY_TEXT_DATA_V1_3000000'
     config['table_name'] = table
     with get_snowpark_session(config) as session:
+        session.sql(f"USE ROLE {config['role']}").collect()
         session.sql(f"USE WAREHOUSE {config['warehouse']}").collect()
         session.sql(f"USE  {config['database']}.{config['schema']}").collect()
         if override_steps['warmup_only']:
@@ -327,7 +329,8 @@ def main(password: str, host: str, warmup_only: bool, render_only: bool, cleanup
     snowflake_config = config['snowflake']['credentials']
     snowflake_config['password'] = password
     snowflake_config['host'] = host
-    snowflake_config['service_function_name'] = f"{snowflake_config['service_name']}_FN"
+    snowflake_config['embeddings_service_function_name'] = f"{snowflake_config['service_name']}_EMBEDDING_FN"
+    snowflake_config['classify_service_function_name'] = f"{snowflake_config['service_name']}_CLASSIFY_FN"
 
     override_steps = {
         'warmup_only': warmup_only,
