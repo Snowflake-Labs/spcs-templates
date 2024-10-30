@@ -1,0 +1,38 @@
+spec:
+  containers:
+    - name: "main"
+      image: preprod8-aivanoutest02.awsuswest2preprod8.registry-dev.snowflakecomputing.com/aivanoudb/public/demo_repo/notebooks:02
+      resources:
+        limits:
+
+          nvidia.com/gpu: 1
+
+          cpu: 1
+        requests:
+
+          nvidia.com/gpu: 1
+
+          cpu: 1
+      volumeMounts:
+        - name: dshm
+          mountPath: /dev/shm
+
+        - name: container-files
+          mountPath: /app/files
+
+  endpoint:
+    - name: jupyter
+      port: 9091
+      public: True
+    - name: ssh
+      port: 9090
+      public: True
+  volume:
+    - name: dshm
+      source: "memory"
+      size: "2Gi"
+
+    - name: container-files
+      source: "@test_stage"
+      uid: 1000
+      gid: 1000

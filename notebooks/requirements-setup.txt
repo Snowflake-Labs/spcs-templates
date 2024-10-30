@@ -1,0 +1,3 @@
+snowflake-cli
+click
+Jinja2
