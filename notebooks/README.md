@@ -11,10 +11,27 @@ In order to run this tutorial one needs the following:
 * python 3.10
 * Snowflake warehouse, database and schema should be created, and user should have access that is defined in the file
   above
+* Set up some important environment variables:
+
+```bash
+export DATABASE=$MY_DATABASE
+export SCHEMA=$MY_SCHEMA
+export ROLE=$MY_ROLE
+# External access integration, only necessary if you need access to the internet
+export EAI_NAME=$MY_EAI_NAME
+```
 
 ### Install
 
-### Setting up EAI(External access integration)
+Run requirements install:
+
+```bash
+pip install -r requirements-setup.txt
+```
+
+The command above among others will install [SnowCLI](https://github.com/snowflakedb/snowflake-cli).
+
+### Setting up EAI(External access integration) - Only if you need access to the Internet
 
 By default, SPCS Service will not have outside access(Egress). In order to enable it, the External Access Integration(
 EAI)
@@ -29,14 +46,6 @@ python setup.py render-eai --database $DATABASE --schema $SCHEMA --eai_name $EAI
 Run the file in the `resources/output/setup_eai.sql` using the user that can use `ACCOUNTADMIN` role.
 
 ### Setting up snowflake connection
-
-Install required dependencies:
-
-```bash
-pip install -r setup_requirements.txt
-```
-
-The command above among others will install [SnowCLI](https://github.com/snowflakedb/snowflake-cli).
 
 Add a new connection to the snow cli:
 
@@ -91,6 +100,25 @@ Run the following command to retrieve compute pool status:
 
 ```bash
 snow spcs compute-pool status $COMPUTE_POOL
+```
+
+The expected output should look like this:
+```commandline
++----------------------------------------------------------------------------------------------------------------+
+| key                            | value                                                                         |
+|--------------------------------+-------------------------------------------------------------------------------|
+| SYSTEM$GET_COMPUTE_POOL_STATUS | {"status":"STARTING","message":"Compute pool is starting for last 1 minutes"} |
++----------------------------------------------------------------------------------------------------------------+
+```
+
+This means that compute pool is in starting. Wait for output to look like this:
+
+```commandline
++-----------------------------------------------------------------+
+| key                            | value                          |
+|--------------------------------+--------------------------------|
+| SYSTEM$GET_COMPUTE_POOL_STATUS | {"status":"IDLE","message":""} |
++-----------------------------------------------------------------+
 ```
 
 ### Preparing image

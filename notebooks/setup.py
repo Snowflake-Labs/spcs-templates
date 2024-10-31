@@ -16,6 +16,7 @@ def _render_jinja_file(input_filepath: Path, context):
     rendered_content = template.render(context)
     with open(rendered_filepath, 'w') as file:
         file.write(rendered_content)
+    print(f'Generated output file: {rendered_filepath}')
     return rendered_filepath
 
 
