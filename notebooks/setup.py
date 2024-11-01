@@ -25,6 +25,8 @@ def _render_service_spec(filename, config):
         'IMAGE_NAME': config['image_name'],
         'NUM_GPUS': config['num_gpus'],
         'STAGE_NAME': config['stage_name'],
+        'ENABLE_SECRETS': config['enable_secrets'],
+        'SECRETS': config['secrets'],
     }
     filepath = Path(__file__).parent.joinpath('resources').joinpath('input').joinpath(filename)
     return _render_jinja_file(filepath, setup_resources_context)
@@ -61,11 +63,16 @@ def cli():
 @click.option('--image_name', help="SPCS Image Name")
 @click.option('--num_gpus', type=int, help="Number of GPUs that will be available to service")
 @click.option('--stage_name', default='', help="Number of GPUs that will be available to service")
-def render_spec(image_name: str, num_gpus: int, stage_name: str):
+@click.option('--secrets', default='', help="Secrets to add")
+def render_spec(image_name: str, num_gpus: int, stage_name: str, secrets: str):
+    secrets_list = [secret.upper() for secret in secrets.split(',')]
+    enable_secrets = len(secrets_list) > 0
     config = {
         'image_name': image_name,
         'num_gpus': num_gpus,
         'stage_name': stage_name,
+        'secrets': secrets_list,
+        'enable_secrets': enable_secrets,
     }
     _render_service_spec('service_spec.yaml.j2', config)
 
