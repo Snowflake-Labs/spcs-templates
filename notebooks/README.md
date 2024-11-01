@@ -103,6 +103,7 @@ snow spcs compute-pool status $COMPUTE_POOL
 ```
 
 The expected output should look like this:
+
 ```commandline
 +----------------------------------------------------------------------------------------------------------------+
 | key                            | value                                                                         |
@@ -225,6 +226,51 @@ Start service with new specification:
 
 ```bash
 snow spcs service create demo_notebook_service --compute-pool $COMPUTE_POOL --spec-path ./resources/output/service_spec.yaml --min-instances 1 --max-instances 1 --no-auto-resume
+```
+
+### Secrets support
+
+Snowflake and SPCS support secrets that can be used to store credentials, e.g. AWS keys.
+
+In order to create secret, execute the following SQL:
+
+```sql
+CREATE SECRET MY_SECRET
+  TYPE = GENERIC_STRING
+  SECRET_STRING = <<YOUR_STRING>>';
+```
+
+SPCS Spec supports secrets on container level:
+
+```yaml
+  containers:
+    - name: "main"
+      secrets:
+        - snowflakeSecret:
+            objectName: MY_SECRET
+          envVarName: MY_SECRET
+          secretKeyRef: secret_string
+```
+
+The secret above will be injected to the container under environment variable `MY_SECRET`.
+
+One can also generate spec using `setup.py` util:
+
+```bash
+python setup.py render-spec --image_name $IMAGE_REPO_URL/notebooks:01 --num_gpus 1 --secrets SECRET1,SECRET2
+```
+
+When SPCS container starts execution, the secrets will be available in corresponding environment variables.
+They can be fetched for example by this code:
+
+```python
+import os
+
+print(os.environ['MY_SECRET'])
+```
+
+```bash
+snow spcs service drop demo_notebook_service
 ```
 
 ### Cleanup
