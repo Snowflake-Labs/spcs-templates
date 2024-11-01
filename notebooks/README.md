@@ -240,6 +240,16 @@ CREATE SECRET MY_SECRET
   SECRET_STRING = <<YOUR_STRING>>';
 ```
 
+One can also use `setup.py` util to generate secrets:
+
+```bash
+# Generate secrets SQL
+python setup.py render-secret --database aivanoudb --schema public --key test --value value
+
+# Create secrets in Snowflake
+snow sql --filename ./resources/output/setup_secrets_test.sql
+```
+
 SPCS Spec supports secrets on container level:
 
 ```yaml
