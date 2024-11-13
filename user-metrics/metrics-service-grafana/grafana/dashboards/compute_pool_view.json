@@ -117,7 +117,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_running{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_running{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "legendFormat": "running",
           "range": true,
           "refId": "A"
@@ -128,7 +128,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_started{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_started{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "hide": false,
           "legendFormat": "started",
           "range": true,
@@ -140,7 +140,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_pending{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_pending{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "hide": false,
           "legendFormat": "pending to start",
           "range": true,
@@ -152,24 +152,12 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_finished{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_finished{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "hide": false,
           "legendFormat": "finished",
           "range": true,
           "refId": "D"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "expr": "sum(max(spcs_container_status_unschedulable{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
-          "hide": false,
-          "legendFormat": "unable to schedule",
-          "range": true,
-          "refId": "E"
-        }
+        },_
       ],
       "title": "Service Distribution",
       "type": "timeseries"
@@ -263,7 +251,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_state_last_finished_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, reason)",
+          "expr": "sum(container_state_last_finished_reason{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id, reason)",
           "legendFormat": "last-terminated-reason[node: {{snow_node_id}}]:{{reason}}",
           "range": true,
           "refId": "A"
@@ -274,7 +262,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_state_pending_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, reason)",
+          "expr": "sum(container_state_pending_reason{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id, reason)",
           "hide": false,
           "legendFormat": "pending-reason[node: {{snow_node_id}}]:{{reason}}",
           "range": true,
@@ -420,7 +408,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_running{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_running{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\", \"reason\")",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -434,7 +422,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_pending{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_pending{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -449,7 +437,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_finished{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_finished{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\", \"reason\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -475,15 +463,15 @@
               "Time 3": true,
               "Value": false,
               "join_label": true,
-              "snow_containers_container_name 2": true,
-              "snow_containers_container_name 3": true,
-              "snow_containers_instance_name": false,
-              "snow_containers_instance_name 2": true,
-              "snow_containers_instance_name 3": true,
+              "snow_service_container_name 2": true,
+              "snow_service_container_name 3": true,
+              "snow_service_container_instance": false,
+              "snow_service_container_instance 2": true,
+              "snow_service_container_instance 3": true,
               "snow_database_name 2": true,
               "snow_database_name 3": true,
-              "snow_executable_name 2": true,
-              "snow_executable_name 3": true,
+              "snow_service_name 2": true,
+              "snow_service_name 3": true,
               "snow_schema_name 2": true,
               "snow_schema_name 3": true
             },
@@ -495,18 +483,18 @@
               "Value #B": 6,
               "Value #C": 7,
               "join_label": 8,
-              "snow_containers_container_name 1": 3,
-              "snow_containers_container_name 2": 11,
-              "snow_containers_container_name 3": 17,
-              "snow_containers_instance_name 1": 4,
-              "snow_containers_instance_name 2": 12,
-              "snow_containers_instance_name 3": 18,
+              "snow_service_container_name 1": 3,
+              "snow_service_container_name 2": 11,
+              "snow_service_container_name 3": 17,
+              "snow_service_container_instance 1": 4,
+              "snow_service_container_instance 2": 12,
+              "snow_service_container_instance 3": 18,
               "snow_database_name 1": 0,
               "snow_database_name 2": 13,
               "snow_database_name 3": 19,
-              "snow_executable_name 1": 2,
-              "snow_executable_name 2": 14,
-              "snow_executable_name 3": 20,
+              "snow_service_name 1": 2,
+              "snow_service_name 2": 14,
+              "snow_service_name 3": 20,
               "snow_schema_name 1": 1,
               "snow_schema_name 2": 15,
               "snow_schema_name 3": 21
@@ -516,14 +504,14 @@
               "Value #A": "Running",
               "Value #B": "Pending Or Failing",
               "Value #C": "Finished",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_container_name 1": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
-              "snow_containers_instance_name 1": "Instance Name",
+              "snow_service_container_name": "Container Name",
+              "snow_service_container_name 1": "Container Name",
+              "snow_service_container_instance": "Instance Name",
+              "snow_service_container_instance 1": "Instance Name",
               "snow_database_name": "Database Name",
               "snow_database_name 1": "Database Name",
-              "snow_executable_name": "Executable Name",
-              "snow_executable_name 1": "Executable Name",
+              "snow_service_name": "Executable Name",
+              "snow_service_name 1": "Executable Name",
               "snow_schema_name": "Schema Name",
               "snow_schema_name 1": "Schema Name"
             }
@@ -615,7 +603,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_last_finished_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_last_finished_reason{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\", \"reason\")",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -639,26 +627,26 @@
               "Time": true,
               "Value": true,
               "join_label": true,
-              "snow_containers_instance_name": false
+              "snow_service_container_instance": false
             },
             "indexByName": {
               "Time": 0,
               "Value": 8,
               "join_label": 7,
               "reason": 1,
-              "snow_containers_container_name": 5,
-              "snow_containers_instance_name": 6,
+              "snow_service_container_name": 5,
+              "snow_service_container_instance": 6,
               "snow_database_name": 2,
-              "snow_executable_name": 4,
+              "snow_service_name": 4,
               "snow_schema_name": 3
             },
             "renameByName": {
               "Time": "",
               "reason": "Reason",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
+              "snow_service_container_name": "Container Name",
+              "snow_service_container_instance": "Instance Name",
               "snow_database_name": "Database",
-              "snow_executable_name": "Executable Name",
+              "snow_service_name": "Executable Name",
               "snow_schema_name": "Schema"
             }
           }
@@ -749,7 +737,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_pending_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_pending_reason{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\", \"reason\")",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -773,158 +761,25 @@
               "Time": true,
               "Value": true,
               "join_label": true,
-              "snow_containers_instance_name": false
+              "snow_service_container_instance": false
             },
             "indexByName": {
               "Time": 0,
               "Value": 8,
               "join_label": 7,
               "reason": 1,
-              "snow_containers_container_name": 5,
-              "snow_containers_instance_name": 6,
+              "snow_service_container_name": 5,
+              "snow_service_container_instance": 6,
               "snow_database_name": 2,
-              "snow_executable_name": 4,
+              "snow_service_name": 4,
               "snow_schema_name": 3
             },
             "renameByName": {
               "reason": "Reason",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
+              "snow_service_container_name": "Container Name",
+              "snow_service_container_instance": "Instance Name",
               "snow_database_name": "Database",
-              "snow_executable_name": "Executable Name",
-              "snow_schema_name": "Schema"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Executable Name"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "continuous-YlRd"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 7,
-        "x": 17,
-        "y": 13
-      },
-      "id": 17,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "9.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "label_join(sum(spcs_container_status_unschedulable{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Pending to schedule containers",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "join_label",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "Value": true,
-              "join_label": true,
-              "snow_containers_instance_name": false
-            },
-            "indexByName": {
-              "Time": 0,
-              "Value": 8,
-              "join_label": 7,
-              "reason": 1,
-              "snow_containers_container_name": 5,
-              "snow_containers_instance_name": 6,
-              "snow_database_name": 2,
-              "snow_executable_name": 4,
-              "snow_schema_name": 3
-            },
-            "renameByName": {
-              "reason": "Reason",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
-              "snow_database_name": "Database",
-              "snow_executable_name": "Executable Name",
+              "snow_service_name": "Executable Name",
               "snow_schema_name": "Schema"
             }
           }
@@ -1137,7 +992,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(sum(container_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "instant": true,
           "legendFormat": "Memory-{{container}}",
@@ -1151,7 +1006,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(sum(container_cpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1166,7 +1021,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_utilization{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1181,7 +1036,8 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_memory_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          #### look, we used to have utilization
+          "expr": "label_join(avg(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1196,7 +1052,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_memory_used_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1211,7 +1067,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_memory_free_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_memory_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1242,31 +1098,31 @@
               "container 3": true,
               "container 4": true,
               "join_label": true,
-              "snow_containers_container_name 1": false,
-              "snow_containers_container_name 2": true,
-              "snow_containers_container_name 3": true,
-              "snow_containers_container_name 4": true,
-              "snow_containers_container_name 5": true,
-              "snow_containers_container_name 6": true,
+              "snow_service_container_name 1": false,
+              "snow_service_container_name 2": true,
+              "snow_service_container_name 3": true,
+              "snow_service_container_name 4": true,
+              "snow_service_container_name 5": true,
+              "snow_service_container_name 6": true,
               "snow_database_name 2": true,
               "snow_database_name 3": true,
               "snow_database_name 4": true,
               "snow_database_name 5": true,
               "snow_database_name 6": true,
-              "snow_executable_name 1": false,
-              "snow_executable_name 2": true,
-              "snow_executable_name 3": true,
-              "snow_executable_name 4": true,
-              "snow_executable_name 5": true,
-              "snow_executable_name 6": true,
+              "snow_service_name 1": false,
+              "snow_service_name 2": true,
+              "snow_service_name 3": true,
+              "snow_service_name 4": true,
+              "snow_service_name 5": true,
+              "snow_service_name 6": true,
               "snow_schema_name 2": true,
               "snow_schema_name 3": true,
               "snow_schema_name 4": true,
               "snow_schema_name 5": true,
               "snow_schema_name 6": true,
-              "sps_snow_executable_name 2": true,
-              "sps_snow_executable_name 3": true,
-              "sps_snow_executable_name 4": true
+              "sps_snow_service_name 2": true,
+              "sps_snow_service_name 3": true,
+              "sps_snow_service_name 4": true
             },
             "indexByName": {
               "Time 1": 1,
@@ -1282,24 +1138,24 @@
               "Value #E": 6,
               "Value #F": 7,
               "join_label": 0,
-              "snow_containers_container_name 1": 14,
-              "snow_containers_container_name 2": 15,
-              "snow_containers_container_name 3": 19,
-              "snow_containers_container_name 4": 23,
-              "snow_containers_container_name 5": 28,
-              "snow_containers_container_name 6": 33,
+              "snow_service_container_name 1": 14,
+              "snow_service_container_name 2": 15,
+              "snow_service_container_name 3": 19,
+              "snow_service_container_name 4": 23,
+              "snow_service_container_name 5": 28,
+              "snow_service_container_name 6": 33,
               "snow_database_name 1": 11,
               "snow_database_name 2": 16,
               "snow_database_name 3": 20,
               "snow_database_name 4": 24,
               "snow_database_name 5": 29,
               "snow_database_name 6": 34,
-              "snow_executable_name 1": 13,
-              "snow_executable_name 2": 18,
-              "snow_executable_name 3": 22,
-              "snow_executable_name 4": 26,
-              "snow_executable_name 5": 30,
-              "snow_executable_name 6": 35,
+              "snow_service_name 1": 13,
+              "snow_service_name 2": 18,
+              "snow_service_name 3": 22,
+              "snow_service_name 4": 26,
+              "snow_service_name 5": 30,
+              "snow_service_name 6": 35,
               "snow_schema_name 1": 12,
               "snow_schema_name 2": 17,
               "snow_schema_name 3": 21,
@@ -1316,7 +1172,7 @@
               "Value #E": "GPU Memory Used(Mib)",
               "Value #F": "GPU Memory Free(Mib)",
               "container 1": "Container",
-              "sps_snow_executable_name 1": "Service Name"
+              "sps_snow_service_name 1": "Service Name"
             }
           }
         }
@@ -1440,7 +1296,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "min(spcs_node_status_allocatable{resource=\"memory\", snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "min(node_memory_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id)",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -1455,7 +1311,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "avg(spcs_node_status_allocatable{resource=\"cpu\", snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "avg(node_cpu_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1470,22 +1326,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_node_status_allocatable{resource=\"gpu\",snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id)",
+          "expr": "sum(container_cpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1500,7 +1341,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "sum(container_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1515,22 +1356,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_node_status_allocatable{resource=\"gpu_memory_mib\", snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "F"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(spcs_container_gpu_memory_used_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "sum(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1675,7 +1501,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "sum(container_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -1777,7 +1603,7 @@
             "uid": "grafana-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(container_cpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id) ",
           "legendFormat": "node: {{snow_node_id}}",
           "range": true,
           "refId": "A"
@@ -1870,7 +1696,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_receive_bytes_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_received_bytes{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -1963,7 +1789,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_receive_packets_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_received_packets{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -2056,7 +1882,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_transmit_bytes_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_transmitted_bytes{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -2149,7 +1975,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_transmit_packets_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_transmitted_packets{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -2242,115 +2068,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_used_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
+          "expr": "sum(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id, gpu)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
       "title": "GPU Memory Usage",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "area"
-            }
-          },
-          "mappings": [],
-          "max": 100,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 68
-      },
-      "id": 18,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
-          "legendFormat": "node: {{snow_node_id}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Node GPU Memory Bandwidth Utilization(%)",
       "type": "timeseries"
     },
     {
@@ -2446,7 +2170,7 @@
             "uid": "grafana-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
+          "expr": "sum(container_gpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_node_id, gpu)",
           "legendFormat": "node: {{snow_node_id}}",
           "range": true,
           "refId": "A"
@@ -2472,16 +2196,16 @@
           "type": "prometheus",
           "uid": "P1809F7CD0C75ACF3"
         },
-        "definition": "label_values(snow_containers_compute_pool_name)",
+        "definition": "label_values(snow_compute_pool_name)",
         "description": "Compute Pool",
         "hide": 0,
         "includeAll": false,
         "label": "ComputePool",
         "multi": false,
-        "name": "snow_containers_compute_pool_name",
+        "name": "snow_compute_pool_name",
         "options": [],
         "query": {
-          "query": "label_values(snow_containers_compute_pool_name)",
+          "query": "label_values(snow_compute_pool_name)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,

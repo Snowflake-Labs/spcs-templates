@@ -116,9 +116,9 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_state_running{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, status)",
+          "expr": "sum(container_state_running{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name)",
           "hide": false,
-          "legendFormat": "running: {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}",
+          "legendFormat": "running: {{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}",
           "range": true,
           "refId": "A"
         }
@@ -214,8 +214,8 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "topk(20, sum(spcs_container_state_pending_reason{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, status, reason))",
-          "legendFormat": "{{reason}} - [{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}]",
+          "expr": "topk(20, sum(container_state_pending_reason{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, status, reason))",
+          "legendFormat": "{{reason}} - [{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}]",
           "range": true,
           "refId": "A"
         }
@@ -311,8 +311,8 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_state_last_finished_reason{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, status, reason)",
-          "legendFormat": "{{reason}} - [{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}]",
+          "expr": "sum(container_state_last_finished_reason{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, status, reason)",
+          "legendFormat": "{{reason}} - [{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}]",
           "range": true,
           "refId": "A"
         }
@@ -489,7 +489,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_resource_requests{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"cpu\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")\n",
+          "expr": "label_join(sum(container_cpu_requested{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -505,7 +505,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_resource_limits{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"cpu\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")\n",
+          "expr": "label_join(sum(container_cpu_limit{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -521,7 +521,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(rate(spcs_container_cpu_usage_seconds_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")",
+          "expr": "label_join(sum(container_cpu_usage{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -537,7 +537,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_memory_used_bytes{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")",
+          "expr": "label_join(sum(container_memory_usage{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -553,7 +553,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_resource_requests{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"memory\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")",
+          "expr": "label_join(sum(container_memory_requested{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance), \"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -569,7 +569,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_resource_limits{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\", resource=\"memory\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name),\"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")",
+          "expr": "label_join(sum(container_memory_limit{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance),\"join_label\", \".\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -607,51 +607,51 @@
               "container 5": true,
               "container 6": true,
               "join_label": false,
-              "snow_containers_container_name 1": true,
-              "snow_containers_container_name 2": true,
-              "snow_containers_container_name 3": true,
-              "snow_containers_container_name 4": true,
-              "snow_containers_container_name 5": true,
-              "snow_containers_container_name 6": true,
-              "snow_containers_instance_name 1": true,
-              "snow_containers_instance_name 2": true,
-              "snow_containers_instance_name 3": true,
-              "snow_containers_instance_name 4": true,
-              "snow_containers_instance_name 5": true,
-              "snow_containers_instance_name 6": true,
+              "snow_service_container_name 1": true,
+              "snow_service_container_name 2": true,
+              "snow_service_container_name 3": true,
+              "snow_service_container_name 4": true,
+              "snow_service_container_name 5": true,
+              "snow_service_container_name 6": true,
+              "snow_service_container_instance 1": true,
+              "snow_service_container_instance 2": true,
+              "snow_service_container_instance 3": true,
+              "snow_service_container_instance 4": true,
+              "snow_service_container_instance 5": true,
+              "snow_service_container_instance 6": true,
               "snow_database_name 1": true,
               "snow_database_name 2": true,
               "snow_database_name 3": true,
               "snow_database_name 4": true,
               "snow_database_name 5": true,
               "snow_database_name 6": true,
-              "snow_executable_name 1": true,
-              "snow_executable_name 2": true,
-              "snow_executable_name 3": true,
-              "snow_executable_name 4": true,
-              "snow_executable_name 5": true,
-              "snow_executable_name 6": true,
+              "snow_service_name 1": true,
+              "snow_service_name 2": true,
+              "snow_service_name 3": true,
+              "snow_service_name 4": true,
+              "snow_service_name 5": true,
+              "snow_service_name 6": true,
               "snow_schema_name 1": true,
               "snow_schema_name 2": true,
               "snow_schema_name 3": true,
               "snow_schema_name 4": true,
               "snow_schema_name 5": true,
               "snow_schema_name 6": true,
-              "sps_snow_containers_instance_name 1": false,
-              "sps_snow_containers_instance_name 2": true,
-              "sps_snow_containers_instance_name 3": true,
-              "sps_snow_containers_instance_name 4": true,
-              "sps_snow_containers_instance_name 5": true,
-              "sps_snow_containers_instance_name 6": true
+              "sps_snow_service_container_instance 1": false,
+              "sps_snow_service_container_instance 2": true,
+              "sps_snow_service_container_instance 3": true,
+              "sps_snow_service_container_instance 4": true,
+              "sps_snow_service_container_instance 5": true,
+              "sps_snow_service_container_instance 6": true
             },
             "indexByName": {
               "Time": 7,
               "Value": 5,
               "join_label": 6,
-              "snow_containers_container_name": 3,
-              "snow_containers_instance_name": 4,
+              "snow_service_container_name": 3,
+              "snow_service_container_instance": 4,
               "snow_database_name": 0,
-              "snow_executable_name": 2,
+              "snow_service_name": 2,
               "snow_schema_name": 1
             },
             "renameByName": {
@@ -667,19 +667,19 @@
               "Value #REQUESTS_MEMORY": "Memory Requests",
               "container 1": "Container",
               "join_label": "Container Id",
-              "snow_containers_container_name 1": "Container Name",
-              "snow_containers_container_name 2": "Container Name",
-              "snow_containers_container_name 3": "Container Name",
-              "snow_containers_instance_name 1": "Instance Id",
-              "snow_containers_instance_name 2": "Instance Name",
-              "snow_containers_instance_name 3": "CPU Consumed",
+              "snow_service_container_name 1": "Container Name",
+              "snow_service_container_name 2": "Container Name",
+              "snow_service_container_name 3": "Container Name",
+              "snow_service_container_instance 1": "Instance Id",
+              "snow_service_container_instance 2": "Instance Name",
+              "snow_service_container_instance 3": "CPU Consumed",
               "snow_database_name 2": "Database Name",
               "snow_database_name 3": "",
-              "snow_executable_name 2": "Executable Name",
-              "snow_executable_name 3": "",
+              "snow_service_name 2": "Executable Name",
+              "snow_service_name 3": "",
               "snow_schema_name 2": "Schema Name",
               "snow_schema_name 3": "",
-              "sps_snow_containers_instance_name 1": "Instance Id"
+              "sps_snow_service_container_instance 1": "Instance Id"
             }
           }
         }
@@ -782,13 +782,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(container_cpu_usage{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name)",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "CPU Usage(cores)",
+      "title": "CPU Usage (cores)",
       "type": "timeseries"
     },
     {
@@ -845,7 +845,7 @@
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "GiB"
         },
         "overrides": []
       },
@@ -875,13 +875,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_memory_used_bytes{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(container_memory_usage{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name) / 1024 / 1024 / 1024",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Memory Usage",
+      "title": "Memory Usage (GiB)",
       "type": "timeseries"
     },
     {
@@ -968,8 +968,8 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_receive_bytes_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(network_egress_received_bytes{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name)",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "A"
         }
@@ -1061,8 +1061,8 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_receive_packets_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(network_egress_received_packets{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name)",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "A"
         }
@@ -1154,9 +1154,9 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_transmit_bytes_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
+          "expr": "sum(network_egress_transmitted{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name)",
           "hide": false,
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "A"
         }
@@ -1248,9 +1248,9 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_transmit_packets_total{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name)",
+          "expr": "sum(network_egress_transmitted_packets{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name)",
           "hide": false,
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "A"
         }
@@ -1270,99 +1270,6 @@
       "panels": [],
       "title": "GPU Usage",
       "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 6,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "mbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 41
-      },
-      "id": 23,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_used_mib{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) ",
-          "legendFormat": "GPU Used Memory(Mib) {{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
-          "range": true,
-          "refId": "GPU Usage"
-        }
-      ],
-      "title": "GPU Utilization %",
-      "type": "timeseries"
     },
     {
       "datasource": {
@@ -1450,8 +1357,8 @@
             "uid": "grafana-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_utilization{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) ",
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(container_gpu_utilization{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name) ",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "GPU Usage"
         }
@@ -1515,7 +1422,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "GiB"
         },
         "overrides": []
       },
@@ -1545,13 +1452,13 @@
             "uid": "grafana-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_utilization{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_executable_name=~\"$snow_executable_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_instance_name, snow_containers_container_name) ",
-          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_executable_name}}.{{snow_containers_container_name}}.{{snow_containers_instance_name}}",
+          "expr": "sum(container_gpu_memory_usage{snow_database_name=\"$snow_database_name\", snow_schema_name=\"$snow_schema_name\", snow_service_name=~\"$snow_service_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_instance, snow_service_container_name) / 1024 / 1024 / 1024",
+          "legendFormat": "{{snow_database_name}}.{{snow_schema_name}}.{{snow_service_name}}.{{snow_service_container_name}}.{{snow_service_container_instance}}",
           "range": true,
           "refId": "GPU Usage"
         }
       ],
-      "title": "GPU Memory Utilization%",
+      "title": "GPU Memory Usage (GiB)",
       "type": "timeseries"
     }
   ],
@@ -1571,16 +1478,16 @@
           "type": "prometheus",
           "uid": "P1809F7CD0C75ACF3"
         },
-        "definition": "label_values(snow_executable_name)",
+        "definition": "label_values(snow_service_name)",
         "description": "Service Name",
         "hide": 0,
         "includeAll": true,
         "label": "ServiceName",
         "multi": false,
-        "name": "snow_executable_name",
+        "name": "snow_service_name",
         "options": [],
         "query": {
-          "query": "label_values(snow_executable_name)",
+          "query": "label_values(snow_service_name)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
