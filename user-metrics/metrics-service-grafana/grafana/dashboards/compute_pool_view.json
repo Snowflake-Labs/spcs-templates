@@ -24,7 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -92,7 +91,7 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 13,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -117,7 +116,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_running{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_running{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "legendFormat": "running",
           "range": true,
           "refId": "A"
@@ -128,7 +127,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_started{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_started{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "hide": false,
           "legendFormat": "started",
           "range": true,
@@ -140,7 +139,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_pending{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_pending{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "hide": false,
           "legendFormat": "pending to start",
           "range": true,
@@ -152,136 +151,14 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(max(spcs_container_state_finished{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "expr": "sum(max(container_state_finished{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name))",
           "hide": false,
           "legendFormat": "finished",
           "range": true,
           "refId": "D"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "expr": "sum(max(spcs_container_status_unschedulable{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
-          "hide": false,
-          "legendFormat": "unable to schedule",
-          "range": true,
-          "refId": "E"
         }
       ],
       "title": "Service Distribution",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 11,
-        "x": 13,
-        "y": 0
-      },
-      "id": 15,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "9.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_state_last_finished_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, reason)",
-          "legendFormat": "last-terminated-reason[node: {{snow_node_id}}]:{{reason}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_state_pending_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, reason)",
-          "hide": false,
-          "legendFormat": "pending-reason[node: {{snow_node_id}}]:{{reason}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Number of Pending or Terminated Containers",
       "type": "timeseries"
     },
     {
@@ -411,7 +288,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.5.5",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -420,7 +297,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_running{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_running{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -434,7 +311,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_pending{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_pending{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -449,7 +326,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_finished{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "expr": "label_join(sum(container_state_finished{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name, snow_service_container_instance, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\", \"snow_service_container_instance\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -475,17 +352,17 @@
               "Time 3": true,
               "Value": false,
               "join_label": true,
-              "snow_containers_container_name 2": true,
-              "snow_containers_container_name 3": true,
-              "snow_containers_instance_name": false,
-              "snow_containers_instance_name 2": true,
-              "snow_containers_instance_name 3": true,
               "snow_database_name 2": true,
               "snow_database_name 3": true,
-              "snow_executable_name 2": true,
-              "snow_executable_name 3": true,
               "snow_schema_name 2": true,
-              "snow_schema_name 3": true
+              "snow_schema_name 3": true,
+              "snow_service_container_instance": false,
+              "snow_service_container_instance 2": true,
+              "snow_service_container_instance 3": true,
+              "snow_service_container_name 2": true,
+              "snow_service_container_name 3": true,
+              "snow_service_name 2": true,
+              "snow_service_name 3": true
             },
             "indexByName": {
               "Time 1": 9,
@@ -495,437 +372,38 @@
               "Value #B": 6,
               "Value #C": 7,
               "join_label": 8,
-              "snow_containers_container_name 1": 3,
-              "snow_containers_container_name 2": 11,
-              "snow_containers_container_name 3": 17,
-              "snow_containers_instance_name 1": 4,
-              "snow_containers_instance_name 2": 12,
-              "snow_containers_instance_name 3": 18,
               "snow_database_name 1": 0,
               "snow_database_name 2": 13,
               "snow_database_name 3": 19,
-              "snow_executable_name 1": 2,
-              "snow_executable_name 2": 14,
-              "snow_executable_name 3": 20,
               "snow_schema_name 1": 1,
               "snow_schema_name 2": 15,
-              "snow_schema_name 3": 21
+              "snow_schema_name 3": 21,
+              "snow_service_container_instance 1": 4,
+              "snow_service_container_instance 2": 12,
+              "snow_service_container_instance 3": 18,
+              "snow_service_container_name 1": 3,
+              "snow_service_container_name 2": 11,
+              "snow_service_container_name 3": 17,
+              "snow_service_name 1": 2,
+              "snow_service_name 2": 14,
+              "snow_service_name 3": 20
             },
             "renameByName": {
               "Value": "Running",
               "Value #A": "Running",
               "Value #B": "Pending Or Failing",
               "Value #C": "Finished",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_container_name 1": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
-              "snow_containers_instance_name 1": "Instance Name",
               "snow_database_name": "Database Name",
               "snow_database_name 1": "Database Name",
-              "snow_executable_name": "Executable Name",
-              "snow_executable_name 1": "Executable Name",
               "snow_schema_name": "Schema Name",
-              "snow_schema_name 1": "Schema Name"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "reason"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "continuous-RdYlGr"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 9,
-        "x": 0,
-        "y": 13
-      },
-      "id": 12,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "9.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_last_finished_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Last Terminated Container Status",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "join_label",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "Value": true,
-              "join_label": true,
-              "snow_containers_instance_name": false
-            },
-            "indexByName": {
-              "Time": 0,
-              "Value": 8,
-              "join_label": 7,
-              "reason": 1,
-              "snow_containers_container_name": 5,
-              "snow_containers_instance_name": 6,
-              "snow_database_name": 2,
-              "snow_executable_name": 4,
-              "snow_schema_name": 3
-            },
-            "renameByName": {
-              "Time": "",
-              "reason": "Reason",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
-              "snow_database_name": "Database",
-              "snow_executable_name": "Executable Name",
-              "snow_schema_name": "Schema"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "reason"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "continuous-RdYlGr"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 9,
-        "y": 13
-      },
-      "id": 13,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "9.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "label_join(sum(spcs_container_state_pending_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Containers in pending State",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "join_label",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "Value": true,
-              "join_label": true,
-              "snow_containers_instance_name": false
-            },
-            "indexByName": {
-              "Time": 0,
-              "Value": 8,
-              "join_label": 7,
-              "reason": 1,
-              "snow_containers_container_name": 5,
-              "snow_containers_instance_name": 6,
-              "snow_database_name": 2,
-              "snow_executable_name": 4,
-              "snow_schema_name": 3
-            },
-            "renameByName": {
-              "reason": "Reason",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
-              "snow_database_name": "Database",
-              "snow_executable_name": "Executable Name",
-              "snow_schema_name": "Schema"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Executable Name"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "continuous-YlRd"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 7,
-        "x": 17,
-        "y": 13
-      },
-      "id": 17,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "9.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "label_join(sum(spcs_container_status_unschedulable{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\")",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Pending to schedule containers",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "join_label",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "Value": true,
-              "join_label": true,
-              "snow_containers_instance_name": false
-            },
-            "indexByName": {
-              "Time": 0,
-              "Value": 8,
-              "join_label": 7,
-              "reason": 1,
-              "snow_containers_container_name": 5,
-              "snow_containers_instance_name": 6,
-              "snow_database_name": 2,
-              "snow_executable_name": 4,
-              "snow_schema_name": 3
-            },
-            "renameByName": {
-              "reason": "Reason",
-              "snow_containers_container_name": "Container Name",
-              "snow_containers_instance_name": "Instance Name",
-              "snow_database_name": "Database",
-              "snow_executable_name": "Executable Name",
-              "snow_schema_name": "Schema"
+              "snow_schema_name 1": "Schema Name",
+              "snow_service_container_instance": "Instance Name",
+              "snow_service_container_instance 1": "Instance Name",
+              "snow_service_container_name": "Container Name",
+              "snow_service_container_name 1": "Container Name",
+              "snow_service_container_name 3": "",
+              "snow_service_name": "Executable Name",
+              "snow_service_name 1": "Executable Name"
             }
           }
         }
@@ -964,7 +442,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Memory(Mb)"
+              "options": "Memory Usage"
             },
             "properties": [
               {
@@ -983,7 +461,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "CPU Rate"
+              "options": "CPU Cores Used"
             },
             "properties": [
               {
@@ -998,7 +476,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "GPU Utilization"
+              "options": "GPU Avg Utilization"
             },
             "properties": [
               {
@@ -1042,7 +520,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "GPU Memory Used(Mib)"
+              "options": "GPU Avg Memory Used"
             },
             "properties": [
               {
@@ -1113,7 +591,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 13
       },
       "id": 4,
       "options": {
@@ -1128,7 +606,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.5.5",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -1137,7 +615,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(sum(container_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "instant": true,
           "legendFormat": "Memory-{{container}}",
@@ -1151,7 +629,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(sum(container_cpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1166,7 +644,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_utilization{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1181,7 +659,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_memory_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1196,7 +674,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_memory_used_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_memory_used_mib{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1211,7 +689,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(avg(spcs_container_gpu_memory_free_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "expr": "label_join(avg(container_gpu_memory_free_mib{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_service_name, snow_service_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_service_name\", \"snow_service_container_name\")",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1242,81 +720,61 @@
               "container 3": true,
               "container 4": true,
               "join_label": true,
-              "snow_containers_container_name 1": false,
-              "snow_containers_container_name 2": true,
-              "snow_containers_container_name 3": true,
-              "snow_containers_container_name 4": true,
-              "snow_containers_container_name 5": true,
-              "snow_containers_container_name 6": true,
               "snow_database_name 2": true,
               "snow_database_name 3": true,
               "snow_database_name 4": true,
               "snow_database_name 5": true,
               "snow_database_name 6": true,
-              "snow_executable_name 1": false,
-              "snow_executable_name 2": true,
-              "snow_executable_name 3": true,
-              "snow_executable_name 4": true,
-              "snow_executable_name 5": true,
-              "snow_executable_name 6": true,
               "snow_schema_name 2": true,
               "snow_schema_name 3": true,
               "snow_schema_name 4": true,
               "snow_schema_name 5": true,
               "snow_schema_name 6": true,
-              "sps_snow_executable_name 2": true,
-              "sps_snow_executable_name 3": true,
-              "sps_snow_executable_name 4": true
+              "snow_service_container_name 1": false,
+              "snow_service_container_name 2": true,
+              "snow_service_container_name 3": true,
+              "snow_service_container_name 4": true,
+              "snow_service_container_name 5": true,
+              "snow_service_container_name 6": true,
+              "snow_service_name 1": false,
+              "snow_service_name 2": true,
+              "snow_service_name 3": true,
+              "snow_service_name 4": true,
+              "snow_service_name 5": true,
+              "snow_service_name 6": true,
+              "sps_snow_service_name 2": true,
+              "sps_snow_service_name 3": true,
+              "sps_snow_service_name 4": true
             },
             "indexByName": {
               "Time 1": 1,
-              "Time 2": 8,
-              "Time 3": 9,
-              "Time 4": 10,
-              "Time 5": 27,
-              "Time 6": 32,
+              "Time 2": 6,
+              "Time 3": 7,
+              "Time 4": 8,
               "Value #A": 2,
               "Value #B": 3,
-              "Value #C": 5,
-              "Value #D": 4,
-              "Value #E": 6,
-              "Value #F": 7,
+              "Value #C": 4,
+              "Value #D": 5,
               "join_label": 0,
-              "snow_containers_container_name 1": 14,
-              "snow_containers_container_name 2": 15,
-              "snow_containers_container_name 3": 19,
-              "snow_containers_container_name 4": 23,
-              "snow_containers_container_name 5": 28,
-              "snow_containers_container_name 6": 33,
-              "snow_database_name 1": 11,
-              "snow_database_name 2": 16,
-              "snow_database_name 3": 20,
-              "snow_database_name 4": 24,
-              "snow_database_name 5": 29,
-              "snow_database_name 6": 34,
-              "snow_executable_name 1": 13,
-              "snow_executable_name 2": 18,
-              "snow_executable_name 3": 22,
-              "snow_executable_name 4": 26,
-              "snow_executable_name 5": 30,
-              "snow_executable_name 6": 35,
-              "snow_schema_name 1": 12,
-              "snow_schema_name 2": 17,
-              "snow_schema_name 3": 21,
-              "snow_schema_name 4": 25,
-              "snow_schema_name 5": 31,
-              "snow_schema_name 6": 36
+              "snow_database_name 1": 9,
+              "snow_database_name 2": 14,
+              "snow_schema_name 1": 10,
+              "snow_schema_name 2": 15,
+              "snow_service_container_name 1": 12,
+              "snow_service_container_name 2": 13,
+              "snow_service_name 1": 11,
+              "snow_service_name 2": 16
             },
             "renameByName": {
               "Time 2": "",
-              "Value #A": "Memory(Mb)",
-              "Value #B": "CPU Rate",
-              "Value #C": "GPU Utilization",
-              "Value #D": "GPU Memory Utilization",
+              "Value #A": "Memory Usage",
+              "Value #B": "CPU Cores Used",
+              "Value #C": "GPU Avg Utilization",
+              "Value #D": "GPU Avg Memory Used",
               "Value #E": "GPU Memory Used(Mib)",
               "Value #F": "GPU Memory Free(Mib)",
               "container 1": "Container",
-              "sps_snow_executable_name 1": "Service Name"
+              "sps_snow_service_name 1": "Service Name"
             }
           }
         }
@@ -1359,7 +817,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Memory"
+              "options": "Memory Capacity"
             },
             "properties": [
               {
@@ -1383,24 +841,48 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "GPU Memory"
+              "options": "GPU Avg Utilization"
             },
             "properties": [
               {
                 "id": "unit",
-                "value": "mbytes"
+                "value": "percentunit"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "GPU Memory Used(Mib)"
+              "options": "GPU Avg Memory Usage"
             },
             "properties": [
               {
                 "id": "unit",
-                "value": "mbytes"
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU Cores Used"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "vCPU"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU Core Count"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "vCPU"
               }
             ]
           }
@@ -1410,7 +892,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 22
       },
       "id": 9,
       "options": {
@@ -1431,7 +913,7 @@
           }
         ]
       },
-      "pluginVersion": "9.5.5",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -1440,8 +922,9 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "min(spcs_node_status_allocatable{resource=\"memory\", snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "min(node_memory_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
+          "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "__auto",
@@ -1455,7 +938,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "avg(spcs_node_status_allocatable{resource=\"cpu\", snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "avg(node_cpu_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1470,7 +953,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_node_status_allocatable{resource=\"gpu\",snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "sum(node_gpu_capacity{resource=\"gpu\",snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1485,7 +968,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id)",
+          "expr": "sum(container_cpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1500,7 +983,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "sum(container_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1515,7 +998,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_node_status_allocatable{resource=\"gpu_memory_mib\", snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "avg(container_gpu_utilization{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1530,7 +1013,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(spcs_container_gpu_memory_used_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "avg(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1544,7 +1027,7 @@
         {
           "id": "seriesToColumns",
           "options": {
-            "byField": "snow_node_id"
+            "byField": "snow_compute_pool_node_id"
           }
         },
         {
@@ -1572,24 +1055,37 @@
               "Value #D": 4,
               "Value #E": 2,
               "Value #F": 12,
-              "snow_node_id": 0
+              "snow_compute_pool_node_id": 0
             },
             "renameByName": {
               "Time 6": "",
-              "Value #A": "Memory",
-              "Value #B": "CPU",
+              "Value #A": "Memory Capacity",
+              "Value #B": "CPU Core Count",
               "Value #C": "GPU",
-              "Value #D": "CPU Usage",
+              "Value #D": "CPU Cores Used",
               "Value #E": "Memory Usage",
-              "Value #F": "GPU Memory(Mib)",
-              "Value #G": "GPU Memory Used(Mib)",
+              "Value #F": "GPU Avg Utilization",
+              "Value #G": "GPU Avg Memory Usage",
               "node": "Node",
-              "snow_node_id": "Node Id"
+              "snow_compute_pool_node_id": "Node Id"
             }
           }
         }
       ],
       "type": "table"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "id": 29,
+      "panels": [],
+      "title": "System",
+      "type": "row"
     },
     {
       "datasource": {
@@ -1628,10 +1124,12 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
           "mappings": [],
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1640,12 +1138,16 @@
                 "value": null
               },
               {
+                "color": "#EAB839",
+                "value": 0.6
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 0.8
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "percentunit"
         },
         "overrides": []
       },
@@ -1653,7 +1155,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 30
       },
       "id": 21,
       "options": {
@@ -1675,13 +1177,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id)",
+          "expr": "sum(container_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) / sum(node_memory_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Memory Usage",
+      "title": "Node Memory Usage (%)",
       "type": "timeseries"
     },
     {
@@ -1726,6 +1228,7 @@
           },
           "mappings": [],
           "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "percentage",
             "steps": [
@@ -1751,7 +1254,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 30
       },
       "id": 10,
       "options": {
@@ -1777,13 +1280,14 @@
             "uid": "grafana-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
-          "legendFormat": "node: {{snow_node_id}}",
+          "expr": "sum(container_cpu_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) / sum(node_cpu_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) ",
+          "hide": false,
+          "legendFormat": "node: {{snow_compute_pool_node_id}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "CPU Utilization(%)",
+      "title": "Node CPU Utilization(%)",
       "type": "timeseries"
     },
     {
@@ -1803,7 +1307,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 0,
+            "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -1828,15 +1332,11 @@
           },
           "mappings": [],
           "thresholds": {
-            "mode": "absolute",
+            "mode": "percentage",
             "steps": [
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -1848,12 +1348,16 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 44
+        "y": 38
       },
-      "id": 23,
+      "id": 18,
       "options": {
         "legend": {
-          "calcs": [],
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -1867,17 +1371,132 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "grafana-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_receive_bytes_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
-          "legendFormat": "__auto",
+          "expr": "sum(container_gpu_memory_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id, gpu) / 1024 / 1024 / 1024",
+          "legendFormat": "node: {{snow_compute_pool_node_id}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Egress: Bytes Received From Internet",
+      "title": "Node GPU Memory Usage (GiB)",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 38
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_gpu_utilization{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id, gpu)",
+          "legendFormat": "node: {{snow_compute_pool_node_id}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Node GPU Utilization(%)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "id": 31,
+      "panels": [],
+      "title": "Block Storage",
+      "type": "row"
     },
     {
       "datasource": {
@@ -1939,9 +1558,304 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 44
+        "w": 8,
+        "x": 0,
+        "y": 47
+      },
+      "id": 26,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(volume_usage{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id, snow_volume_name, snow_volume_replica) / sum(volume_capacity{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id, snow_volume_name, snow_volume_replica)",
+          "interval": "",
+          "legendFormat": "{{snow_compute_pool_node_id}} | {{snow_volume_name}}.{{snow_volume_replica}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Volume Utilization (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "MBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 47
+      },
+      "id": 33,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(volume_read_throughput{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id, snow_volume_name, snow_volume_replica) / 1000 / 1000",
+          "interval": "",
+          "legendFormat": "{{snow_compute_pool_node_id}} | {{snow_volume_name}}.{{snow_volume_replica}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Volume Read Throughput (MB/s)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "MBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 47
+      },
+      "id": 34,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(volume_write_throughput{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id, snow_volume_name, snow_volume_replica) / 1000 / 1000",
+          "interval": "",
+          "legendFormat": "{{snow_compute_pool_node_id}} | {{snow_volume_name}}.{{snow_volume_replica}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Volume Write Throughput (MB/s)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
+      "id": 30,
+      "panels": [],
+      "title": "Network",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 56
       },
       "id": 24,
       "options": {
@@ -1963,7 +1877,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_receive_packets_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_received_packets{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -2026,17 +1940,17 @@
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "none"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 52
+        "w": 8,
+        "x": 8,
+        "y": 56
       },
-      "id": 25,
+      "id": 32,
       "options": {
         "legend": {
           "calcs": [],
@@ -2056,13 +1970,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_transmit_bytes_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_transmitted_packets{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Egress: Bytes Sent To Internet",
+      "title": "Egress: Packets Sent To Internet",
       "type": "timeseries"
     },
     {
@@ -2125,11 +2039,11 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 52
+        "w": 8,
+        "x": 16,
+        "y": 56
       },
-      "id": 26,
+      "id": 27,
       "options": {
         "legend": {
           "calcs": [],
@@ -2149,13 +2063,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(spcs_network_egress_transmit_packets_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) ",
+          "expr": "sum(network_egress_denied_packets{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Egress: Packets Sent From Internet",
+      "title": "Egress: Denied Packets",
       "type": "timeseries"
     },
     {
@@ -2212,17 +2126,17 @@
               }
             ]
           },
-          "unit": "mbytes"
+          "unit": "bytes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 60
+        "y": 64
       },
-      "id": 22,
+      "id": 23,
       "options": {
         "legend": {
           "calcs": [],
@@ -2242,13 +2156,13 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_used_mib{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
+          "expr": "sum(network_egress_received_bytes{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) ",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "GPU Memory Usage",
+      "title": "Egress: Bytes Received From Internet",
       "type": "timeseries"
     },
     {
@@ -2268,7 +2182,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -2288,21 +2202,16 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "area"
+              "mode": "off"
             }
           },
           "mappings": [],
-          "max": 100,
           "thresholds": {
-            "mode": "percentage",
+            "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 60
               },
               {
                 "color": "red",
@@ -2310,109 +2219,7 @@
               }
             ]
           },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 68
-      },
-      "id": 18,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafana-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_memory_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
-          "legendFormat": "node: {{snow_node_id}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Node GPU Memory Bandwidth Utilization(%)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "area"
-            }
-          },
-          "mappings": [],
-          "max": 100,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -2420,16 +2227,12 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 68
+        "y": 64
       },
-      "id": 11,
+      "id": 25,
       "options": {
         "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean"
-          ],
+          "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -2443,16 +2246,16 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "grafana-prometheus"
+            "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(spcs_container_gpu_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
-          "legendFormat": "node: {{snow_node_id}}",
+          "expr": "sum(network_egress_transmitted_bytes{snow_compute_pool_name=\"$snow_compute_pool_name\"}) by (snow_compute_pool_node_id) ",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Node GPU Utilization(%)",
+      "title": "Egress: Bytes Sent To Internet",
       "type": "timeseries"
     }
   ],
@@ -2465,23 +2268,23 @@
       {
         "current": {
           "selected": false,
-          "text": "EMB_COMPUTE_POOL",
-          "value": "EMB_COMPUTE_POOL"
+          "text": "SPCS_TEST_COMPUTE_POOL",
+          "value": "SPCS_TEST_COMPUTE_POOL"
         },
         "datasource": {
           "type": "prometheus",
           "uid": "P1809F7CD0C75ACF3"
         },
-        "definition": "label_values(snow_containers_compute_pool_name)",
+        "definition": "label_values(snow_compute_pool_name)",
         "description": "Compute Pool",
         "hide": 0,
         "includeAll": false,
         "label": "ComputePool",
         "multi": false,
-        "name": "snow_containers_compute_pool_name",
+        "name": "snow_compute_pool_name",
         "options": [],
         "query": {
-          "query": "label_values(snow_containers_compute_pool_name)",
+          "query": "label_values(snow_compute_pool_name)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -2493,13 +2296,13 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "ComputePoolView",
-  "uid": "d8034c5e-6148-420e-918e-a1e127866bf7",
+  "uid": "d487141e-9d2f-4e53-8ebe-25c346ff9a02",
   "version": 1,
   "weekStart": ""
 }
