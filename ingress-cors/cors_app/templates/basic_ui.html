@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>CORS Testing</title>
+  <style>
+    .drop-zone {
+      width: 300px;
+      height: 200px;
+      border: 2px dashed #aaa;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      color: #555;
+      text-align: center;
+    }
+
+    .drop-zone.dragover {
+      border-color: #007bff;
+      background-color: #e7f3ff;
+    }
+
+    .private-key {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    input[type="text"] {
+      width: 80%;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Welcome to CORS Testing Service!</h1>
+
+  <section>
+    <h2>CORS HTTP GET WITH TOKEN</h2>
+    <form>
+      <label for="cors_get_input_url_token_provided">GET URL:</label><br>
+      <input type="text" id="cors_get_input_url_token_provided" name="cors_get_input_url_token_provided" value="https://id-org-account.snowflakecomputing.app/healthcheck"><br>
+      <label for="cors_get_input_token">JWT Token:</label><br>
+      <input type="text" id="cors_get_input_token" name="cors_get_input_token"><br>
+    </form>
+    <button onclick="executeCorsGetWithToken()">Execute CORS GET</button>
+  </section>
+
+  <h3>CORS GET Response:</h3>
+  <p id="cors_get_response_with_token"></p>
+
+  <section>
+    <h2>CORS HTTP GET WITHOUT TOKEN</h2>
+    <form>
+      <label for="cors_get_input_url">GET URL:</label><br>
+      <input type="text" id="cors_get_input_url" name="cors_get_input_url" value="https://id-org-account.snowflakecomputing.app/healthcheck"><br>
+      <label for="user">User:</label><br>
+      <input type="text" id="user" name="user"><br>
+      <label for="role">Role:</label><br>
+      <input type="text" id="role" name="role"><br>
+      <label for="snowflake_account_url">Snowflake Account URL:</label><br>
+      <input type="text" id="snowflake_account_url" name="snowflake_account_url" value="https://org-account.snowflakecomputing.com"><br>
+      <div id="get-drop-zone" class="drop-zone">Drop your file here</div>
+      <div id="get-private-key" class="private-key"></div>
+    </form>
+    <button onclick="executeCorsGetWithoutToken()">Execute CORS GET</button>
+  </section>
+
+  <h3>CORS GET Response:</h3>
+  <p id="cors_get_response_without_token"></p>
+
+  <section>
+    <h2>CORS HTTP POST WITH TOKEN</h2>
+    <form>
+      <label for="cors_post_input_url_token_provided">POST URL:</label><br>
+      <input type="text" id="cors_post_input_url_token_provided" name="cors_post_input_url_token_provided" value="https://id-org-account.snowflakecomputing.app/echo"><br>
+      <label for="cors_post_input_token">JWT Token:</label><br>
+      <input type="text" id="cors_post_input_token" name="cors_post_input_token"><br>
+      <label for="cors_post_input_payload_token_provided">POST Payload:</label><br>
+      <input type="text" id="cors_post_input_payload_token_provided" name="cors_post_input_payload_token_provided"><br>
+    </form>
+    <button onclick="executeCorsPostWithToken()">Execute CORS POST</button>
+  </section>
+
+  <h3>CORS POST Response:</h3>
+  <p id="cors_post_response_with_token"></p>
+
+  <section>
+    <h2>CORS HTTP POST WITHOUT TOKEN</h2>
+    <form>
+      <label for="cors_post_input_url">POST URL:</label><br>
+      <input type="text" id="cors_post_input_url" name="cors_post_input_url" value="https://id-org-account.snowflakecomputing.app/echo"><br>
+      <label for="cors_post_input_payload">POST Payload:</label><br>
+      <input type="text" id="cors_post_input_payload" name="cors_post_input_payload"><br>
+      <label for="post_user">User:</label><br>
+      <input type="text" id="post_user" name="post_user"><br>
+      <label for="post_role">Role:</label><br>
+      <input type="text" id="post_role" name="post_role"><br>
+      <label for="post_snowflake_account_url">Snowflake Account URL:</label><br>
+      <input type="text" id="post_snowflake_account_url" name="post_snowflake_account_url" value="https://org-account.snowflakecomputing.com"><br>
+      <div id="post-drop-zone" class="drop-zone">Drop your file here</div>
+      <div id="post-private-key" class="private-key"></div>
+    </form>
+    <button onclick="executeCorsPostWithoutToken()">Execute CORS POST</button>
+  </section>
+
+  <h3>CORS POST Response:</h3>
+  <p id="cors_post_response_without_token"></p>
+
+  <script>
+    function setupDragAndDrop(zoneId, outputId) {
+      const dropZone = document.getElementById(zoneId);
+      const output = document.getElementById(outputId);
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'));
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'));
+      });
+
+      dropZone.addEventListener('drop', e => {
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          const reader = new FileReader();
+
+          reader.onload = () => {
+            output.textContent = reader.result;
+          };
+
+          reader.onerror = () => {
+            output.textContent = `Error reading file: ${reader.error.message}`;
+          };
+
+          reader.readAsText(file);
+        }
+      });
+    }
+
+    setupDragAndDrop('get-drop-zone', 'get-private-key');
+    setupDragAndDrop('post-drop-zone', 'post-private-key');
+
+    async function executeRequest(url, method, headers = {}, body = null) {
+      try {
+        const options = {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : null
+        };
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.text();
+      } catch (error) {
+        console.error('Error during request:', error);
+        throw error;
+      }
+    }
+
+    async function executeCorsGetWithToken() {
+      const url = document.getElementById("cors_get_input_url_token_provided").value;
+      const token = document.getElementById("cors_get_input_token").value;
+      const headers = token ? { Authorization: `Snowflake Token=\"${token}\"` } : {};
+
+      try {
+        const response = await executeRequest(url, 'GET', headers);
+        console.log("CORS GET response with token returned, ", response);
+        document.getElementById("cors_get_response_with_token").textContent = response;
+      } catch (error) {
+        document.getElementById("cors_get_response_with_token").textContent = error;
+      }
+    }
+
+    async function executeCorsGetWithoutToken() {
+      const url = document.getElementById("cors_get_input_url").value;
+      const user = document.getElementById("user").value;
+      const role = document.getElementById("role").value.toUpperCase();
+      const snowflakeAccountUrl = document.getElementById("snowflake_account_url").value;
+      const privateKey = document.getElementById("get-private-key").textContent;
+
+      const tokenRequestData = {
+        user,
+        endpoint: new URL(url).hostname,
+        role,
+        snowflake_account_url: snowflakeAccountUrl,
+        private_key_string: privateKey
+      };
+
+      try {
+        console.log("Token is not provided. Fetching JWT token with keypair");
+        const token = await executeRequest('/jwt', 'POST', { 'Content-Type': 'application/json' }, tokenRequestData);
+        console.log("Using JWT token: ", token);
+        const headers = { Authorization: `Snowflake Token=\"${token}\"` };
+        const response = await executeRequest(url, 'GET', headers);
+        console.log("CORS GET response without token returned, ", response);
+        document.getElementById("cors_get_response_without_token").textContent = response;
+        console.log("CORS GET response returned, ", response);
+      } catch (error) {
+        document.getElementById("cors_get_response_without_token").textContent = error;
+      }
+    }
+
+    async function executeCorsPostWithToken() {
+      const url = document.getElementById("cors_post_input_url_token_provided").value;
+      const payload = document.getElementById("cors_post_input_payload_token_provided").value;
+      const token = document.getElementById("cors_post_input_token").value;
+      const headers = {
+        Authorization: `Snowflake Token=\"${token}\"`,
+        'Content-Type': 'application/json'
+      };
+
+      try {
+        const response = await executeRequest(url, 'POST', headers, { data: payload });
+        const validJsonString = response.replace(/'/g, '"');
+        const parsedResponse = JSON.parse(validJsonString);
+        const responseValue = parsedResponse.data;
+        console.log("CORS POST response without token returned, ", responseValue);
+        document.getElementById("cors_post_response_with_token").textContent = responseValue
+      } catch (error) {
+        document.getElementById("cors_post_response_with_token").textContent = error;
+      }
+    }
+
+    async function executeCorsPostWithoutToken() {
+      const url = document.getElementById("cors_post_input_url").value;
+      const payload = document.getElementById("cors_post_input_payload").value;
+      const user = document.getElementById("post_user").value;
+      const role = document.getElementById("post_role").value.toUpperCase();
+      const snowflakeAccountUrl = document.getElementById("post_snowflake_account_url").value;
+      const privateKey = document.getElementById("post-private-key").textContent;
+
+      const tokenRequestData = {
+        user,
+        endpoint: new URL(url).hostname,
+        role,
+        snowflake_account_url: snowflakeAccountUrl,
+        private_key_string: privateKey
+      };
+
+      try {
+        console.log("Token is not provided. Fetching JWT token with keypair");
+        const token = await executeRequest('/jwt', 'POST', { 'Content-Type': 'application/json' }, tokenRequestData);
+        console.log("Using JWT token: ", token);
+        const headers = {
+          Authorization: `Snowflake Token=\"${token}\"`,
+          'Content-Type': 'application/json'
+        };
+
+        const response = await executeRequest(url, 'POST', headers, { data: payload });
+
+        const validJsonString = response.replace(/'/g, '"');
+        const parsedResponse = JSON.parse(validJsonString);
+        const responseValue = parsedResponse.data;
+        console.log("CORS POST response without token returned, ", responseValue);
+        document.getElementById("cors_post_response_without_token").textContent = responseValue;
+      } catch (error) {
+        document.getElementById("cors_post_response_without_token").textContent = error;
+      }
+    }
+  </script>
+</body>
+
+</html>
