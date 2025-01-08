@@ -249,7 +249,7 @@ Note down the current network policy on the account:
 show network policies;
 ```
 
-Create a network rule with all the IPs. To get a JWT token locally and supply to the service or to run the service locally with built-in programmaitc access support, the the IP of the laptop needs to be specified. If testing with the echo_service_cors_requester service we have set up, the IPs of the service need to be specified. IPs of the service can be found on https://whatismyipaddress.com/hostname-ip or other sites with similar functionality. To specify IPs that are allowed to send traffic into the customer's Snowflake account, run the following query in the Snowflake account with a role with access:
+Create a network rule with all the IPs. To get a JWT token locally and supply to the service or to run the service locally with built-in programmaitc access support, the IP of the laptop needs to be specified. If testing with the echo_service_cors_requester service we have set up, the IPs of the Snowflake proxies need to be specified. IPs of the Snowflake proxies can be found on https://whatismyipaddress.com/hostname-ip or other sites with similar functionality. To specify IPs that are allowed to send traffic into the customer's Snowflake account, run the following query in the Snowflake account with a role with access:
 **Example**
 ```
 CREATE OR REPLACE NETWORK RULE cors_supply_jwt_account_ingress
@@ -271,7 +271,7 @@ Set the user's network policy to the newly created network policy:
 ALTER USER YIZHANG SET NETWORK_POLICY = allow_cors_policy;
 ```
 
-Note that the IPs for a hostname can change if there's changes to the compute pool or every two weeks during the cluster uprade. If the /jwt request fails, repeat this step.
+Note that allowing the Snowflake proxies allows access from all traffic from within SPCS from all accounts. In addition, the IPs can change whenever there's a restart of Snowflake proxies. If the /jwt request fails, repeat this step. We recognize that this is not ideal. We are working on a Snowflake system function that would make such network rules unnecessary. 
 
 # 6: Configure key pair authentication
  Configure key pair authentication for the user by following the first two steps in [Setup in the programmatic access tutorial](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/tutorial-1#setup).
