@@ -24,12 +24,6 @@ RUN pip install snowflake-telemetry-python \
               opentelemetry-exporter-otlp \
               Flask
 
-# Install necessary Python packages
-# RUN pip install opentelemetry-api \
-#                 opentelemetry-sdk \
-#                 opentelemetry-exporter-otlp \
-#                 Flask
-
 # Copy application files to the container
 COPY app.py /workspace/
 COPY stock-snap.json /workspace/
