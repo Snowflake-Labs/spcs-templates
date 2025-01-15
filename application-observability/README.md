@@ -103,7 +103,7 @@ Refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-g
 
 Sample SQL query to view trace data:
 ```sql
-select timestamp, start_timestamp, record:name as span_name, trace from <your-event-table>
+select timestamp, scope, start_timestamp, record:name as span_name, trace from <your-event-table>
 where timestamp > dateadd(day, -1, current_timestamp())
 and resource_attributes:"snow.service.name" = '<your-spcs-service-name>'
 and record_type = 'SPAN'
@@ -116,7 +116,7 @@ Refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-g
 
 Sample SQL query to view metric data:
 ```sql
-select timestamp, record:metric.name AS metric_name, value from <your-event-table>
+select timestamp, scope, record:metric.name AS metric_name, value, record_attributes from <your-event-table>
 where timestamp > dateadd(day, -1, current_timestamp())
 and resource_attributes:"snow.service.name" = '<your-spcs-service-name>'
 and record_type = 'METRIC'
