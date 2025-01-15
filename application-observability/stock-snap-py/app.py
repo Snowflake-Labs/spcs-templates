@@ -41,9 +41,9 @@ tracer_provider = TracerProvider(
     id_generator=trace_id_generator
 )
 span_processor = BatchSpanProcessor(
-        span_exporter=OTLPSpanExporter(insecure=True),
-        schedule_delay_millis=5000
-    )
+    span_exporter=OTLPSpanExporter(insecure=True),
+    schedule_delay_millis=5000
+)
 tracer_provider.add_span_processor(span_processor)
 trace.set_tracer_provider(tracer_provider)
 tracer = trace.get_tracer(SERVICE_NAME)
@@ -80,6 +80,7 @@ stock_count_gauge = meter.create_observable_gauge(
     callbacks=[lambda options: [Observation(value=len(stock_prices))]]
 )
 
+
 @app.route(STOCK_ENDPOINT, methods=['GET'])
 def get_stock_price():
     """
@@ -94,7 +95,7 @@ def get_stock_price():
     with tracer.start_as_current_span("get_stock_price") as span:
         start_time = time.time()
         symbol = request.args.get('symbol')
-        
+
         with tracer.start_as_current_span("validate_input") as child_span:
             if not symbol or symbol not in stock_prices:
                 logger.info(f"GET {STOCK_ENDPOINT} - 400 - Invalid symbol")
@@ -116,6 +117,7 @@ def get_stock_price():
         logger.info(f"GET {STOCK_ENDPOINT} - 200 - {symbol}: {price}")
         return response
 
+
 @app.route(TOP_GAINERS_ENDPOINT, methods=['GET'])
 def get_top_gainers():
     """
@@ -129,7 +131,7 @@ def get_top_gainers():
     """
     with tracer.start_as_current_span("get_top_gainers") as span:
         start_time = time.time()
-        
+
         with tracer.start_as_current_span("fetch_prices") as child_span:
             random_sleep()  # Simulate fetching delay
             sorted_stocks = sorted(stock_prices.items(), key=lambda item: item[1], reverse=True)
@@ -147,11 +149,13 @@ def get_top_gainers():
         logger.info(f"GET {TOP_GAINERS_ENDPOINT} - 200 - {top_gainers}")
         return response
 
+
 def random_sleep(min_time=0.1, max_time=1):
     """
     Sleep for a random duration between min_time and max_time seconds.
     """
     time.sleep(random.uniform(min_time, max_time))
+
 
 if __name__ == '__main__':
     print(f"Running on host: {SERVICE_HOST}, port: {SERVICE_PORT}")
