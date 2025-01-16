@@ -34,9 +34,11 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * Class sets up a Jetty server to handle requests to Stock Snap service. It has two endpoints: -
- * GET /stock?symbol=<symbol> - GET /top-gainers It uses OpenTelemetry for instrumenting the code
- * with metrics, tracing and logs.
+ * Class sets up a Jetty server to handle requests to Stock Snap service.
+ * It has two endpoints:
+ * - GET /stock?symbol=<symbol>
+ * - GET /top-gainers
+ * It uses OpenTelemetry for instrumenting the code with metrics, tracing and logs.
  */
 public class StockSnapService {
 
