@@ -5,9 +5,13 @@ The sample code provided uses a simple service that can be deployed to Snowpark 
 ## Stock Snap Service
 
 ### Overview
-The Stock Snap Service is a simple Flask-based application written in Python & Java that offers stock price information and top gainers via two APIs. 
+The Stock Snap Service is a simple web application written in Python & Java that offers stock price information and top gainers via two APIs. 
 The application is instrumented with OpenTelemetry. When deployed in Snowflake SPCS and its APIs are invoked, observability 
 data is sent to a Snowflake-deployed OpenTelemetry Collector, which subsequently routes the data to the configured event table.
+
+> **Note:** 
+> The sample code provided uses a custom Snowflake TraceId Generator when generating traces, which is required for Snowflake to display traces and spans in the Snowsight UI.
+
 
 #### APIs
 
@@ -33,6 +37,8 @@ The application is instrumented with the following OpenTelemetry metrics and tra
 ### Building and Pushing Docker Container
 
 To build the Docker container and push it to Snowflake SPCS for execution, follow these steps:
+
+Change directory to `stock-snap-py` or `stock-snap-java` based on the language you want to use.
 
 Build the Docker image and upload it to your repository:
    ```bash
@@ -103,7 +109,7 @@ Refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-g
 
 Sample SQL query to view trace data:
 ```sql
-select timestamp, start_timestamp, record:name as span_name, trace from <your-event-table>
+select timestamp, scope, start_timestamp, record:name as span_name, trace from <your-event-table>
 where timestamp > dateadd(day, -1, current_timestamp())
 and resource_attributes:"snow.service.name" = '<your-spcs-service-name>'
 and record_type = 'SPAN'
@@ -116,7 +122,7 @@ Refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-g
 
 Sample SQL query to view metric data:
 ```sql
-select timestamp, record:metric.name AS metric_name, value from <your-event-table>
+select timestamp, scope, record:metric.name AS metric_name, value, record_attributes from <your-event-table>
 where timestamp > dateadd(day, -1, current_timestamp())
 and resource_attributes:"snow.service.name" = '<your-spcs-service-name>'
 and record_type = 'METRIC'
