@@ -9,7 +9,9 @@ The Stock Snap Service is a simple web application written in Python & Java that
 The application is instrumented with OpenTelemetry. When deployed in Snowflake SPCS and its APIs are invoked, observability 
 data is sent to a Snowflake-deployed OpenTelemetry Collector, which subsequently routes the data to the configured event table.
 
-> **Note:** Sample code provided uses custom Snowflake TraceId Generator when generating traces to ensure consistency with other Snowflake products.
+> **Note:** 
+> The sample code provided uses a custom Snowflake TraceId Generator when generating traces, which is required for Snowflake to display traces and spans in the Snowsight UI.
+
 
 #### APIs
 
