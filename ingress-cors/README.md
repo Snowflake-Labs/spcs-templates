@@ -203,6 +203,7 @@ There are 4 functionalities the endpoint provides:
 
 Input the endpoint, user, role, and account URL. The JWT token retrival part (a and c) / PAT token exchange (b and d) will be done automatically. For more information on how to find the account URL, visit [Account identifiers](https://docs.snowflake.com/en/user-guide/admin-account-identifier). The value of Role is automatically capitalized as Snowflake roles are always in uppercase.
 Note that comparing to the [programmatic access tutorial](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/tutorial-1#setup), the account and endpoint are both omitted as input, since they can be deduced from the Snowflake Account URL and the GET / POST URL respectively.
+Also note that all 4 functionalities validate Access-Control-Allow-Headers and Access-Control-Expose-Headers as an example. 
 
 For a:
 
