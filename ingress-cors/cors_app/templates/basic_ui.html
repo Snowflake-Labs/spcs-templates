@@ -165,7 +165,7 @@
     setupDragAndDrop('get-drop-zone', 'get-private-key');
     setupDragAndDrop('post-drop-zone', 'post-private-key');
 
-    async function executeRequest(url, method, headers = {}, body = null) {
+    async function executeRequest(url, method, headers = {}, body = null, expectCustomHeader = false) {
       try {
         const options = {
           method,
@@ -176,15 +176,14 @@
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        if (!response.headers) {
-          // throw new Error('Headers are empty')
-          console.log('Headers are empty')
-        } else if (!response.headers.has('Custom-Header-X')) {
-          console.log(`Headers do not contain Custom-Header-X, which is supposed to be exposed. Headers: ${Array.from(response.headers)}`)
-          // throw new Error(`Headers do not contain Custom-Header-X, which is supposed to be exposed. Headers: ${Array.from(response.headers)}`)
-        } else if (response.headers.has('Custom-Header-Y')) {
-          console.log(`Headers contains Custom-Header-Y, which is not supposed to be exposed. Headers: ${Array.from(response.headers)}`)
-          // throw new Error(`Headers contains Custom-Header-Y, which is not supposed to be exposed. Headers: ${Array.from(response.headers)}`)
+        if (expectCustomHeader) {
+          if (!response.headers) {
+            throw new Error('Headers are empty')
+          } else if (!response.headers.has('Custom-Header-X')) {
+            throw new Error(`Headers do not contain Custom-Header-X, which is supposed to be exposed. Headers: ${Array.from(response.headers)}`)
+          } else if (response.headers.has('Custom-Header-Y')) {
+            throw new Error(`Headers contains Custom-Header-Y, which is not supposed to be exposed. Headers: ${Array.from(response.headers)}`)
+          }
         }
 
         return await response.text();
@@ -226,13 +225,13 @@
         };
 
         console.log("Token is not provided. Fetching JWT token with keypair");
-        const token = await executeRequest('/jwt', 'POST', { 'Content-Type': 'application/json' }, tokenRequestData);
+        const token = await executeRequest('/jwt', 'POST', { 'Content-Type': 'application/json' }, tokenRequestData, undefined);
         console.log("Using JWT token: ", token);
         const headers = { 
           Authorization: `Snowflake Token=\"${token}\"`,
           'Custom-Header-A': 'foo',
         };
-        const response = await executeRequest(url, 'GET', headers);
+        const response = await executeRequest(url, 'GET', headers, undefined, expectCustomHeader=true);
         console.log("CORS GET response without token returned, ", response);
         if (isPat) {
           document.getElementById("cors_get_response_with_pat").textContent = response;
@@ -282,7 +281,7 @@
         };
 
         console.log("Token is not provided. Fetching JWT token with keypair");
-        const token = await executeRequest('/jwt', 'POST', { 'Content-Type': 'application/json' }, tokenRequestData);
+        const token = await executeRequest('/jwt', 'POST', { 'Content-Type': 'application/json' }, tokenRequestData, undefined);
         console.log("Using JWT token: ", token);
         const headers = {
           Authorization: `Snowflake Token=\"${token}\"`,
@@ -290,7 +289,7 @@
           'Custom-Header-A': 'foo',
         };
 
-        const response = await executeRequest(url, 'POST', headers, { data: payload });
+        const response = await executeRequest(url, 'POST', headers, { data: payload }, true);
 
         const validJsonString = response.replace(/'/g, '"');
         const parsedResponse = JSON.parse(validJsonString);
