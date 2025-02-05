@@ -52,7 +52,7 @@ Once the image is uploaded, you can create the service by following the instruct
 
 #### Kubernetes Specification
 
-Use the following Kubernetes specification to create the service:
+Use the following Service Specification to create the service:
 
 ```yaml
  spec:
@@ -60,12 +60,6 @@ Use the following Kubernetes specification to create the service:
    - name: stock-snap
      image: <repository-url>/stock-snap:<tag>
      applicationMonitor:
-       metricConfig:
-         otlp:
-           endpoint: fromEnv
-       traceConfig:
-         otlp:
-           endpoint: fromEnv
    platformMonitor:
      metricConfig:
        groups:
@@ -75,10 +69,9 @@ Use the following Kubernetes specification to create the service:
      port: 8080
      public: true
 ```
-The OpenTelemetry Collector endpoint will be provided to the service via environment variables by SPCS. OpenTelemetry 
-exporters use these endpoints to send data to the collector.
+The OpenTelemetry Collector endpoint will automatically be provided to the service containers via [opentelemetry environment variables](https://opentelemetry.io/docs/zero-code/net/configuration/#otlp) `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` and `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`.
 
-Refer to this [Snowflake documentation](https://docs.snowflake.com/en/developer-guide/logging-tracing/event-table-setting-up) on how to set up event table if not done already.
+Refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-guide/logging-tracing/event-table-setting-up) on how to access data in your Event Table.
 
 ### Interacting with the APIs
 
