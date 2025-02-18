@@ -58,7 +58,7 @@ Use the following Service Specification to create the service:
  spec:
    containers:
    - name: stock-snap
-     image: <repository-url>/stock-snap:<tag>
+     image: <repository-url>/stock-snap-<language(py/java)>:<tag>
    platformMonitor:
      metricConfig:
        groups:

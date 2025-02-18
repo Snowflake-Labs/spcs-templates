@@ -14,6 +14,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.metrics import set_meter_provider, get_meter_provider, Observation
 from snowflake.telemetry.trace import SnowflakeTraceIdGenerator
+import snowflake.connector
 
 SERVICE_NAME = "stock_snap_py"
 # Set service host and port from environment variables or use default values
@@ -80,6 +81,10 @@ stock_count_gauge = meter.create_observable_gauge(
     callbacks=[lambda options: [Observation(value=len(stock_prices))]]
 )
 
+# Get authorization token from SPCS environment
+def get_login_token():
+  with open('/snowflake/session/token', 'r') as f:
+    return f.read()
 
 @app.route(STOCK_ENDPOINT, methods=['GET'])
 def get_stock_price():
@@ -87,7 +92,8 @@ def get_stock_price():
     Endpoint to get the stock price for a given symbol.
 
     This method validates the input symbol, fetches the stock price from the loaded stock prices,
-    and returns the price in JSON format.
+    and returns the price in JSON format. The stock prices can also be retrieved from your
+    Snowflake account using the Snowflake connector. 
 
     Returns:
         Response: JSON response containing the stock symbol and price, or an error message.
@@ -107,6 +113,35 @@ def get_stock_price():
         with tracer.start_as_current_span("fetch_price") as child_span:
             random_sleep()  # Simulate fetching delay
             price = stock_prices[symbol]
+
+            # Alternatively, retrieve the stock price from your Snowflake account
+            # The connector library is equipped with trace propagation
+            
+            # SPCS stores your account information in the SPCS instance environment
+            SNOWFLAKE_ACCOUNT = os.getenv('SNOWFLAKE_ACCOUNT')
+            SNOWFLAKE_HOST = os.getenv('SNOWFLAKE_HOST')
+            
+            conn = snowflake.connector.connect(
+                host = SNOWFLAKE_HOST,
+                account = SNOWFLAKE_ACCOUNT,
+                token = get_login_token(),
+                authenticator = "oauth"
+            )
+
+            try:
+                cur = conn.cursor()
+                cur.execute("USE DATABASE STOCKS;")
+                cur.execute("USE SCHEMA STOCK_PRICES;")
+                cur.execute(f"SELECT price FROM stock_prices WHERE symbol = ?", (symbol,))
+                price = cur.fetchone()[0]
+                conn.commit()
+
+            except Exception as e:
+                print(str(e))
+                
+            finally:
+                cur.close()
+                conn.close()
 
         response_time = (time.time() - start_time) * 1000
         request_counter.add(1, {"endpoint": STOCK_ENDPOINT})
