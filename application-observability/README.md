@@ -17,6 +17,7 @@ data is sent to a Snowflake-deployed OpenTelemetry Collector, which subsequently
 
 - **Get Stock Price**: Retrieves the current price of a specified stock. Endpoint: `/stock?symbol=<stock_symbol>`
 - **Get Top Gainers**: Retrieves a list of stocks with the highest gains. Endpoint: `/top-gainers`
+- **Get Stock Exchange**: Retrieves the stock exchange a specified stock is listed on. Endpoint: `/stock-exchange?symbol=<stock_symbol>`
 
 ## Instrumentation
 The application is instrumented with the following OpenTelemetry metrics and traces:
@@ -33,6 +34,9 @@ The application is instrumented with the following OpenTelemetry metrics and tra
 - `get_top_gainers`: Trace for the `get_top_gainers` endpoint.
   - `fetch_prices`: Child span for fetching stock prices.
   - `sort_and_filter`: Child span for sorting and filtering top gainers.
+- `get_stock_exchange`: Trace for the `get_stock_exchange` endpoint.
+    - `validate_input`: Child span for input validation.
+    - `fetch_exchange`: Child span for fetching the stock exchange.
 
 ### Building and Pushing Docker Container
 
@@ -89,6 +93,14 @@ Endpoint: `/top-gainers`
 ```
 http://<service_url>/top-gainers
 ```
+
+#### Get Stock Exchange
+
+Endpoint: `/stock-exchange`
+```
+http://<service_url>/stock-exchange?symbol=AAPL
+```
+
 To get your service ingress url, refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/tutorial-1#use-the-service).
 
 ### Viewing Metrics and Traces
@@ -107,6 +119,12 @@ and resource_attributes:"snow.service.name" = '<your-spcs-service-name>'
 and record_type = 'SPAN'
 order by timestamp
 ```
+
+> **Note:** Trace propagation is supported for the Python example. Services that interact with a Snowflake table will have those SQL queries properly nested within the parent span.
+
+To visualize the trace tree, in the sidebar navigate to **Monitoring > Traces & Logs**, and select a Trace. An example trace tree visualization for the `get_stock_exchange` function is shown below:
+
+![Example Trace Tree](assets/example-trace-tree.png)
 
 #### Viewing Metric Data
 
