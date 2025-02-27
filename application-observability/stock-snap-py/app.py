@@ -33,6 +33,10 @@ SERVICE_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
 SERVICE_PORT = os.getenv('SERVER_PORT', 8080)
 SNOWFLAKE_HOST = os.getenv('SNOWFLAKE_HOST')
 SNOWFLAKE_ACCOUNT = os.getenv('SNOWFLAKE_ACCOUNT')
+STOCK_EXCHANGE_DATABASE = "STOCK_EXCHANGE_DATABASE"
+STOCK_EXCHANGE_SCHEMA = "STOCK_EXCHANGE_SCHEMA"
+STOCK_EXCHANGE_TABLE = "STOCK_EXCHANGE_TABLE"
+STOCK_EXCHANGE_ROW = "EXCHANGE"
 
 # Set snowflake role
 SNOWFLAKE_ROLE = "test_role"
@@ -203,9 +207,13 @@ def get_stock_exchange():
 
             try:
                 cur = conn.cursor()
-                cur.execute("USE DATABASE STOCKS_DB;")
-                cur.execute("USE SCHEMA STOCKS_SCHEMA;")
-                cur.execute("SELECT exchange FROM stock_exchanges WHERE symbol = %s", (symbol,))
+                cur.execute(f"""
+                    SELECT {STOCK_EXCHANGE_ROW} 
+                    FROM {STOCK_EXCHANGE_DATABASE}.{STOCK_EXCHANGE_SCHEMA}.{STOCK_EXCHANGE_TABLE} 
+                    WHERE symbol = %s
+                    """, 
+                    (symbol,)
+                )
                 exchange = cur.fetchone()[0]
                 conn.commit()
 
