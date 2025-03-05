@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trainer
+spec:
+  template:
+    metadata:
+      labels:
+        workload-type: trainer
+      annotations:
+        snowflake.com/inject-oauth-token: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: node-10-16-22-87
+      containers:
+        - name: main
+          image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/test_repo/temp/train:08
+          command: [ "sleep", "350000" ]
+          env:
+            - name: SNOWFLAKE_ACCOUNT
+              value: "AEB14586"
+            - name: SNOWFLAKE_HOST
+              value: "snowflake.prod3.us-west-2.aws.snowflakecomputing.com"
+            - name: SNOWFLAKE_DATABASE
+              value: "AIVANOUDB"
+            - name: SNOWFLAKE_SCHEMA
+              value: "PUBLIC"
+            - name: SNOWFLAKE_ROLE
+              value: "SYSADMIN"
+
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+              cpu: 4
+              memory: 10Gi
+            requests:
+              nvidia.com/gpu: 1
+              cpu: 4
+              memory: 10Gi
+
+          volumeMounts:
+            - mountPath: /data
+              name: host-volume
+      restartPolicy: Never
+      volumes:
+        - name: host-volume
+          hostPath:
+            path: /var/spcs-nvme-userlv/data
+            type: DirectoryOrCreate

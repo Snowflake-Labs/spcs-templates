@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: download-data-pod
+spec:
+  template:
+    metadata:
+      labels:
+        workload-type: download-data
+      annotations:
+        snowflake.com/inject-oauth-token: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: node-10-16-22-87
+      containers:
+        - name: main
+          image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/test_repo/temp/download_data:08
+          command: [ "python", "-u", "./main.py" ]
+          args:
+            - "--stage-path"
+            - "DATA_STAGE/test-data"
+            - "--target-dir"
+            - "/data/v1"
+          env:
+            - name: SNOWFLAKE_ACCOUNT
+              value: "AEB14586"
+            - name: SNOWFLAKE_HOST
+              value: "snowflake.prod3.us-west-2.aws.snowflakecomputing.com"
+            - name: SNOWFLAKE_DATABASE
+              value: "AIVANOUDB"
+            - name: SNOWFLAKE_SCHEMA
+              value: "PUBLIC"
+            - name: SNOWFLAKE_ROLE
+              value: "SYSADMIN"
+          volumeMounts:
+            - mountPath: /data
+              name: host-volume
+      restartPolicy: Never
+      volumes:
+        - name: host-volume
+          hostPath:
+            path: /var/spcs-nvme-userlv/data
+            type: DirectoryOrCreate

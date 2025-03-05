@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: download-data-pod
+  annotations:
+    snowflake.com/inject-oauth-token: "true"
+spec:
+  #  nodeSelector:
+  #    snowflake.com/instance-type-name: GPU_NV_XL
+  containers:
+    - name: main
+      image: sfengineering-xaccounttest2.registry.snowflakecomputing.com/aivanoudb/public/testrepo/temp/download_data:08
+      command: [ "python", "-u", "./main.py" ]
+      args:
+        - "--stage-path"
+        - "TEST01/test-data"
+        - "--target-dir"
+        - "/data/v1"
+      env:
+        - name: SNOWFLAKE_ACCOUNT
+          value: AEB14586
+        - name: SNOWFLAKE_HOST
+          value: snowflake.prod3.us-west-2.aws.snowflakecomputing.com
+        - name: SNOWFLAKE_DATABASE
+          value: AIVANOUDB
+        - name: SNOWFLAKE_SCHEMA
+          value: PUBLIC
+        - name: SNOWFLAKE_ROLE
+          value: SYSADMIN
+      volumeMounts:
+        - mountPath: /data
+          name: host-volume
+  volumes:
+    - name: host-volume
+      hostPath:
+        path: /home
+        type: Directory
