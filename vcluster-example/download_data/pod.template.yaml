@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: download-data
+spec:
+  template:
+    metadata:
+      labels:
+        workload-type: download-data
+      annotations:
+        snowflake.com/inject-oauth-token: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: ${NODE_HOSTNAME}
+      containers:
+        - name: main
+          image: ${DATA_IMAGE_REPO}
+          command: [ "python", "-u", "./main.py" ]
+          args:
+            - "--stage-path"
+            - "${STAGE_PATH}"
+            - "--target-dir"
+            - "/data/v1"
+          env:
+            - name: SNOWFLAKE_ACCOUNT
+              value: "${SNOWFLAKE_ACCOUNT}"
+            - name: SNOWFLAKE_HOST
+              value: "${SNOWFLAKE_HOST}"
+            - name: SNOWFLAKE_DATABASE
+              value: "${SNOWFLAKE_DATABASE}"
+            - name: SNOWFLAKE_SCHEMA
+              value: "${SNOWFLAKE_SCHEMA}"
+            - name: SNOWFLAKE_ROLE
+              value: "${SNOWFLAKE_ROLE}"
+          volumeMounts:
+            - mountPath: /data
+              name: host-volume
+      restartPolicy: Never
+      volumes:
+        - name: host-volume
+          hostPath:
+            path: /var/spcs-nvme-userlv/data
+            type: DirectoryOrCreate

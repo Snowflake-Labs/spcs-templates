@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trainer
+spec:
+  template:
+    metadata:
+      labels:
+        workload-type: trainer
+      annotations:
+        snowflake.com/inject-oauth-token: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: ${NODE_HOSTNAME}
+      containers:
+        - name: main
+          image: ${TRAIN_IMAGE_REPO}
+          command: [ "python", "-u", "./main.py" ]
+          env:
+            - name: SNOWFLAKE_ACCOUNT
+              value: "${SNOWFLAKE_ACCOUNT}"
+            - name: SNOWFLAKE_HOST
+              value: "${SNOWFLAKE_HOST}"
+            - name: SNOWFLAKE_DATABASE
+              value: "${SNOWFLAKE_DATABASE}"
+            - name: SNOWFLAKE_SCHEMA
+              value: "${SNOWFLAKE_SCHEMA}"
+            - name: SNOWFLAKE_ROLE
+              value: "${SNOWFLAKE_ROLE}"
+
+          resources:
+            limits:
+              nvidia.com/gpu: ${TRAINER_NUM_GPUS}
+              cpu: ${TRAINER_NUM_CPUS}
+              memory: ${TRAINER_MEM_GI}
+            requests:
+              nvidia.com/gpu: ${TRAINER_NUM_GPUS}
+              cpu: ${TRAINER_NUM_CPUS}
+              memory: ${TRAINER_MEM_GI}
+
+          volumeMounts:
+            - mountPath: /data
+              name: host-volume
+      restartPolicy: Never
+      volumes:
+        - name: host-volume
+          hostPath:
+            path: /var/spcs-nvme-userlv/data
+            type: DirectoryOrCreate
