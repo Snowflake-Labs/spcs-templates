@@ -16,6 +16,7 @@ import sys
 SERVICE_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
 SERVICE_PORT = os.getenv('SERVER_PORT', 8888)
 CHARACTER_NAME = os.getenv('CHARACTER_NAME', 'I')
+snowflake_account_url = os.getenv('SNOWFLAKE_HOST')
 
 
 def get_logger(logger_name):
@@ -100,7 +101,7 @@ def get_p8():
             logger.error("Failed getting private key. ")
     return p8
 
-def token_exchange(token, role, endpoint, snowflake_account_url, isPat):
+def token_exchange(token, role, endpoint, isPat):
     scope_role = f'session:role:{role}'
     scope = f'{scope_role} {endpoint}'
     
@@ -119,14 +120,14 @@ def token_exchange(token, role, endpoint, snowflake_account_url, isPat):
         }
 
     logger.info(data)
-    response = _do_token_exchange(data, snowflake_account_url)
+    response = _do_token_exchange(data)
     return response.text
 
-def _do_token_exchange(data, snowflake_account_url) -> requests.Response:
-    url = f'{snowflake_account_url}/oauth/token'
+def _do_token_exchange(data) -> requests.Response:
+    url = f'https://{snowflake_account_url}/oauth/token'
     response = requests.post(url, data=data, verify=False)
     logger.info("snowflake jwt response code : %s" % response.status_code)
-    assert 200 == response.status_code, "unable to get snowflake token"
+    assert 200 == response.status_code, f"unable to get snowflake token from {url}, status code={response.status_code}"
     return response
 
 
@@ -139,20 +140,18 @@ def handle_data():
         user = data.get("user")
         role = data.get("role")
         isPat = data.get("isPat")
-        snowflake_account_url = data.get("snowflake_account_url")
-        snowflake_account_hostname = snowflake_account_url[8:]
-        account = snowflake_account_hostname.split('.')[0]
+        account = snowflake_account_url.split('.')[0]
         logger.debug(f'Account from Snowflake Account URL: {account}')
         endpoint = data.get("endpoint")
         key = data.get("key")
         if isPat:
             snowflake_jwt = token_exchange(key, role=role, endpoint=endpoint,
-                    snowflake_account_url=snowflake_account_url, isPat=isPat)
+                    isPat=isPat)
         else:
             token = JWTGenerator(account, user, key, timedelta(minutes=59),
                 timedelta(minutes=54)).get_token()
             snowflake_jwt = token_exchange(token, role=role, endpoint=endpoint,
-                    snowflake_account_url=snowflake_account_url, isPat=isPat)
+                    isPat=isPat)
         
         return snowflake_jwt
 

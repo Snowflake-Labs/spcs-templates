@@ -49,8 +49,6 @@
       <input type="text" id="user" name="user"><br>
       <label for="role">Role:</label><br>
       <input type="text" id="role" name="role"><br>
-      <label for="snowflake_account_url">Snowflake Account URL:</label><br>
-      <input type="text" id="snowflake_account_url" name="snowflake_account_url" value="https://org-account.snowflakecomputing.com"><br>
       <div id="get-drop-zone" class="drop-zone">Drop your file here</div>
       <div id="get-private-key" class="private-key"></div>
     </form>
@@ -69,8 +67,6 @@
       <input type="text" id="user_pat" name="user_pat"><br>
       <label for="role_pat">Role:</label><br>
       <input type="text" id="role_pat" name="role_pat"><br>
-      <label for="snowflake_account_url_pat">Snowflake Account URL:</label><br>
-      <input type="text" id="snowflake_account_url_pat" name="snowflake_account_url_pat" value="https://org-account.snowflakecomputing.com"><br>
       <label for="get_pat_token">PAT token:</label><br>
       <input type="text" id="get_pat_token" name="get_pat_token"><br>
     </form>
@@ -91,8 +87,6 @@
       <input type="text" id="post_user" name="post_user"><br>
       <label for="post_role">Role:</label><br>
       <input type="text" id="post_role" name="post_role"><br>
-      <label for="post_snowflake_account_url">Snowflake Account URL:</label><br>
-      <input type="text" id="post_snowflake_account_url" name="post_snowflake_account_url" value="https://org-account.snowflakecomputing.com"><br>
       <div id="post-drop-zone" class="drop-zone">Drop your file here</div>
       <div id="post-private-key" class="private-key"></div>
     </form>
@@ -113,8 +107,6 @@
       <input type="text" id="post_user_pat" name="post_user_pat"><br>
       <label for="post_role_pat">Role:</label><br>
       <input type="text" id="post_role_pat" name="post_role_pat"><br>
-      <label for="post_snowflake_account_url_pat">Snowflake Account URL:</label><br>
-      <input type="text" id="post_snowflake_account_url_pat" name="post_snowflake_account_url_pat" value="https://org-account.snowflakecomputing.com"><br>
       <label for="post_pat_token">PAT token:</label><br>
       <input type="text" id="post_pat_token" name="post_pat_token"><br>
     </form>
@@ -197,29 +189,26 @@
       const url = document.getElementById("cors_get_input_url").value;
       const user = document.getElementById("user").value;
       const role = document.getElementById("role").value.toUpperCase();
-      const snowflakeAccountUrl = document.getElementById("snowflake_account_url").value;
 
       const privateKey = document.getElementById("get-private-key").textContent;
-      return executeCorsGetWithoutToken(url, user, role, snowflakeAccountUrl, false, privateKey)
+      return executeCorsGetWithoutToken(url, user, role, false, privateKey)
     }
 
     async function executeCorsGetWithPat() {
       const url = document.getElementById("cors_get_input_url_pat").value;
       const user = document.getElementById("user_pat").value;
       const role = document.getElementById("role_pat").value.toUpperCase();
-      const snowflakeAccountUrl = document.getElementById("snowflake_account_url_pat").value;
 
       const patToken = document.getElementById("get_pat_token").value;
-      return executeCorsGetWithoutToken(url, user, role, snowflakeAccountUrl, true, patToken)
+      return executeCorsGetWithoutToken(url, user, role, true, patToken)
     }
 
-    async function executeCorsGetWithoutToken(url, user, role, snowflakeAccountUrl, isPat, key) {
+    async function executeCorsGetWithoutToken(url, user, role, isPat, key) {
       try {
         const tokenRequestData = {
           user,
           endpoint: new URL(url).hostname,
           role,
-          snowflake_account_url: snowflakeAccountUrl,
           key: key,
           isPat: isPat
         };
@@ -252,10 +241,9 @@
       const payload = document.getElementById("cors_post_input_payload").value;
       const user = document.getElementById("post_user").value;
       const role = document.getElementById("post_role").value.toUpperCase();
-      const snowflakeAccountUrl = document.getElementById("post_snowflake_account_url").value;
 
       const privateKey = document.getElementById("post-private-key").textContent;
-      return executeCorsPostWithoutToken(url, payload, user, role, snowflakeAccountUrl, false, privateKey)
+      return executeCorsPostWithoutToken(url, payload, user, role, false, privateKey)
     }
 
     async function executeCorsPostWithPat() {
@@ -263,19 +251,17 @@
       const payload = document.getElementById("cors_post_input_payload_pat").value;
       const user = document.getElementById("post_user_pat").value;
       const role = document.getElementById("post_role_pat").value.toUpperCase();
-      const snowflakeAccountUrl = document.getElementById("post_snowflake_account_url_pat").value;
 
       const patToken = document.getElementById("post_pat_token").value;
-      return executeCorsPostWithoutToken(url, payload, user, role, snowflakeAccountUrl, true, patToken)
+      return executeCorsPostWithoutToken(url, payload, user, role, true, patToken)
     }
 
-    async function executeCorsPostWithoutToken(url, payload, user, role, snowflakeAccountUrl, isPat, key) {
+    async function executeCorsPostWithoutToken(url, payload, user, role, isPat, key) {
       try {
         const tokenRequestData = {
           user,
           endpoint: new URL(url).hostname,
           role,
-          snowflake_account_url: snowflakeAccountUrl,
           key: key,
           isPat: isPat
         };
