@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	sf "github.com/snowflakedb/gosnowflake"
 )
@@ -15,12 +16,8 @@ const (
 	SpcsTokenFilePath = "/snowflake/session/token"
 )
 
-// GetSfConfig retrieves the Snowflake configuration based on environment variables
-// and a token file.
-//
-// It reads the Snowflake account and host from environment variables (SNOWFLAKE_ACCOUNT
-// and SNOWFLAKE_HOST, respectively). It also retrieves the token from a file specified
-// by the SpcsTokenFilePath constant.
+// GetSfConfig retrieves the Snowflake configuration from environment variables
+// and the container's token file.
 //
 // Parameters:
 //   - None
@@ -34,20 +31,32 @@ func GetSfConfig() (sf.Config, error) {
 	var token string
 	var account = os.Getenv("SNOWFLAKE_ACCOUNT")
 	var host = os.Getenv("SNOWFLAKE_HOST")
+	var protocol = os.Getenv("SNOWFLAKE_PROTOCOL")
+	var portStr = os.Getenv("SNOWFLAKE_PORT")
+
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return sf.Config{}, fmt.Errorf("Error parsing SNOWFLAKE_PORT", err)
+	}
 
 	token, err = getTokenFromFile(SpcsTokenFilePath)
+	if err != nil {
+		return sf.Config{}, fmt.Errorf(
+			"SPCS discovery plugin: Error getting credentials from token file. account: %v host: %v err: %v", account, host, err,
+		)
+	}
+
 	cfg = sf.Config{
 		Account:       account,
 		Host:          host,
 		Token:         token,
 		Authenticator: sf.AuthTypeOAuth,
+		Protocol:      protocol,
+		Port:          port,
 	}
 
 	cfg.InsecureMode = true
 
-	if err != nil {
-		return cfg, fmt.Errorf("SPCS discovery plugin: Error getting credentials from token file. account: %v host: %v err: %v", account, host, err)
-	}
 	return cfg, nil
 }
 

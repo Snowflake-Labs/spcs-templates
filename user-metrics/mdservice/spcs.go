@@ -124,11 +124,11 @@ func getTargets(endPoint string, resolver EndpointResolver) ([]string, error) {
 }
 
 func getLabels(computePoolMonitorEndpoint string) (map[string]string, error) {
-	// discover.monitor.mypool.snowflakecomputing.internal -> mypool
+	// discover.monitor.mypool.cp.spcs.internal -> mypool
 	delimiter := "."
 	segments := strings.Split(computePoolMonitorEndpoint, delimiter)
-	if len(segments)!=5 {
-		return nil, fmt.Errorf("SPCS discovery plugin: Endpoint doesn't have 5 segments : %v", computePoolMonitorEndpoint)
+	if len(segments) < 3 {
+		return nil, fmt.Errorf("SPCS discovery plugin: Endpoint has fewer than 3 segments : %v", computePoolMonitorEndpoint)
 	}
 	labels := map[string]string{
 		MetaComputePoolName: strings.ToLower(segments[2]),
