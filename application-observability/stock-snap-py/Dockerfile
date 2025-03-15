@@ -22,7 +22,8 @@ RUN rm -rf "snowflake-telemetry-python-${VERSION}" "snowflake-telemetry-python-$
 
 RUN pip install snowflake-telemetry-python \
               opentelemetry-exporter-otlp \
-              Flask
+              Flask \
+              snowflake-connector-python
 
 # Copy application files to the container
 COPY app.py /workspace/
