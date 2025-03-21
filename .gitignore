@@ -1,8 +1,8 @@
 .idea
-llama/llama7b-chat-hf/snow/__pycache__
 llama/llama7b-chat-hf/spcs_spec.yaml
 .DS_Store
 user-metrics/metrics-service-datadog/metrics-service.yml
 user-metrics/metrics-service-grafana/metrics-service.yml
 service_functions/embeddings/sql/output/**
-service_functions/embeddings/src/__pycache__
+**/.ipynb_checkpoints
+**/__pycache__

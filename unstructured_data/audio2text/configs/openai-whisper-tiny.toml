@@ -1,0 +1,5 @@
+[general]
+attention_implementation="sdpa"
+cache_implementation="static"
+model_name="openai/whisper-tiny.en"
+model_type="whisper-hf"
