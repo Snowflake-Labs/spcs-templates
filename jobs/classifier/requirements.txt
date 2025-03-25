@@ -1,0 +1,7 @@
+click==8.1.8
+transformers==4.49.0
+snowflake-connector-python==3.14.0
+snowflake-connector-python[pandas]==3.14.0
+toml==0.10.2
+pandas==2.2.3
+numpy==1.26.4
