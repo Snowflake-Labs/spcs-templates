@@ -16,9 +16,9 @@ git clone https://github.com/Snowflake-Labs/spcs-templates.git
 docker login <registry_hostname> -u <username>
 ```
 Note the following:
-* The <registry_hostname> is the hostname part of the repository URL. For example, myorg-myacct.registry.snowflakecomputing.com.
+* The `<registry_hostname>` is the hostname part of the repository URL. For example, myorg-myacct.registry.snowflakecomputing.com.
 
- * <username> is your Snowflake username. Docker will prompt you for your password.
+ * `<username>` is your Snowflake username. Docker will prompt you for your password.
 
 6. Use one of the following options to upload images to your image repository:
     * Option 1: The easiest option is to upload the pre-built [Docker images](https://hub.docker.com/u/snowflakedb) that Snowflake provides on dockerhub.
@@ -29,7 +29,15 @@ Note the following:
     ```commandline
     make build-all SNOW_REPO=<repository-url>
     ```
-7. Call the SYSTEM$REGISTRY_LIST_IMAGES function to verify that the images are present in the repository.
-```commandline
-SELECT SYSTEM$REGISTRY_LIST_IMAGES('/tutorial_db/data_schema/tutorial_repository');
-```
+7. Run the `SHOW IMAGES IN IMAGE REPOSITORY` statement to verify that the images are present in the repository.
+
+    ```commandline
+    SHOW IMAGES IN IMAGE REPOSITORY tutorial_db.data_schema.tutorial_repository;
+    ```
+
+    The repository should contain four images:
+
+    - `grafana`
+    - `mdservice`
+    - `otel-prometheus`
+    - `prometheus`
