@@ -8,6 +8,20 @@ import gzip
 import shutil
 from typing import List, Generator
 from snowflake.snowpark import Session
+from dataclasses import dataclass
+
+
+@dataclass
+class InputRow:
+    audio_id: str
+    filepath: str
+    text: str
+    audio_data: list
+
+
+@dataclass
+class OutputRow:
+    text: str
 
 
 def get_rank() -> int:
@@ -20,6 +34,25 @@ def get_world_size() -> int:
 
 def get_job_name() -> int:
     return os.environ.get("SNOWFLAKE_SERVICE_NAME", "test01")
+
+
+def create_session() -> Session:
+    with open("/snowflake/session/token", "r") as f:
+        token = f.read()
+    snowflake_warehouse = os.getenv("SNOWFLAKE_QUERY_WAREHOUSE")
+
+    connection_parameters = {
+        "account": os.getenv("SNOWFLAKE_ACCOUNT"),
+        "host": os.getenv("SNOWFLAKE_HOST"),
+        "authenticator": "oauth",
+        "token": token,
+        "warehouse": snowflake_warehouse,
+        "database": os.getenv("SNOWFLAKE_DATABASE"),
+        "schema": os.getenv("SNOWFLAKE_SCHEMA"),
+        "role": os.getenv("SNOWFLAKE_ROLE"),
+        "client_session_keep_alive": True,
+    }
+    return Session.builder.configs(connection_parameters).create()
 
 
 class WorkerFormatter(logging.Formatter):
@@ -112,7 +145,7 @@ def download_file_from_stage(session: Session, stage_path: str, local_path: str)
 
 
 def get_batch_iterator(
-    rank: int, world_size: int, batch_size: int, files: List[str]
+        rank: int, world_size: int, batch_size: int, files: List[str]
 ) -> Generator[List[str], None, None]:
     """
     Generator to yield batches of files for distributed processing.
@@ -123,4 +156,4 @@ def get_batch_iterator(
     :return: Generator yielding batches of files.
     """
     for i in range(rank * batch_size, len(files), batch_size * world_size):
-        yield files[i : i + batch_size]
+        yield files[i: i + batch_size]
