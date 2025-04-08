@@ -7,3 +7,8 @@ ffmpeg-python==0.2.0
 numpy==1.26.4
 transformers==4.49.0
 toml==0.10.2
+evaluate==0.4.3
+datasets==3.4.1
+jiwer==3.1.0
+whisper_normalizer==0.1.0
+nemo_toolkit[asr]
