@@ -52,6 +52,7 @@ def _get_dataset(dataset_type: str, local_dir: str):
     if dataset_type == "hf":
         return HFDataset(local_dir)
     else:
+        # return LibriSpeechDataset("/Users/aivanou/temp/data/dev_clean/LibriSpeech")
         return LibriSpeechDataset('/data')
 
 
@@ -94,11 +95,9 @@ def process(
         logger.info(f"Finished processing, total time: {total_time}")
 
 
-def get_model(model_type: str, model_name: str) -> openai_whisper.Model:
+def get_model(model_type: str, model_name: str, batch_size: int = 8) -> openai_whisper.Model:
     if model_type == "whisper":
-        attention_implementation = 'sdpa'
-        cache_implementation = 'static'
-        return openai_whisper.Model(model_name, attention_implementation, cache_implementation, get_device())
+        return openai_whisper.Model(model_name, device=get_device(), batch_size=batch_size)
     elif model_type == 'nemo-canary':
         return nemo_canary.Model(model_name, get_device())
     else:
@@ -114,9 +113,9 @@ def get_device():
 @click.option("--model-name", help="Model Name")
 @click.option("--output-table", help="Output Table")
 @click.option("--dataset-type", help="Dataset type")
-@click.option("--batch-size", type=int, default=32, help="Batch size")
+@click.option("--batch-size", type=int, default=8, help="Batch size")
 def main(model_type: str, model_name: str, output_table: str, dataset_type: str, batch_size: int):
-    model = get_model(model_type, model_name)
+    model = get_model(model_type, model_name, batch_size)
     with tempfile.TemporaryDirectory() as temp_dir:
         process(
             model,

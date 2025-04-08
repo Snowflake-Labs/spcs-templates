@@ -14,7 +14,8 @@ class Model:
         self._model_type = "whisper-hf"
         self._model_name = model_name
 
-        torch_dtype = torch.float32
+        is_cuda_available = torch.cuda.is_available()
+        torch_dtype = torch.float16 if is_cuda_available else torch.float32
 
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model_name, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True
@@ -26,13 +27,18 @@ class Model:
             model=model,
             tokenizer=processor.tokenizer,
             feature_extractor=processor.feature_extractor,
-            max_new_tokens=256,
             chunk_length_s=30,
             batch_size=batch_size,
-            return_timestamps=True,
+            return_timestamps=self._get_return_timestamps(model_name),
             torch_dtype=torch_dtype,
             device=device,
         )
+
+    def _get_return_timestamps(self, model_id: str):
+        if model_id == 'nyrahealth/CrisperWhisper':
+            return 'word'
+        else:
+            return True
 
     def transcribe_batch(self, audio_batch: List[InputRow]) -> List[OutputRow]:
         input_data_batch = [row.filepath for row in audio_batch]
