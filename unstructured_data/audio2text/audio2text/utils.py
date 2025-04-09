@@ -52,6 +52,7 @@ def create_session() -> Session:
         "role": os.getenv("SNOWFLAKE_ROLE"),
         "client_session_keep_alive": True,
     }
+
     return Session.builder.configs(connection_parameters).create()
 
 
