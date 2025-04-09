@@ -12,4 +12,5 @@ RUN pip install --upgrade pip \
 
 ADD ./ /app
 
-ENTRYPOINT ["python", "-u", "/app/files/audio2text/container-files/main_benchmark.py", "--model-type=nemo-canary", "--output-table=audio2text01", "--model-name=nvidia/canary-1b"]
+CMD ["sleep", "infinity"]
+# ENTRYPOINT ["python", "-u", "/app/files/audio2text/container-files/main_benchmark.py", "--model-type=nemo-canary", "--output-table=audio2text01", "--model-name=nvidia/canary-1b"]

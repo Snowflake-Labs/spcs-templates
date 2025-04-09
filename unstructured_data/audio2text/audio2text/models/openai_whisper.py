@@ -2,7 +2,8 @@ from typing import List
 
 import torch
 from audio2text.utils import InputRow, OutputRow
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+from transformers import AutoModelForSpeechSeq2Seq, pipeline
+from transformers import AutoProcessor
 
 
 class Model:

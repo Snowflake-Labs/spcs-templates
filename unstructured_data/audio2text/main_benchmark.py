@@ -16,7 +16,7 @@ from snowflake.snowpark import Session
 from whisper_normalizer.english import EnglishTextNormalizer
 
 from audio2text.data import HFDataset, LibriSpeechDataset
-from audio2text.models import openai_whisper, nemo_canary
+from audio2text.models import openai_whisper, nemo
 from audio2text.utils import InputRow
 from audio2text.utils import (
     init_logger,
@@ -52,7 +52,6 @@ def _get_dataset(dataset_type: str, local_dir: str):
     if dataset_type == "hf":
         return HFDataset(local_dir)
     else:
-        # return LibriSpeechDataset("/Users/aivanou/temp/data/dev_clean/LibriSpeech")
         return LibriSpeechDataset('/data')
 
 
@@ -98,10 +97,10 @@ def process(
 def get_model(model_type: str, model_name: str, batch_size: int = 8) -> openai_whisper.Model:
     if model_type == "whisper":
         return openai_whisper.Model(model_name, device=get_device(), batch_size=batch_size)
-    elif model_type == 'nemo-canary':
-        return nemo_canary.Model(model_name, get_device())
+    elif model_type == 'nemo':
+        return nemo.Model(model_name, get_device())
     else:
-        raise ValueError(f'Unknown model type: {model_type}, supported: [whisper, nemo-canary]]')
+        raise ValueError(f'Unknown model type: {model_type}, supported: [whisper, nemo]]')
 
 
 def get_device():
