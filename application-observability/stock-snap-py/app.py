@@ -20,6 +20,7 @@ import snowflake.connector
 
 # Service name
 SERVICE_NAME = "stock_snap_py"
+
 # Endpoints
 STOCK_ENDPOINT = "/stock"
 TOP_GAINERS_ENDPOINT = "/top-gainers"
@@ -76,10 +77,6 @@ meter_provider = MeterProvider(metric_readers=[metric_reader], resource=Resource
 set_meter_provider(meter_provider)
 meter = get_meter_provider().get_meter(SERVICE_NAME)
 
-# Load stock prices from JSON file
-with open('stock-snap.json') as f:
-    stock_prices = json.load(f)
-
 # Define metrics
 request_counter = meter.create_counter(
     name="request_count",
@@ -97,6 +94,9 @@ stock_count_gauge = meter.create_observable_gauge(
     callbacks=[lambda options: [Observation(value=len(stock_prices))]]
 )
 
+# Load stock prices from JSON file
+with open('stock-snap.json') as f:
+    stock_prices = json.load(f)
 
 @app.route(STOCK_ENDPOINT, methods=['GET'])
 def get_stock_price():
@@ -175,7 +175,7 @@ the Snowflake query engine will be properly nested within the calling function s
 @app.route(STOCK_EXCHANGE_ENDPOINT, methods = ['GET'])
 def get_stock_exchange():
     """
-    Endpoint to get the stock exchange a given symbol is listed on.
+    Endpoint to get the stock exchange a symbol is listed on.
 
     This method validates the input symbol, creates a connection to a Snowflake account and fetches the
     stock exchange from a table in the account, and returns the exchange in JSON format.

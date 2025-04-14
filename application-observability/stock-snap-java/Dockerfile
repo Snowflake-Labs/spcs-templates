@@ -11,4 +11,5 @@ COPY target/stock-snap-java-1.0-SNAPSHOT-jar-with-dependencies.jar /app/stock-sn
 EXPOSE 8080
 
 # Run the application
-CMD ["java", "-Dorg.slf4j.simpleLogger.logFile=System.out", "-jar", "stock-snap-java.jar"]
+CMD ["java", "--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED", \
+"-Dorg.slf4j.simpleLogger.logFile=System.out", "-Djdk.module.illegalAccess=permit", "-jar", "stock-snap-java.jar"]
