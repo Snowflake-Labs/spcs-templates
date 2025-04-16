@@ -5,7 +5,7 @@ The sample code provided uses a simple service that can be deployed to Snowpark 
 ## Stock Snap Service
 
 ### Overview
-The Stock Snap Service is a simple web application written in Python & Java that offers stock price information and top gainers via two APIs. 
+The Stock Snap Service is a simple web application written in Python, Go, and Java that offers stock price, top gainers, and stock exchange information via three APIs. 
 The application is instrumented with OpenTelemetry. When deployed in Snowflake SPCS and its APIs are invoked, observability 
 data is sent to a Snowflake-deployed OpenTelemetry Collector, which subsequently routes the data to the configured event table.
 
@@ -17,7 +17,7 @@ data is sent to a Snowflake-deployed OpenTelemetry Collector, which subsequently
 
 - **Get Stock Price**: Retrieves the current price of a specified stock. Endpoint: `/stock?symbol=<stock_symbol>`
 - **Get Top Gainers**: Retrieves a list of stocks with the highest gains. Endpoint: `/top-gainers`
-- **Get Stock Exchange**: Retrieves the stock exchange a specified stock is listed on. Endpoint: `/stock-exchange?symbol=<stock_symbol>`
+- **Get Stock Exchange**: Retrieves the exchange a specified stock is listed on. Endpoint: `/stock-exchange?symbol=<stock_symbol>`
 
 ## Instrumentation
 The application is instrumented with the following OpenTelemetry metrics and traces:
@@ -35,19 +35,19 @@ The application is instrumented with the following OpenTelemetry metrics and tra
   - `fetch_prices`: Child span for fetching stock prices.
   - `sort_and_filter`: Child span for sorting and filtering top gainers.
 - `get_stock_exchange`: Trace for the `get_stock_exchange` endpoint.
-    - `validate_input`: Child span for input validation.
-    - `fetch_exchange`: Child span for fetching the stock exchange.
+  - `validate_input`: Child span for input validation.
+  - `fetch_exchange`: Child span for fetching the stock exchange.
 
 ### Building and Pushing Docker Container
 
 To build the Docker container and push it to Snowflake SPCS for execution, follow these steps:
 
-Change directory to `stock-snap-py` or `stock-snap-java` based on the language you want to use.
+Change directory to `stock-snap-py`, `stock-snap-go`, or `stock-snap-java` based on the language you want to use.
 
 Build the Docker image and upload it to your repository:
-   ```bash
-   bash build.sh <repository_url> <docker_tag> <snowflake_username>
-   ```
+  ```bash
+  bash build.sh <repository_url> <docker_tag> <snowflake_username>
+  ```
 Refer to the [Snowflake documentation](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/tutorial-1#build-an-image-and-upload) for detailed instructions on building and uploading the image.
 
 ### Creating the Service
@@ -59,18 +59,25 @@ Once the image is uploaded, you can create the service by following the instruct
 Use the following Service Specification to create the service:
 
 ```yaml
- spec:
-   containers:
-   - name: stock-snap
-     image: <repository-url>/stock-snap-<language(py/java)>:<tag>
-   platformMonitor:
-     metricConfig:
-       groups:
-       - system
-   endpoints:
-   - name: stock-snap-endpoint
-     port: 8080
-     public: true
+spec:
+	containers:
+	- name: stock-snap
+	  image: <repository-url>/stock-snap-<py|go|java>:<tag>
+	applicationMonitor:
+	  metricConfig:
+	    otlp:
+	      endpoint: fromEnv
+	  traceConfig:
+	    otlp:
+	      endpoint: fromEnv
+	platformMonitor:
+	  metricConfig:
+		  groups:
+			- system
+	endpoints:
+	- name: stock-snap-endpoint
+	  port: 8080
+	  public: true
 ```
 The OpenTelemetry Collector endpoint will automatically be provided to the service containers via [opentelemetry environment variables](https://opentelemetry.io/docs/zero-code/net/configuration/#otlp) `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` and `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`.
 
@@ -120,9 +127,9 @@ and record_type = 'SPAN'
 order by timestamp
 ```
 
-> **Note:** Trace propagation is supported for the Python example. Services that interact with a Snowflake table will have those SQL queries properly nested within the parent span.
+> **Note:** Trace propagation is supported for the Python example. Services that interact with a Snowflake table via the Python connector will have those SQL queries properly nested within the parent span. The Java and Go connectors are WIP.
 
-To visualize the trace tree, in the sidebar navigate to **Monitoring > Traces & Logs**, and select a Trace. An example trace tree visualization for the `get_stock_exchange` function is shown below:
+To visualize the trace tree, navigate to **Monitoring > Traces & Logs** in the Snowsight sidebar, and select a Trace. An example trace tree visualization for the `get_stock_exchange` function is shown below (trace propagation enables the SQL queries to be nested under `fetch_exchange` parent span):
 
 ![Example Trace Tree](assets/example-trace-tree.png)
 

@@ -286,7 +286,7 @@ public class StockSnapService {
         }
         
         // Fetch exchange
-        Span fetchExchangeSpan = tracer.spanBuilder("fetch_stock_exchange").startSpan();
+        Span fetchExchangeSpan = tracer.spanBuilder("fetch_exchange").startSpan();
 
         try (Scope ignored1 = fetchExchangeSpan.makeCurrent()) {
           randomSleep();

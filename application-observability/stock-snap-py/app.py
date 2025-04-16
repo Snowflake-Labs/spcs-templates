@@ -26,21 +26,18 @@ STOCK_ENDPOINT = "/stock"
 TOP_GAINERS_ENDPOINT = "/top-gainers"
 STOCK_EXCHANGE_ENDPOINT = "/stock-exchange"
 
-# Define dynamic variables, modify these as needed
-
-# Containers managed by Snowpark Container Services make the Service host and port, and 
-# Snowflake host and account available in the following environment variables. 
+# Containers managed by Snowpark Container Services make many variables needed for connecting 
+# to Snowflake available in container environment. 
 SERVICE_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
 SERVICE_PORT = os.getenv('SERVER_PORT', 8080)
 SNOWFLAKE_HOST = os.getenv('SNOWFLAKE_HOST')
 SNOWFLAKE_ACCOUNT = os.getenv('SNOWFLAKE_ACCOUNT')
-STOCK_EXCHANGE_DATABASE = "STOCK_EXCHANGE_DATABASE"
-STOCK_EXCHANGE_SCHEMA = "STOCK_EXCHANGE_SCHEMA"
-STOCK_EXCHANGE_TABLE = "STOCK_EXCHANGE_TABLE"
-STOCK_EXCHANGE_ROW = "EXCHANGE"
+STOCK_EXCHANGE_DATABASE = os.getenv('SNOWFLAKE_DATABASE')
+STOCK_EXCHANGE_SCHEMA = os.getenv('SNOWFLAKE_SCHEMA')
+SNOWFLAKE_ROLE = os.getenv('SNOWFLAKE_ROLE')
 
-# Set snowflake role
-SNOWFLAKE_ROLE = "test_role"
+STOCK_EXCHANGE_TABLE = "STOCK_EXCHANGES"
+STOCK_EXCHANGE_COLUMN = "EXCHANGE"
 
 # Initialize Flask app
 app = Flask(SERVICE_NAME)
@@ -208,7 +205,7 @@ def get_stock_exchange():
             try:
                 cur = conn.cursor()
                 cur.execute(f"""
-                    SELECT {STOCK_EXCHANGE_ROW} 
+                    SELECT {STOCK_EXCHANGE_COLUMN} 
                     FROM {STOCK_EXCHANGE_DATABASE}.{STOCK_EXCHANGE_SCHEMA}.{STOCK_EXCHANGE_TABLE} 
                     WHERE symbol = %s
                     """, 
