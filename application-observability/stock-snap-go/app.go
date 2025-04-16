@@ -84,33 +84,25 @@ func (g SnowflakeTraceIDGenerator) NewSpanID(ctx context.Context, traceID trace.
 func init() {
 	ctx := context.Background()
 
-	// Set up logging
 	setUpLogging()
 
-	// Set up tracing
 	setupOTelTracing(ctx)
 	tracer = otel.Tracer(ServiceName)
 
-	// Set up metrics
 	setUpMetrics(ctx)
 	meter = otel.GetMeterProvider().Meter(ServiceName)
 
-	// Set up Snowflake configuration
 	setSnowflakeConfig()
-	
-	// Load stock prices
+
 	loadStockPrices("stock-snap.json")
 }
 
 func main() {
-	// Use the default Gin router with built-in logging and recovery
 	router := gin.Default()
 	router.Use(addNewlineMiddleware())
 
-	// Setup routes
 	setupRoutes(router)
 
-	// Define metrics
 	requestCounter, _ = meter.Int64Counter(
 		"request_count",
 		metric.WithDescription("Counts the number of requests"),
@@ -132,7 +124,6 @@ func main() {
 		),
 	)
 
-	// Start server
 	serverAddr := fmt.Sprintf("%s:%s", ServiceHost, ServerPort)
 	logger.Info("Starting server", "address", serverAddr)
 
@@ -179,7 +170,6 @@ func setupOTelTracing(ctx context.Context) {
 func getHandler() *slog.TextHandler {
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-			// Format the timestamp
 			if a.Key == slog.TimeKey {
 				a.Value = slog.StringValue(a.Value.Time().Format("2006-01-02 15:04:05"))
 			}
@@ -210,7 +200,8 @@ func getLoginToken() string {
 }
 
 func setSnowflakeConfig() {
-	// Snowpark Container Services (SPCS) provides many of the variables needed for a connection in the local SPCS environment
+	// Snowpark Container Services (SPCS) provides many of the variables needed for a connection
+	// in the service container's environment
 	sfConfig = gosnowflake.Config{
 		Account:       os.Getenv("SNOWFLAKE_ACCOUNT"),
 		User:          os.Getenv("SNOWFLAKE_USER"),
@@ -224,7 +215,6 @@ func setSnowflakeConfig() {
 	}
 }
 
-// Appends newline to the response body
 func addNewlineMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next() // Process the request
@@ -242,7 +232,6 @@ func setupRoutes(router *gin.Engine) {
 	router.GET(TopGainersEndpoint, getTopGainers)
 	router.GET(StockExchangeEndpoint, getStockExchange)
 
-	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "up"})
 	})
@@ -296,7 +285,6 @@ func getStockPrice(c *gin.Context) {
 
 	logger.Info(fmt.Sprintf("GET %s - 200 - %s: %f", StockEndpoint, symbol, price))
 
-	// Response
 	c.JSON(http.StatusOK, gin.H{"symbol": symbol, "price": price})
 }
 
@@ -346,7 +334,6 @@ func getTopGainers(c *gin.Context) {
 
 	logger.Info(fmt.Sprintf("GET %s - 200 - %v", TopGainersEndpoint, sortedStocks))
 
-	// Response
 	c.IndentedJSON(http.StatusOK, gin.H{"top_gainers": sortedStocks})
 }
 
