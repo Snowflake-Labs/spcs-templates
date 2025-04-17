@@ -38,9 +38,9 @@ const (
 
 // Global variables
 var (
-	ServiceName    = "stock_snap_go"
-	ServiceHost, _ = os.LookupEnv("SERVICE_HOST")
-	ServerPort, _  = os.LookupEnv("SERVER_PORT")
+	ServiceName = "stock_snap_go"
+	ServiceHost = getEnvOrDefault("SERVICE_HOST", "0.0.0.0")
+	ServerPort  = getEnvOrDefault("SERVER_PORT", "8080")
 
 	logger            *slog.Logger
 	tracer            trace.Tracer
@@ -213,6 +213,14 @@ func setSnowflakeConfig() {
 		Schema:        os.Getenv("SNOWFLAKE_SCHEMA"),
 		Host:          os.Getenv("SNOWFLAKE_HOST"),
 	}
+}
+
+func getEnvOrDefault(envVar string, defaultValue string) string {
+	value, exists := os.LookupEnv(envVar)
+	if !exists {
+		return defaultValue
+	}
+	return value
 }
 
 func addNewlineMiddleware() gin.HandlerFunc {

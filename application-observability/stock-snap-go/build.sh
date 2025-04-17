@@ -22,9 +22,6 @@ REPOSITORY_URL=$1
 DOCKER_TAG=$2
 SNOWFLAKE_USERNAME=$3
 
-# Build the Go executable
-GOOS=linux GOARCH=amd64 go build app.go
-
 # Login to Docker repository
 docker login $REPOSITORY_URL -u $SNOWFLAKE_USERNAME
 

@@ -63,13 +63,13 @@ spec:
 	containers:
 	- name: stock-snap
 	  image: <repository-url>/stock-snap-<py|go|java>:<tag>
-	applicationMonitor:
-	  metricConfig:
-	    otlp:
-	      endpoint: fromEnv
-	  traceConfig:
-	    otlp:
-	      endpoint: fromEnv
+	  applicationMonitor:
+	    metricConfig:
+	      otlp:
+	        endpoint: fromEnv
+	    traceConfig:
+	      otlp:
+	        endpoint: fromEnv
 	platformMonitor:
 	  metricConfig:
 		  groups:
