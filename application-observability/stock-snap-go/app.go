@@ -217,7 +217,7 @@ func setSnowflakeConfig() {
 
 func getEnvOrDefault(envVar string, defaultValue string) string {
 	value, exists := os.LookupEnv(envVar)
-	if !exists {
+	if !exists || value == "" {
 		return defaultValue
 	}
 	return value
