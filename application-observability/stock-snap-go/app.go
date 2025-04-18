@@ -29,6 +29,8 @@ import (
 	"github.com/snowflakedb/gosnowflake"
 )
 
+const ServiceName = "stock_snap_go"
+
 // API endpoints
 const (
 	StockEndpoint         = "/stock-price"
@@ -38,9 +40,8 @@ const (
 
 // Global variables
 var (
-	ServiceName = "stock_snap_go"
-	ServiceHost = getEnvOrDefault("SERVICE_HOST", "0.0.0.0")
 	ServerPort  = getEnvOrDefault("SERVER_PORT", "8080")
+	ServiceHost = getEnvOrDefault("SERVICE_HOST", "0.0.0.0")
 
 	logger            *slog.Logger
 	tracer            trace.Tracer

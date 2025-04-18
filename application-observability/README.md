@@ -60,24 +60,24 @@ Use the following Service Specification to create the service:
 
 ```yaml
 spec:
-	containers:
-	- name: stock-snap
-	  image: <repository-url>/stock-snap-<py|go|java>:<tag>
-	  applicationMonitor:
-	    metricConfig:
-	      otlp:
-	        endpoint: fromEnv
-	    traceConfig:
-	      otlp:
-	        endpoint: fromEnv
-	platformMonitor:
-	  metricConfig:
-		  groups:
-			- system
-	endpoints:
-	- name: stock-snap-endpoint
-	  port: 8080
-	  public: true
+  containers:
+  - name: stock-snap
+    image: <repository-url>/stock-snap-<py|go|java>:<tag>
+    applicationMonitor:
+      metricConfig:
+        otlp:
+          endpoint: fromEnv
+      traceConfig:
+        otlp:
+          endpoint: fromEnv
+  platformMonitor:
+    metricConfig:
+      groups:
+      - system
+  endpoints:
+  - name: stock-snap-endpoint
+    port: 8080
+    public: true
 ```
 The OpenTelemetry Collector endpoint will automatically be provided to the service containers via [opentelemetry environment variables](https://opentelemetry.io/docs/zero-code/net/configuration/#otlp) `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` and `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`.
 
