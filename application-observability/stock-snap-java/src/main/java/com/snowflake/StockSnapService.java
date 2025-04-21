@@ -57,8 +57,6 @@ public class StockSnapService {
   private static final String STOCK_EXCHANGE_ENDPOINT = "/stock-exchange";
 
   // Global variables
-  private static final String ServiceName = "stock_snap_java";
-  private static final String ServiceHost = System.getenv("SERVICE_HOST") != null ? System.getenv(ServiceName) : "0.0.0.0";
   private static final String ServicePort = System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "8080";
   
   private static final Logger logger = Logger.getLogger(StockSnapService.class.getName());
