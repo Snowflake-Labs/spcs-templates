@@ -252,12 +252,14 @@ func setupRoutes(router *gin.Engine) {
 func getStockPrice(c *gin.Context) {
 	// Root span
 	ctx, span := tracer.Start(context.Background(), "get_stock_price")
+	defer span.End()
 
 	startTime := time.Now()
 	symbol := c.Query("symbol")
 
 	// Validate input span
-	_, childSpan := tracer.Start(ctx, "validate_input")
+	_, validateInputSpan := tracer.Start(ctx, "validate_input")
+	defer validateInputSpan.End()
 
 	_, exists := stockPrices[symbol]
 	if symbol == "" || !exists {
@@ -271,15 +273,12 @@ func getStockPrice(c *gin.Context) {
 	}
 	randomSleep() // Simulate validation delay
 
-	childSpan.End()
-
 	// Stock price span
-	_, childSpan = tracer.Start(ctx, "fetch_price")
+	_, fetchPriceSpan := tracer.Start(ctx, "fetch_price")
+	defer fetchPriceSpan.End()
 
 	price := stockPrices[symbol]
 	randomSleep() // Simulate fetching delay
-
-	childSpan.End()
 
 	// Metrics and logging
 	responseTime := time.Since(startTime).Milliseconds()
@@ -290,7 +289,6 @@ func getStockPrice(c *gin.Context) {
 		attribute.Int("http.status_code", http.StatusOK),
 		attribute.String("response.body", fmt.Sprintf(`{"symbol": "%s", "price": %f}`, symbol, price)),
 	))
-	span.End()
 
 	logger.Info(fmt.Sprintf("GET %s - 200 - %s: %f", StockEndpoint, symbol, price))
 
@@ -301,10 +299,12 @@ func getStockPrice(c *gin.Context) {
 func getTopGainers(c *gin.Context) {
 	// Root span
 	ctx, span := tracer.Start(context.Background(), "get_top_gainers")
+	defer span.End()
 	startTime := time.Now()
 
 	// Fetch prices span
-	_, childSpan := tracer.Start(ctx, "fetch_prices")
+	_, fetchPricesSpan := tracer.Start(ctx, "fetch_prices")
+	defer fetchPricesSpan.End()
 
 	sortedStocks := make([]struct {
 		Symbol string
@@ -318,17 +318,14 @@ func getTopGainers(c *gin.Context) {
 		}{Symbol: symbol, Price: price})
 	}
 
-	childSpan.End()
-
 	// Sort and filter span
-	_, childSpan = tracer.Start(ctx, "sort_and_filter")
+	_, sortAndFilterSpan := tracer.Start(ctx, "sort_and_filter")
+	defer sortAndFilterSpan.End()
 
 	sort.Slice(sortedStocks, func(i, j int) bool {
 		return sortedStocks[i].Price > sortedStocks[j].Price
 	})
 	sortedStocks = sortedStocks[:5]
-
-	childSpan.End()
 
 	// Metrics and logging
 	responseTime := time.Since(startTime).Milliseconds()
@@ -339,7 +336,6 @@ func getTopGainers(c *gin.Context) {
 		attribute.Int("http.status_code", http.StatusOK),
 		attribute.String("response.body", fmt.Sprintf(`{"top_gainers": %v}`, sortedStocks)),
 	))
-	span.End()
 
 	logger.Info(fmt.Sprintf("GET %s - 200 - %v", TopGainersEndpoint, sortedStocks))
 
@@ -350,10 +346,12 @@ func getTopGainers(c *gin.Context) {
 func getStockExchange(c *gin.Context) {
 	// Root span
 	ctx, span := tracer.Start(context.Background(), "get_stock_exchange")
+	defer span.End()
 	startTime := time.Now()
 
 	// Validate input span
-	_, childSpan := tracer.Start(ctx, "validate_input")
+	_, validateInputSpan := tracer.Start(ctx, "validate_input")
+	defer validateInputSpan.End()
 
 	symbol := c.Query("symbol")
 	if symbol == "" {
@@ -367,10 +365,9 @@ func getStockExchange(c *gin.Context) {
 	}
 	randomSleep() // Simulate validation delay
 
-	childSpan.End()
-
 	// Fetch exchange span
-	childCtx, childSpan := tracer.Start(ctx, "fetch_exchange")
+	childCtx, fetchExchangeSpan := tracer.Start(ctx, "fetch_exchange")
+	defer fetchExchangeSpan.End()
 
 	// Snowflake connection
 	config := &sfConfig
@@ -427,8 +424,6 @@ func getStockExchange(c *gin.Context) {
 		return
 	}
 
-	childSpan.End()
-
 	// Metrics and logging
 	responseTime := time.Since(startTime).Milliseconds()
 	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", StockExchangeEndpoint)))
@@ -438,7 +433,6 @@ func getStockExchange(c *gin.Context) {
 		attribute.Int("http.status_code", http.StatusOK),
 		attribute.String("response.body", fmt.Sprintf(`{"exchange": "%s"}`, exchange)),
 	))
-	span.End()
 
 	logger.Info(fmt.Sprintf("GET %s - 200 - %s", StockExchangeEndpoint, exchange))
 
