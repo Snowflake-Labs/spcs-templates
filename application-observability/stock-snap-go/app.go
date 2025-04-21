@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -58,29 +57,6 @@ var (
 // Generated trace ID consists of a leading section derived from the timestamp and a trailing section composed of a random suffix.
 // Using this generator is required for Snowflake to display traces & spans in Snowsight UI.
 type SnowflakeTraceIDGenerator struct{}
-
-func (g SnowflakeTraceIDGenerator) NewIDs(ctx context.Context) (trace.TraceID, trace.SpanID) {
-	var traceIDBytes [16]byte
-	timestampInMinutes := time.Now().Unix() / 60
-	binary.BigEndian.PutUint32(traceIDBytes[:4], uint32(timestampInMinutes))
-
-	for i := 4; i < 16; i++ {
-		traceIDBytes[i] = byte(rand.Intn(256))
-	}
-	var spanIDBytes [8]byte
-	for i := range 8 {
-		spanIDBytes[i] = byte(rand.Intn(256))
-	}
-	return trace.TraceID(traceIDBytes), trace.SpanID(spanIDBytes)
-}
-
-func (g SnowflakeTraceIDGenerator) NewSpanID(ctx context.Context, traceID trace.TraceID) trace.SpanID {
-	var spanIDBytes [8]byte
-	for i := range 8 {
-		spanIDBytes[i] = byte(rand.Intn(256))
-	}
-	return trace.SpanID(spanIDBytes)
-}
 
 func init() {
 	ctx := context.Background()
@@ -157,7 +133,7 @@ func setupOTelTracing(ctx context.Context) {
 		),
 	)
 
-	traceIDGenerator := SnowflakeTraceIDGenerator{}
+	traceIDGenerator := newSnowflakeTraceIDGenerator()
 
 	bsp := sdktrace.NewBatchSpanProcessor(exporter)
 	tp := sdktrace.NewTracerProvider(
