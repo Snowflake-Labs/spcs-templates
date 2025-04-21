@@ -16,7 +16,6 @@ func TestNewIDs(t *testing.T) {
 	for i := 0; i < n; i++ {
 		traceID, spanID := gen.NewIDs(context.Background())
 		assert.Truef(t, traceID.IsValid(), "trace id: %s", traceID.String())
-		t.Log(traceID.String())
 		assert.Truef(t, spanID.IsValid(), "span id: %s", spanID.String())
 	}
 }
