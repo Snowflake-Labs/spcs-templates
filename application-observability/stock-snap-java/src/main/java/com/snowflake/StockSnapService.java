@@ -42,11 +42,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * Class sets up a Jetty server to handle requests to Stock Snap service.
- * It has two endpoints:
- * - GET /stock?symbol=<symbol>
- * - GET /top-gainers
- * It uses OpenTelemetry for instrumenting the code with metrics, tracing and logs.
+ * Class sets up a Jetty server to handle requests to Stock Snap service. It has two endpoints: -
+ * GET /stock?symbol=<symbol> - GET /top-gainers It uses OpenTelemetry for instrumenting the code
+ * with metrics, tracing and logs.
  */
 public class StockSnapService {
 
@@ -56,14 +54,15 @@ public class StockSnapService {
   private static final String STOCK_EXCHANGE_ENDPOINT = "/stock-exchange";
 
   // Global variables
-  private static final String ServicePort = System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "8080";
-  
+  private static final String ServicePort =
+      System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "8080";
+
   private static final Logger logger = Logger.getLogger(StockSnapService.class.getName());
   private static Tracer tracer;
   private static LongCounter requestCounter;
   private static LongHistogram responseHistogram;
   private static ObservableLongGauge stockCountGauge;
-  
+
   private static final Random random = new Random();
 
   public static void main(String[] args) throws Exception {
@@ -89,7 +88,8 @@ public class StockSnapService {
     // Add Servlets to handle APIs
     context.addServlet(new ServletHolder(new StockServlet(stockPrices)), STOCK_ENDPOINT);
     context.addServlet(new ServletHolder(new TopGainersServlet(stockPrices)), TOP_GAINERS_ENDPOINT);
-    context.addServlet(new ServletHolder(new StockExchangeServlet(stockPrices)), STOCK_EXCHANGE_ENDPOINT);
+    context.addServlet(
+        new ServletHolder(new StockExchangeServlet(stockPrices)), STOCK_EXCHANGE_ENDPOINT);
 
     // Initialize OpenTelemetry and configure
     OpenTelemetry openTelemetry = Configuration.initOpenTelemetry();
@@ -97,22 +97,28 @@ public class StockSnapService {
     tracer = openTelemetry.getTracer("com.snowflake");
     Meter meter = openTelemetry.getMeter("com.snowflake");
 
-    requestCounter = meter.counterBuilder("request_count")
-                    .setDescription("Counts the number of requests")
-                    .build();
-    responseHistogram = meter.histogramBuilder("response_latency")
-                    .setDescription("Latency of responses")
-                    .setUnit("ms")
-                    .ofLongs()
-                    .build();
-    stockCountGauge = meter.gaugeBuilder("stock_count")
-                    .setDescription("Number of stock entries")
-                    .setUnit("count")
-                    .ofLongs()
-                    .buildWithCallback(
-                            result -> {
-                              result.record(stockPrices.size(), Attributes.empty());
-                            });
+    requestCounter =
+        meter
+            .counterBuilder("request_count")
+            .setDescription("Counts the number of requests")
+            .build();
+    responseHistogram =
+        meter
+            .histogramBuilder("response_latency")
+            .setDescription("Latency of responses")
+            .setUnit("ms")
+            .ofLongs()
+            .build();
+    stockCountGauge =
+        meter
+            .gaugeBuilder("stock_count")
+            .setDescription("Number of stock entries")
+            .setUnit("count")
+            .ofLongs()
+            .buildWithCallback(
+                result -> {
+                  result.record(stockPrices.size(), Attributes.empty());
+                });
 
     // Start the server
     server.start();
@@ -202,7 +208,8 @@ public class StockSnapService {
         List<Map.Entry<String, Double>> sortedStocks;
         try (Scope ignored1 = fetchPricesSpan.makeCurrent()) {
           randomSleep();
-          sortedStocks = stockPrices.entrySet().stream()
+          sortedStocks =
+              stockPrices.entrySet().stream()
                   .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                   .toList();
         } finally {
@@ -235,7 +242,8 @@ public class StockSnapService {
         logger.info("GET /top-gainers - 200 - " + topGainers);
 
         // Record metrics
-        requestCounter.add(1, Attributes.of(AttributeKey.stringKey("endpoint"), TOP_GAINERS_ENDPOINT));
+        requestCounter.add(
+            1, Attributes.of(AttributeKey.stringKey("endpoint"), TOP_GAINERS_ENDPOINT));
         responseHistogram.record(
             System.currentTimeMillis() - startTime,
             Attributes.of(AttributeKey.stringKey("endpoint"), TOP_GAINERS_ENDPOINT));
@@ -253,7 +261,7 @@ public class StockSnapService {
   public static class StockExchangeServlet extends HttpServlet {
     private final Map<String, Double> stockPrices;
 
-    public StockExchangeServlet (Map<String, Double> stockPrices) {
+    public StockExchangeServlet(Map<String, Double> stockPrices) {
       this.stockPrices = stockPrices;
     }
 
@@ -264,7 +272,7 @@ public class StockSnapService {
 
       try (Scope ignored = span.makeCurrent()) {
         String symbol = req.getParameter("symbol");
-        
+
         // Validate input
         Span validationSpan = tracer.spanBuilder("validate_input").startSpan();
         try (Scope ignored1 = validationSpan.makeCurrent()) {
@@ -281,14 +289,15 @@ public class StockSnapService {
         } finally {
           validationSpan.end();
         }
-        
+
         // Fetch exchange
         Span fetchExchangeSpan = tracer.spanBuilder("fetch_exchange").startSpan();
 
         try (Scope ignored1 = fetchExchangeSpan.makeCurrent()) {
           randomSleep();
-          
-          // SnowPark Container Services provide environment variables to facilitate creating a connection and running queries
+
+          // SnowPark Container Services provide environment variables to facilitate creating a
+          // connection and running queries
           String host = System.getenv("SNOWFLAKE_HOST");
           String account = System.getenv("SNOWFLAKE_ACCOUNT");
           String token = getLoginToken();
@@ -300,13 +309,13 @@ public class StockSnapService {
           String column = "EXCHANGE";
 
           // Create connection
-          Connection conn = getConnection(host, account, token, warehouse, database, schema); 
+          Connection conn = getConnection(host, account, token, warehouse, database, schema);
 
           // SQL query to retrieve stock exchange
           String query =
-            String.format(
-              "SELECT %s FROM %s.%s.%s WHERE symbol = '%s'",
-                column, database, schema, table, symbol);
+              String.format(
+                  "SELECT %s FROM %s.%s.%s WHERE symbol = '%s'",
+                  column, database, schema, table, symbol);
 
           // Execute query
           ResultSet resultSet = executeStatement(query, conn);
@@ -314,7 +323,9 @@ public class StockSnapService {
           boolean resultExists = resultSet.next();
 
           if (!resultExists) {
-            validationSpan.setStatus(io.opentelemetry.api.trace.StatusCode.ERROR, "Invalid symbol for stock exchange table");
+            validationSpan.setStatus(
+                io.opentelemetry.api.trace.StatusCode.ERROR,
+                "Invalid symbol for stock exchange table");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
             JsonObject errorJson = new JsonObject();
@@ -341,7 +352,8 @@ public class StockSnapService {
         }
 
         // Record metrics
-        requestCounter.add(1, Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_EXCHANGE_ENDPOINT));
+        requestCounter.add(
+            1, Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_EXCHANGE_ENDPOINT));
         responseHistogram.record(
             System.currentTimeMillis() - startTime,
             Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_EXCHANGE_ENDPOINT));
@@ -358,8 +370,7 @@ public class StockSnapService {
       } finally {
         span.end();
       }
-    }    
-
+    }
   }
 
   private static ResultSet executeStatement(String sql, Connection conn) throws SQLException {
@@ -373,11 +384,13 @@ public class StockSnapService {
     return resultSet;
   }
 
-  private static Connection getConnection(String host, String account, String token, String warehouse, String database, String schema) throws SQLException {
+  private static Connection getConnection(
+      String host, String account, String token, String warehouse, String database, String schema)
+      throws SQLException {
     Connection conn = null;
     Properties props = new Properties();
     String connectionURL;
-    
+
     // Build connection URL for SPCS
     connectionURL = String.format("jdbc:snowflake://%s/", host);
 
@@ -388,9 +401,9 @@ public class StockSnapService {
     props.put("warehouse", warehouse);
     props.put("database", database);
     props.put("schema", schema);
-    
+
     logger.info("Connection URL: " + connectionURL);
-    
+
     // Connect to Snowflake
     try {
       conn = DriverManager.getConnection(connectionURL, props);
