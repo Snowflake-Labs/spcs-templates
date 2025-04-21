@@ -235,7 +235,6 @@ func getStockPrice(c *gin.Context) {
 
 	// Validate input span
 	_, validateInputSpan := tracer.Start(ctx, "validate_input")
-	defer validateInputSpan.End()
 
 	_, exists := stockPrices[symbol]
 	if symbol == "" || !exists {
@@ -247,7 +246,9 @@ func getStockPrice(c *gin.Context) {
 		))
 		return
 	}
+
 	randomSleep() // Simulate validation delay
+	validateInputSpan.End()
 
 	// Stock price span
 	_, fetchPriceSpan := tracer.Start(ctx, "fetch_price")
@@ -280,7 +281,6 @@ func getTopGainers(c *gin.Context) {
 
 	// Fetch prices span
 	_, fetchPricesSpan := tracer.Start(ctx, "fetch_prices")
-	defer fetchPricesSpan.End()
 
 	sortedStocks := make([]struct {
 		Symbol string
@@ -293,6 +293,8 @@ func getTopGainers(c *gin.Context) {
 			Price  float64
 		}{Symbol: symbol, Price: price})
 	}
+
+	fetchPricesSpan.End()
 
 	// Sort and filter span
 	_, sortAndFilterSpan := tracer.Start(ctx, "sort_and_filter")
@@ -327,7 +329,6 @@ func getStockExchange(c *gin.Context) {
 
 	// Validate input span
 	_, validateInputSpan := tracer.Start(ctx, "validate_input")
-	defer validateInputSpan.End()
 
 	symbol := c.Query("symbol")
 	if symbol == "" {
@@ -337,9 +338,12 @@ func getStockExchange(c *gin.Context) {
 			attribute.String("response.body", `{"error": "Invalid symbol."}`),
 		))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid symbol."})
+		validateInputSpan.End()
 		return
 	}
+
 	randomSleep() // Simulate validation delay
+	validateInputSpan.End()
 
 	// Fetch exchange span
 	childCtx, fetchExchangeSpan := tracer.Start(ctx, "fetch_exchange")
