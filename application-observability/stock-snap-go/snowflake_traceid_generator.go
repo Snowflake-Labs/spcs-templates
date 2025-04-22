@@ -11,6 +11,9 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+// SnowflakeTraceIdGenerator generates trace IDs incorporating a timestamp component to ensure both uniqueness and traceability.
+// Generated trace ID consists of a leading section derived from the timestamp and a trailing section composed of a random suffix.
+// Using this generator is required for Snowflake to display traces & spans in Snowsight UI.
 type snowflakeTraceIDGenerator struct {
 	sync.Mutex
 	randSource *rand.Rand
