@@ -42,32 +42,33 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * Class sets up a Jetty server to handle requests to Stock Snap service. It has two endpoints: -
- * GET /stock?symbol=<symbol> - GET /top-gainers It uses OpenTelemetry for instrumenting the code
- * with metrics, tracing and logs.
+ * Class sets up a Jetty server to handle requests to Stock Snap service. It has three endpoints: 
+ * - GET /stock-price?symbol=<symbol> 
+ * - GET /top-gainers 
+ * - GET /stock-exchange?symbol=<symbol>
+ * It uses OpenTelemetry for instrumenting the code with metrics, tracing and logs.
  */
 public class StockSnapService {
 
+  // Global variables
+  private static final Logger LOGGER = Logger.getLogger(StockSnapService.class.getName());
+  private static final Random RANDOM = new Random();
+  private static final String SERVICE_PORT =
+      System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "8080";
+
   // API endpoints
-  private static final String STOCK_ENDPOINT = "/stock";
+  private static final String STOCK_PRICE_ENDPOINT = "/stock-price";
   private static final String TOP_GAINERS_ENDPOINT = "/top-gainers";
   private static final String STOCK_EXCHANGE_ENDPOINT = "/stock-exchange";
 
-  // Global variables
-  private static final String ServicePort =
-      System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "8080";
-
-  private static final Logger logger = Logger.getLogger(StockSnapService.class.getName());
   private static Tracer tracer;
   private static LongCounter requestCounter;
   private static LongHistogram responseHistogram;
   private static ObservableLongGauge stockCountGauge;
 
-  private static final Random random = new Random();
-
   public static void main(String[] args) throws Exception {
     // Create Jetty Server on port 8080
-    Server server = new Server(Integer.parseInt(ServicePort));
+    Server server = new Server(Integer.parseInt(SERVICE_PORT));
 
     // Create a ServletContextHandler for handling servlets
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -86,7 +87,7 @@ public class StockSnapService {
     }
 
     // Add Servlets to handle APIs
-    context.addServlet(new ServletHolder(new StockServlet(stockPrices)), STOCK_ENDPOINT);
+    context.addServlet(new ServletHolder(new StockServlet(stockPrices)), STOCK_PRICE_ENDPOINT);
     context.addServlet(new ServletHolder(new TopGainersServlet(stockPrices)), TOP_GAINERS_ENDPOINT);
     context.addServlet(
         new ServletHolder(new StockExchangeServlet(stockPrices)), STOCK_EXCHANGE_ENDPOINT);
@@ -150,7 +151,7 @@ public class StockSnapService {
             JsonObject errorJson = new JsonObject();
             errorJson.addProperty("error", "Invalid symbol");
             resp.getWriter().println(new Gson().toJson(errorJson));
-            logger.info("GET /stock - 400 - Invalid symbol");
+            LOGGER.info("GET " + STOCK_PRICE_ENDPOINT + " - 400 - Invalid symbol");
             return;
           }
         } finally {
@@ -168,20 +169,20 @@ public class StockSnapService {
 
           resp.setStatus(HttpServletResponse.SC_OK);
           resp.getWriter().println(new Gson().toJson(responseJson));
-          logger.info("GET /stock - 200 - " + symbol + ": " + price);
+          LOGGER.info("GET " + STOCK_PRICE_ENDPOINT + " - 200 - " + symbol + ": " + price);
         } finally {
           fetchPriceSpan.end();
         }
 
         // Record metrics
-        requestCounter.add(1, Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_ENDPOINT));
+        requestCounter.add(1, Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_PRICE_ENDPOINT));
         responseHistogram.record(
             System.currentTimeMillis() - startTime,
-            Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_ENDPOINT));
+            Attributes.of(AttributeKey.stringKey("endpoint"), STOCK_PRICE_ENDPOINT));
       } catch (Exception e) {
         span.setStatus(
             io.opentelemetry.api.trace.StatusCode.ERROR, "Unhandled exception: " + e.getMessage());
-        logger.severe("GET /stock - 500 - Unhandled exception: " + e.getMessage());
+        LOGGER.severe("GET " + STOCK_PRICE_ENDPOINT + " - 500 - Unhandled exception: " + e.getMessage());
         throw e;
       } finally {
         span.end();
@@ -239,7 +240,7 @@ public class StockSnapService {
 
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().println(new Gson().toJson(responseJson));
-        logger.info("GET /top-gainers - 200 - " + topGainers);
+        LOGGER.info("GET " + TOP_GAINERS_ENDPOINT + " - 200 - " + topGainers);
 
         // Record metrics
         requestCounter.add(
@@ -250,7 +251,7 @@ public class StockSnapService {
       } catch (Exception e) {
         span.setStatus(
             io.opentelemetry.api.trace.StatusCode.ERROR, "Unhandled exception: " + e.getMessage());
-        logger.severe("GET /top-gainers - 500 - Unhandled exception: " + e.getMessage());
+        LOGGER.severe("GET " + TOP_GAINERS_ENDPOINT + " - 500 - Unhandled exception: " + e.getMessage());
         throw e;
       } finally {
         span.end();
@@ -283,7 +284,7 @@ public class StockSnapService {
             JsonObject errorJson = new JsonObject();
             errorJson.addProperty("error", "Invalid symbol");
             resp.getWriter().println(new Gson().toJson(errorJson));
-            logger.info("GET /stock-exchange - 400 - Invalid symbol");
+            LOGGER.info("GET " + STOCK_EXCHANGE_ENDPOINT + " - 400 - Invalid symbol");
             return;
           }
         } finally {
@@ -332,7 +333,7 @@ public class StockSnapService {
             errorJson.addProperty("error", "Invalid symbol for stock exchange table");
             resp.getWriter().println(new Gson().toJson(errorJson));
 
-            logger.info("GET /stock-exchange - 400 - Invalid symbol for stock exchange table");
+            LOGGER.info("GET " + STOCK_EXCHANGE_ENDPOINT + " - 400 - Invalid symbol for stock exchange table");
             return;
           }
 
@@ -346,7 +347,7 @@ public class StockSnapService {
           // Update API response status and write response
           resp.setStatus(HttpServletResponse.SC_OK);
           resp.getWriter().println(new Gson().toJson(responseJson));
-          logger.info("GET /stock-exchange - 200 - " + symbol + ": " + exchange);
+          LOGGER.info("GET " + STOCK_EXCHANGE_ENDPOINT + " - 200 - " + symbol + ": " + exchange);
         } finally {
           fetchExchangeSpan.end();
         }
@@ -361,11 +362,11 @@ public class StockSnapService {
       } catch (SQLException e) {
         span.setStatus(
             io.opentelemetry.api.trace.StatusCode.ERROR, "SQL exception: " + e.getMessage());
-        logger.info("GET /stock-exchange - 500 - SQL exception: " + e.getMessage());
+        LOGGER.info("GET " + STOCK_EXCHANGE_ENDPOINT + " - 500 - SQL exception: " + e.getMessage());
       } catch (Exception e) {
         span.setStatus(
             io.opentelemetry.api.trace.StatusCode.ERROR, "Unhandled exception: " + e.getMessage());
-        logger.severe("GET /stock-exchange - 500 - Unhandled exception: " + e.getMessage());
+        LOGGER.severe("GET " + STOCK_EXCHANGE_ENDPOINT + " - 500 - Unhandled exception: " + e.getMessage());
         throw e;
       } finally {
         span.end();
@@ -379,7 +380,7 @@ public class StockSnapService {
       Statement statement = conn.createStatement();
       resultSet = statement.executeQuery(sql);
     } catch (SQLException e) {
-      logger.info("Error executing SQL: " + sql + " " + e.getMessage());
+      LOGGER.info("Error executing SQL: " + sql + " " + e.getMessage());
     }
     return resultSet;
   }
@@ -402,18 +403,18 @@ public class StockSnapService {
     props.put("database", database);
     props.put("schema", schema);
 
-    logger.info("Connection URL: " + connectionURL);
+    LOGGER.info("Connection URL: " + connectionURL);
 
     // Connect to Snowflake
     try {
       conn = DriverManager.getConnection(connectionURL, props);
       if (conn == null) {
-        logger.severe("Failed to connect to Snowflake, getConnection returned null");
+        LOGGER.severe("Failed to connect to Snowflake, getConnection returned null");
       } else {
-        logger.info("Successfully connected to Snowflake");
+        LOGGER.info("Successfully connected to Snowflake");
       }
     } catch (SQLException e) {
-      logger.severe("Connection to Snowflake failed: " + e.getMessage());
+      LOGGER.severe("Connection to Snowflake failed: " + e.getMessage());
       throw e;
     }
 
@@ -425,14 +426,14 @@ public class StockSnapService {
     try (BufferedReader reader = new BufferedReader(new FileReader("/snowflake/session/token"))) {
       return reader.readLine();
     } catch (IOException e) {
-      logger.severe("Failed to read login token: " + e.getMessage());
+      LOGGER.severe("Failed to read login token: " + e.getMessage());
       return "";
     }
   }
 
   private static void randomSleep() {
     try {
-      Thread.sleep(100 + random.nextInt(900)); // Random sleep between 100ms and 1s
+      Thread.sleep(100 + RANDOM.nextInt(900)); // Random sleep between 100ms and 1s
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }

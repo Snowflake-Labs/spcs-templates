@@ -22,7 +22,7 @@ import snowflake.connector
 SERVICE_NAME = "stock_snap_py"
 
 # Endpoints
-STOCK_ENDPOINT = "/stock"
+STOCK_PRICE_ENDPOINT = "/stock-price"
 TOP_GAINERS_ENDPOINT = "/top-gainers"
 STOCK_EXCHANGE_ENDPOINT = "/stock-exchange"
 
@@ -95,7 +95,7 @@ stock_count_gauge = meter.create_observable_gauge(
 with open('stock-snap.json') as f:
     stock_prices = json.load(f)
 
-@app.route(STOCK_ENDPOINT, methods=['GET'])
+@app.route(STOCK_PRICE_ENDPOINT, methods=['GET'])
 def get_stock_price():
     """
     Endpoint to get the stock price for a given symbol.
@@ -112,7 +112,7 @@ def get_stock_price():
 
         with tracer.start_as_current_span("validate_input") as child_span:
             if not symbol or symbol not in stock_prices:
-                logger.info(f"GET {STOCK_ENDPOINT} - 400 - Invalid symbol")
+                logger.info(f"GET {STOCK_PRICE_ENDPOINT} - 400 - Invalid symbol")
                 response = jsonify({"error": "Invalid symbol"}), 400
                 span.add_event("response", {"response": str(response)})
                 return response
@@ -123,12 +123,12 @@ def get_stock_price():
             price = stock_prices[symbol]
 
         response_time = (time.time() - start_time) * 1000
-        request_counter.add(1, {"endpoint": STOCK_ENDPOINT})
-        response_histogram.record(response_time, {"endpoint": STOCK_ENDPOINT})
+        request_counter.add(1, {"endpoint": STOCK_PRICE_ENDPOINT})
+        response_histogram.record(response_time, {"endpoint": STOCK_PRICE_ENDPOINT})
 
         response = jsonify({"symbol": symbol, "price": price}), 200
         span.add_event("response", {"response": str(response)})
-        logger.info(f"GET {STOCK_ENDPOINT} - 200 - {symbol}: {price}")
+        logger.info(f"GET {STOCK_PRICE_ENDPOINT} - 200 - {symbol}: {price}")
         return response
 
 
@@ -186,7 +186,7 @@ def get_stock_exchange():
 
         with tracer.start_as_current_span("validate_input") as child_span:
             if not symbol or symbol not in stock_prices:
-                logger.info(f"GET {STOCK_ENDPOINT} - 400 - Invalid symbol")
+                logger.info(f"GET {STOCK_PRICE_ENDPOINT} - 400 - Invalid symbol")
                 response = jsonify({"error": "Invalid symbol"}), 400
                 span.add_event("response", {"response": str(response)})
                 return response

@@ -28,19 +28,19 @@ import (
 	"github.com/snowflakedb/gosnowflake"
 )
 
-const ServiceName = "stock_snap_go"
+const serviceName = "stock_snap_go"
 
 // API endpoints
 const (
-	StockEndpoint         = "/stock-price"
-	TopGainersEndpoint    = "/top-gainers"
-	StockExchangeEndpoint = "/stock-exchange"
+	stockPriceEndpoint    = "/stock-price"
+	topGainersEndpoint    = "/top-gainers"
+	stockExchangeEndpoint = "/stock-exchange"
 )
 
 // Global variables
 var (
-	ServerPort  = getEnvOrDefault("SERVER_PORT", "8080")
-	ServiceHost = getEnvOrDefault("SERVICE_HOST", "0.0.0.0")
+	serverPort  = getEnvOrDefault("SERVER_PORT", "8080")
+	serviceHost = getEnvOrDefault("SERVICE_HOST", "0.0.0.0")
 
 	logger            *slog.Logger
 	tracer            trace.Tracer
@@ -59,10 +59,10 @@ func init() {
 	setUpLogging()
 
 	setupOTelTracing(ctx)
-	tracer = otel.Tracer(ServiceName)
+	tracer = otel.Tracer(serviceName)
 
 	setUpMetrics(ctx)
-	meter = otel.GetMeterProvider().Meter(ServiceName)
+	meter = otel.GetMeterProvider().Meter(serviceName)
 
 	setSnowflakeConfig()
 
@@ -96,7 +96,7 @@ func main() {
 		),
 	)
 
-	serverAddr := fmt.Sprintf("%s:%s", ServiceHost, ServerPort)
+	serverAddr := fmt.Sprintf("%s:%s", serviceHost, serverPort)
 	logger.Info("Starting server", "address", serverAddr)
 
 	if err := router.Run(serverAddr); err != nil {
@@ -120,7 +120,7 @@ func setUpMetrics(ctx context.Context) {
 
 func setupOTelTracing(ctx context.Context) {
 	res, _ := resource.New(ctx,
-		resource.WithAttributes(semconv.ServiceNameKey.String(ServiceName)),
+		resource.WithAttributes(semconv.ServiceNameKey.String(serviceName)),
 	)
 	exporter, _ := otlptrace.New(ctx,
 		otlptracegrpc.NewClient(
@@ -208,9 +208,9 @@ func randomSleep() {
 
 // setupRoutes configures all API endpoints
 func setupRoutes(router *gin.Engine) {
-	router.GET(StockEndpoint, getStockPrice)
-	router.GET(TopGainersEndpoint, getTopGainers)
-	router.GET(StockExchangeEndpoint, getStockExchange)
+	router.GET(stockPriceEndpoint, getStockPrice)
+	router.GET(topGainersEndpoint, getTopGainers)
+	router.GET(stockExchangeEndpoint, getStockExchange)
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "up"})
@@ -233,7 +233,7 @@ func getStockPrice(c *gin.Context) {
 
 	_, exists := stockPrices[symbol]
 	if symbol == "" || !exists {
-		logger.Info(fmt.Sprintf("GET %s - 400 - Invalid symbol", StockEndpoint))
+		logger.Info(fmt.Sprintf("GET %s - 400 - Invalid symbol", stockPriceEndpoint))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid symbol"})
 		span.AddEvent("response", trace.WithAttributes(
 			attribute.Int("http.status_code", http.StatusBadRequest),
@@ -254,15 +254,15 @@ func getStockPrice(c *gin.Context) {
 
 	// Metrics and logging
 	responseTime := time.Since(startTime).Milliseconds()
-	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", StockEndpoint)))
-	requestCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("endpoint", StockEndpoint)))
+	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", stockPriceEndpoint)))
+	requestCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("endpoint", stockPriceEndpoint)))
 
 	span.AddEvent("response", trace.WithAttributes(
 		attribute.Int("http.status_code", http.StatusOK),
 		attribute.String("response.body", fmt.Sprintf(`{"symbol": "%s", "price": %f}`, symbol, price)),
 	))
 
-	logger.Info(fmt.Sprintf("GET %s - 200 - %s: %f", StockEndpoint, symbol, price))
+	logger.Info(fmt.Sprintf("GET %s - 200 - %s: %f", stockPriceEndpoint, symbol, price))
 
 	c.JSON(http.StatusOK, gin.H{"symbol": symbol, "price": price})
 }
@@ -302,15 +302,15 @@ func getTopGainers(c *gin.Context) {
 
 	// Metrics and logging
 	responseTime := time.Since(startTime).Milliseconds()
-	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", TopGainersEndpoint)))
-	requestCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("endpoint", TopGainersEndpoint)))
+	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", topGainersEndpoint)))
+	requestCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("endpoint", topGainersEndpoint)))
 
 	span.AddEvent("response", trace.WithAttributes(
 		attribute.Int("http.status_code", http.StatusOK),
 		attribute.String("response.body", fmt.Sprintf(`{"top_gainers": %v}`, sortedStocks)),
 	))
 
-	logger.Info(fmt.Sprintf("GET %s - 200 - %v", TopGainersEndpoint, sortedStocks))
+	logger.Info(fmt.Sprintf("GET %s - 200 - %v", topGainersEndpoint, sortedStocks))
 
 	c.IndentedJSON(http.StatusOK, gin.H{"top_gainers": sortedStocks})
 }
@@ -327,7 +327,7 @@ func getStockExchange(c *gin.Context) {
 
 	symbol := c.Query("symbol")
 	if symbol == "" {
-		logger.Info(fmt.Sprintf("GET %s - 400 - Invalid symbol.", StockExchangeEndpoint))
+		logger.Info(fmt.Sprintf("GET %s - 400 - Invalid symbol.", stockExchangeEndpoint))
 		span.AddEvent("response", trace.WithAttributes(
 			attribute.Int("http.status_code", http.StatusBadRequest),
 			attribute.String("response.body", `{"error": "Invalid symbol."}`),
@@ -349,7 +349,7 @@ func getStockExchange(c *gin.Context) {
 	connector := gosnowflake.NewConnector(gosnowflake.SnowflakeDriver{}, *config)
 	db := sql.OpenDB(connector)
 	if err := db.Ping(); err != nil {
-		logger.Info(fmt.Sprintf("GET %s - 500 - Failed to connect to Snowflake: %v", StockExchangeEndpoint, err))
+		logger.Info(fmt.Sprintf("GET %s - 500 - Failed to connect to Snowflake: %v", stockExchangeEndpoint, err))
 		span.AddEvent("response", trace.WithAttributes(
 			attribute.Int("http.status_code", http.StatusInternalServerError),
 			attribute.String("response.body", fmt.Sprintf("Failed to connect to Snowflake: %v", err)),
@@ -366,7 +366,7 @@ func getStockExchange(c *gin.Context) {
 	)
 	rows, err := db.QueryContext(childCtx, query)
 	if err != nil {
-		logger.Info(fmt.Sprintf("GET %s - 500 - Failed to execute query: %v", StockExchangeEndpoint, err))
+		logger.Info(fmt.Sprintf("GET %s - 500 - Failed to execute query: %v", stockExchangeEndpoint, err))
 		span.AddEvent("response", trace.WithAttributes(
 			attribute.Int("http.status_code", http.StatusInternalServerError),
 			attribute.String("response.body", fmt.Sprintf("Failed to execute query: %v", err)),
@@ -381,7 +381,7 @@ func getStockExchange(c *gin.Context) {
 	var exchange string
 	if rows.Next() {
 		if err := rows.Scan(&exchange); err != nil {
-			logger.Info(fmt.Sprintf("GET %s - 500 - Failed to scan exchange: %v", StockExchangeEndpoint, err))
+			logger.Info(fmt.Sprintf("GET %s - 500 - Failed to scan exchange: %v", stockExchangeEndpoint, err))
 			span.AddEvent("response", trace.WithAttributes(
 				attribute.Int("http.status_code", http.StatusInternalServerError),
 				attribute.String("response.body", fmt.Sprintf("Failed to scan exchange: %v", err)),
@@ -390,7 +390,7 @@ func getStockExchange(c *gin.Context) {
 			return
 		}
 	} else {
-		logger.Info(fmt.Sprintf("GET %s - 404 - Symbol not found.", StockExchangeEndpoint))
+		logger.Info(fmt.Sprintf("GET %s - 404 - Symbol not found.", stockExchangeEndpoint))
 		span.AddEvent("response", trace.WithAttributes(
 			attribute.Int("http.status_code", http.StatusNotFound),
 			attribute.String("response.body", `{"error": "Symbol not found."}`),
@@ -401,15 +401,15 @@ func getStockExchange(c *gin.Context) {
 
 	// Metrics and logging
 	responseTime := time.Since(startTime).Milliseconds()
-	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", StockExchangeEndpoint)))
-	requestCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("endpoint", StockExchangeEndpoint)))
+	responseHistogram.Record(ctx, float64(responseTime), metric.WithAttributes(attribute.String("endpoint", stockExchangeEndpoint)))
+	requestCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("endpoint", stockExchangeEndpoint)))
 
 	span.AddEvent("response", trace.WithAttributes(
 		attribute.Int("http.status_code", http.StatusOK),
 		attribute.String("response.body", fmt.Sprintf(`{"exchange": "%s"}`, exchange)),
 	))
 
-	logger.Info(fmt.Sprintf("GET %s - 200 - %s", StockExchangeEndpoint, exchange))
+	logger.Info(fmt.Sprintf("GET %s - 200 - %s", stockExchangeEndpoint, exchange))
 
 	c.JSON(http.StatusOK, gin.H{"exchange": exchange})
 }
