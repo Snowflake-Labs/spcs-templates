@@ -1,4 +1,3 @@
-from generateJWT import JWTGenerator
 
 from flask import Flask
 from flask import request
@@ -14,7 +13,7 @@ import os
 import sys
 
 SERVICE_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
-SERVICE_PORT = os.getenv('SERVER_PORT', 8888)
+SERVICE_PORT = os.getenv('SERVER_PORT', 9999)
 CHARACTER_NAME = os.getenv('CHARACTER_NAME', 'I')
 
 
@@ -87,47 +86,6 @@ def ui():
             echo_reponse=get_echo_response(input_text))
 
     return render_template("basic_ui.html")
-
-def get_p8():
-    p8 = ""
-    with open("./rsa_key.p8", 'rb') as pem_in:
-        pemlines = pem_in.read()
-        try:
-            # Try to access the private key without a passphrase.
-            p8 = load_pem_private_key(pemlines, None, default_backend())
-            logger.debug(f"p8: {p8}")
-        except TypeError:
-            logger.error("Failed getting private key. ")
-    return p8
-
-def token_exchange(token, role, endpoint, snowflake_account_url, isPat):
-    scope_role = f'session:role:{role}'
-    scope = f'{scope_role} {endpoint}'
-    
-    if isPat:
-        data = {
-            'grant_type': 'urn:ietf:params:oauth:grant-type:token-exchange',
-            'scope': scope,
-            'subject_token': token,
-            'subject_token_type': 'programmatic_access_token'
-        }
-    else:
-        data = {
-            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'scope': scope,
-            'assertion': token,
-        }
-
-    logger.info(data)
-    response = _do_token_exchange(data, snowflake_account_url)
-    return response.text
-
-def _do_token_exchange(data, snowflake_account_url) -> requests.Response:
-    url = f'{snowflake_account_url}/oauth/token'
-    response = requests.post(url, data=data, verify=False)
-    logger.info("snowflake jwt response code : %s" % response.status_code)
-    assert 200 == response.status_code, "unable to get snowflake token"
-    return response
 
 
 @app.route('/jwt', methods=['POST'])
