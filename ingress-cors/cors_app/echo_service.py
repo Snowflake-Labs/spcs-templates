@@ -14,8 +14,10 @@ import os
 import sys
 
 SERVICE_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
-SERVICE_PORT = os.getenv('SERVER_PORT', 8888)
+SERVICE_PORT = os.getenv('SERVER_PORT', 9999)
 CHARACTER_NAME = os.getenv('CHARACTER_NAME', 'I')
+SNOWFLAKE_HOST = os.getenv('SNOWFLAKE_HOST')
+SNOWFLAKE_ACCOUNT = os.getenv('SNOWFLAKE_ACCOUNT')
 
 
 def get_logger(logger_name):
@@ -140,8 +142,13 @@ def handle_data():
         role = data.get("role")
         isPat = data.get("isPat")
         snowflake_account_hostname = data.get("snowflake_account_hostname")
-        account = snowflake_account_hostname.split('.')[0]
-        logger.debug(f'Account from Snowflake Account URL: {account}')
+        if snowflake_account_hostname:
+            account = snowflake_account_hostname.split('.')[0] or SNOWFLAKE_ACCOUNT
+        else:
+            snowflake_account_hostname =  SNOWFLAKE_HOST
+            account = SNOWFLAKE_ACCOUNT
+        logger.debug(f'SNOWFLAKE_HOST: {snowflake_account_hostname}')
+        logger.debug(f'Account: {account}')
         endpoint = data.get("endpoint")
         key = data.get("key")
         if isPat:
