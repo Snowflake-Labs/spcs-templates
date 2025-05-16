@@ -19,6 +19,7 @@ def get_connection():
         "role": os.environ['SNOWFLAKE_ROLE'],
         "client_session_keep_alive": True
     }
+    print(connection_parameters)
 
     return snowflake.connector.connect(**connection_parameters)
 
