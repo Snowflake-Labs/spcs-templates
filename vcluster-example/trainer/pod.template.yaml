@@ -20,7 +20,7 @@ spec:
             - name: SNOWFLAKE_ACCOUNT
               value: "${SNOWFLAKE_ACCOUNT}"
             - name: SNOWFLAKE_HOST
-              value: "${SNOWFLAKE_HOST}"
+              value: "${SNOWFLAKE_VCLUSTER_HOST}"
             - name: SNOWFLAKE_DATABASE
               value: "${SNOWFLAKE_DATABASE}"
             - name: SNOWFLAKE_SCHEMA
