@@ -32,6 +32,7 @@ SERVICE_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
 SERVICE_PORT = os.getenv('SERVER_PORT', 8080)
 SNOWFLAKE_HOST = os.getenv('SNOWFLAKE_HOST')
 SNOWFLAKE_ACCOUNT = os.getenv('SNOWFLAKE_ACCOUNT')
+SNOWFLAKE_WAREHOUSE = os.getenv('SNOWFLAKE_WAREHOUSE')
 STOCK_EXCHANGE_DATABASE = os.getenv('SNOWFLAKE_DATABASE')
 STOCK_EXCHANGE_SCHEMA = os.getenv('SNOWFLAKE_SCHEMA')
 SNOWFLAKE_ROLE = os.getenv('SNOWFLAKE_ROLE')
@@ -132,6 +133,10 @@ def get_stock_price():
         return response
 
 
+@app.route('/health', methods=['GET'])
+def readiness_probe():
+    return "I'm ready!"
+
 @app.route(TOP_GAINERS_ENDPOINT, methods=['GET'])
 def get_top_gainers():
     """
@@ -199,15 +204,14 @@ def get_stock_exchange():
                 account = SNOWFLAKE_ACCOUNT,
                 role = SNOWFLAKE_ROLE,
                 authenticator = "oauth",
-                token = get_login_token()
+                token = get_login_token(),
+                warehouse = SNOWFLAKE_WAREHOUSE
             )
 
             try:
                 cur = conn.cursor()
                 cur.execute(f"""
-                    SELECT {STOCK_EXCHANGE_COLUMN} 
-                    FROM {STOCK_EXCHANGE_DATABASE}.{STOCK_EXCHANGE_SCHEMA}.{STOCK_EXCHANGE_TABLE} 
-                    WHERE symbol = %s
+                    CALL {STOCK_EXCHANGE_DATABASE}.{STOCK_EXCHANGE_SCHEMA}.get_stock_exchange(%s)
                     """, 
                     (symbol,)
                 )
