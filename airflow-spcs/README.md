@@ -500,7 +500,7 @@ DROP STAGE airflow_dags;
 ```
 
 <!-- ------------------------ -->
-## Additionla Consideration
+## Additional Consideration
 
 Duration: 5
 
@@ -527,7 +527,7 @@ Steps to Integrate Airflow with Okta for RBAC.
       AIRFLOW__WEBSERVER__AUTHENTICATE: False # Change its value to True if you are planning to put the UI behing Okta
       AIRFLOW__WEBSERVER__RBAC: False # Change its value to True if you are planning to put the UI behing Okta
 ```
-4. Run `rendere_templates.py` script and upload `airflow_server.yaml` file to `@service_spec` stage. Once done, restart `airflow_server` service.
+4. Run `render_templates.py` script and upload `airflow_server.yaml` file to `@service_spec` stage. Once done, restart `airflow_server` service.
 
 
 <!-- ------------------------ -->
