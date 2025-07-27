@@ -1,5 +1,5 @@
 # Introduction
-After completing the [common setup](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/common-setup), you are ready to create a service. In this tutorial, you will create one service (named echo_service_with_cors) that exposes an endpoint to respond to CORS requests. Then you will create a service locally to send CORS requests to the endpoint: 
+After completing the [common setup](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/common-setup), you are ready to create a service. In this tutorial, you will create one service (named echo_service_with_cors) that exposes an endpoint to respond to CORS requests. Then you will create a service locally to send CORS requests to the endpoint using **PAT token authentication**: 
 
 **1. /healthcheck:** this method should respond with "I'm ready!"
 
@@ -15,9 +15,9 @@ At a high-level, this tutorial contains the following steps:
 
 3. Create the service by providing the service specification file and the compute pool in which to run the service.
 
-6. Configure key pair authentication and/or PAT token authentication
+4. Configure PAT token authentication
 
-7. Send CORS requests from localhost 
+5. Send CORS requests from localhost using PAT tokens
 
 <br>
 
@@ -131,6 +131,7 @@ CREATE SERVICE echo_service_with_cors
           - http://localhost:8888
           Access-Control-Allow-Methods:
           - POST
+          - GET
           Access-Control-Allow-Headers:
           - Authorization
           - Content-Type
@@ -169,58 +170,39 @@ Verify that you can access the endpoint by hitting the endpoint in the browser:
 https://ftwoqas5-myorg-myacct.snowflakecomputing.app/healthcheck
 ```
 
-# 4: Configure key pair authentication
- 1. Configure key pair authentication for the user by following the [key pair authentication guide](https://docs.snowflake.com/en/user-guide/key-pair-auth)
+# 4: Configure PAT token authentication
+Configure a PAT token for the user by following the [PAT token guide](https://docs.snowflake.com/LIMITEDACCESS/programmatic-access-tokens)
 
- 2. Configure a PAT token for the user by following the [PAT token guide](https://docs.snowflake.com/LIMITEDACCESS/programmatic-access-tokens)
+# 5: Run the service locally
 
-
-# 5: Spin up the service locally
-In the cors_app folder, using a Python virtual environment, execute:
+## Option 1: Using Docker (Recommended)
+In the cors_app folder, execute:
 ```
-python3 -m venv .  
-source bin/activate 
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
-python3 echo_service.py
+cd cors_app
+docker build -t cors-app .
+docker run -p 8888:8888 cors-app
 ```
 
 Access the endpoint at http://localhost:8888/ui in a web browser. This causes the service to execute the ui() function (see echo_service.py).
 
-<img src="cors_app_ui.png" alt="drawing" width="1200"/>
+# 6: Send CORS requests to the endpoint
 
-# 6: Send CORS requests to the endpoint on local browser
+The simplified interface now provides **2 main functionalities** using PAT token authentication:
 
-There are 4 functionalities the endpoint provides:
+  **a. Making a GET request** - Test CORS GET requests with PAT token authentication
+  
+  **b. Making a POST request** - Test CORS POST requests with PAT token authentication
 
-  a. Making a GET request with info necessary for programmatic access using key pair authentication
+Simply input the endpoint URL and your PAT token. The interface will:
+- Use Bearer authentication with your PAT token
+- Send custom headers to test CORS configuration
+- Validate Access-Control-Allow-Headers and Access-Control-Expose-Headers
 
-  b. Making a GET request with info necessary for programmatic access using a PAT token
+The simplified UI eliminates the complexity of key pair authentication and JWT token exchange, making it easier to test CORS functionality with just PAT tokens.
 
-  c. Making a POST request with info necessary for programmatic access using key pair authentication
+**Testing endpoints:**
+- GET: Test against `/healthcheck` or other GET endpoints
+- POST: Test against `/echo` endpoint with custom payloads
 
-  d. Making a POST request with info necessary for programmatic access using a PAT token
-
-Input the endpoint, user, role, and account URL. The JWT token retrival part (a and c) / PAT token exchange (b and d) will be done automatically. For more information on how to find the account URL, visit [Account identifiers](https://docs.snowflake.com/en/user-guide/admin-account-identifier). The value of Role is automatically capitalized as Snowflake roles are always in uppercase.
-Note that comparing to the [programmatic access tutorial](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/tutorials/tutorial-1#setup), the account and endpoint are both omitted as input, since they can be deduced from the Snowflake Account URL and the GET / POST URL respectively.
-Also note that all 4 functionalities validate Access-Control-Allow-Headers and Access-Control-Expose-Headers as an example. 
-
-For a:
-
-<img src="cors_get_with_key_pair.png" alt="drawing" width="600"/>
-
-<br>
-For b:
-
-<img src="cors_get_with_pat.png" alt="drawing" width="600"/>
-
-<br>
-For c:
-
-<img src="cors_post_with_key_pair.png" alt="drawing" width="600"/>
-
-<br>
-For d:
-
-<img src="cors_post_with_pat.png" alt="drawing" width="600"/>
+Both functionalities validate CORS headers as an example of proper CORS implementation. 
 
