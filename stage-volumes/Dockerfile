@@ -19,3 +19,6 @@ ENV PATH="/usr/local/go/bin:$PATH"
 COPY *.go /
 COPY *.py /
 COPY file-generator/file-generator.go /
+RUN go mod init example.com/benchmark_service
+RUN go get github.com/google/uuid
+RUN go build -o file-generator file-generator.go
