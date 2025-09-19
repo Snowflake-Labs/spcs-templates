@@ -74,7 +74,23 @@ EXECUTE JOB SERVICE IN COMPUTE POOL CPU_S
         - "--source_value_column=REVIEW_TEXT"
         - "--result_table=results"
  $$;
-  SELECT SYSTEM$WAIT_FOR_SERVICES(1200, 'summarization_job_async','sentiment_job_async')
 
--- (Optional: CLI debug commands)
---  snow spcs service logs summarization_job_async --container-name main --instance-id 0
+CALL summarization_job_async!spcs_wait_for('DONE', 600);
+CALL sentiment_job_async!spcs_wait_for('DONE', 600);
+ 
+SELECT 
+  name,
+  status,
+  created_time,
+  completed_time,
+  DATEDIFF('second', created_time, completed_time) AS duration_seconds
+FROM TABLE(SNOWFLAKE.SPCS.GET_JOB_HISTORY(RESULT_LIMIT=>5));
+
+
+SELECT * FROM TABLE(summarization_job_sync!spcs_get_logs());
+SELECT * FROM TABLE(summarization_job_async!spcs_get_logs());
+SELECT * FROM TABLE(sentiment_job_async!spcs_get_logs());
+
+DROP service summarization_job_sync;
+DROP service summarization_job_async;
+DROP service sentiment_job_async;
