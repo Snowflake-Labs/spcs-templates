@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# SCRIPT: parallel_rsync_flat.py
+# SCRIPT: read-rsync.py
 #
 # PURPOSE:
 # Accelerates copying a large number of files from a single source directory
@@ -26,7 +26,7 @@
 #
 #
 # Example:
-# python3 parallel_rsync_flat.py /path/to/source /path/to/dest --workers 16
+# python3 read-rsync.py /path/to/source /path/to/dest --workers 16
 #
 import subprocess
 import os
@@ -108,7 +108,7 @@ def main(source_dir, dest_dir, workers):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Run rsync in parallel on a flat directory.",
-        epilog="Example: python3 parallel_rsync_flat.py /path/to/source /path/to/dest --workers 16"
+        epilog="Example: python3 read-rsync.py /path/to/source /path/to/dest --workers 16"
     )
     parser.add_argument("source_directory", help="The source Stage Mount directory.")
     parser.add_argument("destination_directory", help="The local destination directory.")
