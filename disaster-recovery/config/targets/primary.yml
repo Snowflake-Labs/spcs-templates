@@ -1,0 +1,21 @@
+# Primary
+account: YOUR_ORG.YOUR_PRIMARY_ACCOUNT
+
+connection:
+  name: snowflake_primary
+
+service:
+  min_instances: 2
+  max_instances: 4
+
+external:
+  api_host: api.us-west-2.example.com
+  api_endpoint: https://api.us-west-2.example.com/v1
+  s3_bucket: myapp-data-us-west-2
+  s3_host: myapp-data-us-west-2.s3.us-west-2.amazonaws.com
+  aws_region: us-west-2
+
+secrets:
+  api_key: REPLACE_WITH_API_KEY
+  aws_access_key_id: REPLACE_WITH_ACCESS_KEY_ID
+  aws_secret_access_key: REPLACE_WITH_SECRET_ACCESS_KEY
