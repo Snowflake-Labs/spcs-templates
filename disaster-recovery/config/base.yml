@@ -1,0 +1,49 @@
+# Base configuration for SPCS Disaster Recovery
+# Shared settings across primary and secondary
+
+# REPLICATED (failover group)
+# Database - holds image repository
+replicated:
+  database: SPCS_REPLICATED
+  schema: APP
+
+# Compute pool
+compute_pool:
+  name: APP_POOL
+  min_nodes: 1
+  max_nodes: 2
+  instance_family: CPU_X64_XS
+  auto_suspend_secs: 300
+
+# Failover group
+failover_group:
+  name: SPCS_DR_FAILOVER_GROUP
+  replication_schedule: "10 MINUTE"
+
+# NON-REPLICATED REGIONAL SETTINGS
+# Database - holds secrets, network rules, EAI
+local:
+  database: SPCS_LOCAL
+  schema: APP
+
+# Service 
+service:
+  name: MY_APP_SERVICE
+  image: /spcs_replicated/app/repo/my-app:latest # try pushing something like ealen/echo-server for easy testing
+  min_instances: 1
+  max_instances: 2
+
+# External connections
+external:
+  api_host: api.example.com
+  api_endpoint: https://api.example.com/v1
+  s3_bucket: myapp-data
+  s3_host: s3.amazonaws.com
+  aws_region: us-west-2
+
+# Secrets (override in target-specific YAML or pass via --set)
+secrets:
+  api_key: REPLACE_WITH_API_KEY
+  aws_access_key_id: REPLACE_WITH_ACCESS_KEY_ID
+  aws_secret_access_key: REPLACE_WITH_SECRET_ACCESS_KEY
+

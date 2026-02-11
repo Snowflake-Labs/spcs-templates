@@ -1,0 +1,22 @@
+# Secondary (DR)
+account: YOUR_ORG.YOUR_SECONDARY_ACCOUNT
+
+connection:
+  name: snowflake_secondary
+
+service:
+  suspended: true
+  min_instances: 1
+  max_instances: 2
+
+external:
+  api_host: api.eu-west-1.example.com
+  api_endpoint: https://api.eu-west-1.example.com/v1
+  s3_bucket: myapp-data-eu-west-1
+  s3_host: myapp-data-eu-west-1.s3.eu-west-1.amazonaws.com
+  aws_region: eu-west-1
+
+secrets:
+  api_key: REPLACE_WITH_API_KEY
+  aws_access_key_id: REPLACE_WITH_ACCESS_KEY_ID
+  aws_secret_access_key: REPLACE_WITH_SECRET_ACCESS_KEY
