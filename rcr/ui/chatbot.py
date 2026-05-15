@@ -29,9 +29,33 @@ app = FastAPI()
 
 @app.middleware("http")
 async def get_ingress_user_token(request: Request, call_next):
-    """Capture the current user token from ingress"""
+    """Capture the current user token from ingress and log its validity"""
     global ingress_user_token
     ingress_user_token = request.headers.get('Sf-Context-Current-User-Token')
+
+    if ingress_user_token:
+        try:
+            url = f"https://{SNOWFLAKE_HOST}/api/v2/statements"
+            headers = {
+                "Authorization": f"Bearer {get_login_token()}",
+                "X-Snowflake-Authorization-Token-Type": "OAUTH",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+            body = {
+                "statement": "SELECT SYSTEM$GET_SERVICE_CALLER_TOKEN_EXPIRY(?)",
+                "bindings": {"1": {"type": "TEXT", "value": ingress_user_token}}
+            }
+            resp = requests.post(url=url, json=body, headers=headers, timeout=10)
+            if resp.status_code < 400:
+                data = resp.json()
+                expiry = data.get("data", [[None]])[0][0]
+                logger.info(f"Caller token expiry: {expiry}")
+            else:
+                logger.warning(f"Failed to get caller token expiry: HTTP {resp.status_code} - {resp.text[:200]}")
+        except Exception as e:
+            logger.warning(f"Error checking caller token expiry: {e}")
+
     response = await call_next(request)
     return response
 
