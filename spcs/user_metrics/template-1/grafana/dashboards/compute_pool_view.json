@@ -1,0 +1,1386 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 5,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(max(spcs_container_state_running{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "legendFormat": "running",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(max(spcs_container_state_started{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "hide": false,
+          "legendFormat": "started",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(max(spcs_container_state_pending{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "hide": false,
+          "legendFormat": "pending to start",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(max(spcs_container_state_finished{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name))",
+          "hide": false,
+          "legendFormat": "finished",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Service Distribution",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(spcs_container_state_last_finished_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, reason)",
+          "legendFormat": "last-terminated-reason[{{snow_node_id}}]:{{reason}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum(spcs_container_state_pending_reason{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, reason)",
+          "hide": false,
+          "legendFormat": "pending-reason[{{snow_node_id}}]:{{reason}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "pending or Terminated Containers",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 12,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(sum(spcs_container_state_last_finished_reason) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Last Terminated Container Status",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "join_label",
+            "mode": "outer"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "join_label": true,
+              "snow_containers_instance_name": false
+            },
+            "indexByName": {
+              "Time": 0,
+              "Value": 8,
+              "join_label": 7,
+              "reason": 1,
+              "snow_containers_container_name": 5,
+              "snow_containers_instance_name": 6,
+              "snow_database_name": 2,
+              "snow_executable_name": 4,
+              "snow_schema_name": 3
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 13,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(sum(spcs_container_state_pending_reason) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name, snow_containers_instance_name, reason), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\", \"snow_containers_instance_name\", \"reason\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Containers in pending State",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "join_label",
+            "mode": "outer"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "join_label": true,
+              "snow_containers_instance_name": false
+            },
+            "indexByName": {
+              "Time": 0,
+              "Value": 8,
+              "join_label": 7,
+              "reason": 1,
+              "snow_containers_container_name": 5,
+              "snow_containers_instance_name": 6,
+              "snow_database_name": 2,
+              "snow_executable_name": 4,
+              "snow_schema_name": 3
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Memory(Mb)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "lcd",
+                  "type": "gauge"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU Rate"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "lcd",
+                  "type": "gauge"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GPU Memory Utilization"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "lcd",
+                  "type": "gauge"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Memory-{{container}}",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "CPU-{{container}}",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(avg(spcs_container_gpu_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(avg(spcs_container_gpu_memory_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_database_name, snow_schema_name, snow_executable_name, snow_containers_container_name), \"join_label\", \";\", \"snow_database_name\", \"snow_schema_name\", \"snow_executable_name\", \"snow_containers_container_name\")",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "D"
+        }
+      ],
+      "title": "Container Usage",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {
+            "byField": "join_label"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true,
+              "container 2": true,
+              "container 3": true,
+              "container 4": true,
+              "join_label": true,
+              "snow_containers_container_name 1": false,
+              "snow_containers_container_name 2": true,
+              "snow_containers_container_name 3": true,
+              "snow_containers_container_name 4": true,
+              "snow_database_name 2": true,
+              "snow_database_name 3": true,
+              "snow_database_name 4": true,
+              "snow_executable_name 1": false,
+              "snow_executable_name 2": true,
+              "snow_executable_name 3": true,
+              "snow_executable_name 4": true,
+              "snow_schema_name 2": true,
+              "snow_schema_name 3": true,
+              "snow_schema_name 4": true,
+              "sps_snow_executable_name 2": true,
+              "sps_snow_executable_name 3": true,
+              "sps_snow_executable_name 4": true
+            },
+            "indexByName": {
+              "Time 1": 1,
+              "Time 2": 6,
+              "Time 3": 7,
+              "Time 4": 8,
+              "Value #A": 2,
+              "Value #B": 3,
+              "Value #C": 5,
+              "Value #D": 4,
+              "join_label": 0,
+              "snow_containers_container_name 1": 12,
+              "snow_containers_container_name 2": 13,
+              "snow_containers_container_name 3": 17,
+              "snow_containers_container_name 4": 21,
+              "snow_database_name 1": 9,
+              "snow_database_name 2": 14,
+              "snow_database_name 3": 18,
+              "snow_database_name 4": 22,
+              "snow_executable_name 1": 11,
+              "snow_executable_name 2": 16,
+              "snow_executable_name 3": 20,
+              "snow_executable_name 4": 24,
+              "snow_schema_name 1": 10,
+              "snow_schema_name 2": 15,
+              "snow_schema_name 3": 19,
+              "snow_schema_name 4": 23
+            },
+            "renameByName": {
+              "Time 2": "",
+              "Value #A": "Memory(Mb)",
+              "Value #B": "CPU Rate",
+              "Value #C": "GPU Utilization",
+              "Value #D": "GPU Memory Utilization",
+              "container 1": "Container",
+              "sps_snow_executable_name 1": "Service Name"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Memory"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Memory Usage"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Node"
+          }
+        ]
+      },
+      "pluginVersion": "9.5.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "min(spcs_node_status_allocatable{resource=\"memory\"}) by (snow_node_id)",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "avg(spcs_node_status_allocatable{resource=\"cpu\"}) by (snow_node_id)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(spcs_node_status_allocatable{resource=\"gpu\"}) by (snow_node_id)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total[5m])) by (snow_node_id)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(spcs_container_memory_working_set_bytes) by (snow_node_id)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "E"
+        }
+      ],
+      "title": "Node Resources",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {
+            "byField": "snow_node_id"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true,
+              "Time 5": true
+            },
+            "indexByName": {
+              "Time 1": 6,
+              "Time 2": 7,
+              "Time 3": 8,
+              "Time 4": 9,
+              "Time 5": 10,
+              "Value #A": 1,
+              "Value #B": 3,
+              "Value #C": 5,
+              "Value #D": 4,
+              "Value #E": 2,
+              "node": 0
+            },
+            "renameByName": {
+              "Value #A": "Memory",
+              "Value #B": "CPU",
+              "Value #C": "GPU",
+              "Value #D": "CPU Usage",
+              "Value #E": "Memory Usage",
+              "node": "Node"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "max": 1,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spcs_container_memory_used_bytes{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id) / sum(spcs_node_status_allocatable{resource=\"memory\"}) by (snow_node_id)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Node Memory Utilization(%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "max": 1,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spcs_container_cpu_usage_seconds_total{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}[5m])) by (snow_node_id) / sum(spcs_node_status_allocatable{resource=\"cpu\"}) by (snow_node_id)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Node CPU Utilization(%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "max": 1,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spcs_container_gpu_memory_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Node GPU Memory Utilization(%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "max": 1,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafana-prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spcs_container_gpu_utilization{snow_containers_compute_pool_name=\"$snow_containers_compute_pool_name\"}) by (snow_node_id, gpu)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Node GPU Utilization(%)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "AIVANOU02",
+          "value": "AIVANOU02"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "label_values(snow_containers_compute_pool_name)",
+        "description": "Compute Pool",
+        "hide": 0,
+        "includeAll": false,
+        "label": "ComputePool",
+        "multi": false,
+        "name": "snow_containers_compute_pool_name",
+        "options": [],
+        "query": {
+          "query": "label_values(snow_containers_compute_pool_name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ComputePoolView",
+  "uid": "OD1TyiqVz12",
+  "version": 3,
+  "weekStart": ""
+}
