@@ -193,7 +193,7 @@ ALTER SECURITY INTEGRATION IDENTIFIER($SECURITY_INTEGRATION)
     SET NETWORK_POLICY = $NETWORK_POLICY;
 
 -- Retrieve the client credentials for the integration just created.
-SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS($SECURITY_INTEGRATION);
+SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS(UPPER($SECURITY_INTEGRATION));
 
 -- ══════════════════════════════════════════════════════════════════════════════
 -- ▶▶  STOP.  From the result above, copy OAUTH_CLIENT_ID and OAUTH_CLIENT_SECRET.
