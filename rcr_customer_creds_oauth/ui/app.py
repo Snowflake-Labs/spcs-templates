@@ -93,7 +93,7 @@ async def login(request: Request):
     _purge_expired_states()
 
     auth_url = (
-        f"https://{HOST}/oauth/authorize"
+        f"https://{ACCOUNT}.snowflakecomputing.com/oauth/authorize"
         f"?response_type=code"
         f"&client_id={urllib.parse.quote(OAUTH_CLIENT_ID)}"
         f"&redirect_uri={urllib.parse.quote(redirect_uri)}"
